@@ -42,27 +42,26 @@ function select(choices,current,label,onChange){const el=document.createElement(
 function render(){
  const body=$("rows");body.replaceChildren();
  for(const [i,row] of rows.entries()){const tr=document.createElement("tr");
- for(const [col,choices,key] of [[0,dishChoices,"dish"],[1,priceChoices,"price"]]){const td=document.createElement("td");const sel=select(choices,row[key],"Рядок "+(i+1)+", "+(col===0?"страва":"ціна"),v=>row[key]=v);if(review){const expected=target[i];sel.classList.add(expected&&vEqual(row,key,expected,col)?"good":"bad")}td.append(sel);tr.append(td)}
+ for(const [col,choices,key] of [[0,dishChoices,"dish"],[1,priceChoices,"price"]]){const td=document.createElement("td");const sel=select(choices,row[key],"Рядок "+(i+1)+", "+(col===0?"страва":"ціна"),v=>row[key]=v);if(review){const expected=target.find(t=>t[0]===row.dish);sel.classList.add((col===0?!!expected:!!expected&&row.price===expected[1])?"good":"bad")}td.append(sel);tr.append(td)}
  const act=document.createElement("td");act.className="action";const b=document.createElement("button");b.className="remove";b.textContent="×";b.title="Видалити рядок";b.setAttribute("aria-label","Видалити рядок "+(i+1));b.onclick=()=>{if(rows.length===1){msg("Має залишитися хоча б один рядок.");return}if(row.dish==="Кава")deletedExtra=true;rows.splice(i,1);review=false;render();msg("Рядок видалено.")};act.append(b);tr.append(act);body.append(tr)}
  document.querySelectorAll(".head").forEach(x=>{x.classList.toggle("bold",bold);x.classList.toggle("colored",colored)});
  $("bold").classList.toggle("active",bold);$("color").classList.toggle("active",colored);
  $("bold").setAttribute("aria-pressed",String(bold));$("color").setAttribute("aria-pressed",String(colored));
  $("add").disabled=rows.length>=6;
 }
-function vEqual(row,key,expected,col){return row[key]===expected[col]}
-function count(){let points=0;for(let i=0;i<4;i++){const r=rows[i];if(r&&r.dish===target[i][0])points++;if(r&&r.price===target[i][1])points++}if(added)points++;if(deletedExtra&&!rows.some(r=>r.dish==="Кава"))points++;if(bold)points++;if(colored)points++;return points}
+function count(){let points=0;for(const [dish,price] of target){const match=rows.find(r=>r.dish===dish);if(match){points++;if(match.price===price)points++}}if(added)points++;if(deletedExtra&&!rows.some(r=>r.dish==="Кава"))points++;if(bold)points++;if(colored)points++;return points}
 $("add").onclick=()=>{if(rows.length>=6)return;rows.push({id:Date.now()+Math.random(),dish:"",price:""});added=true;review=false;render();msg("Додано порожній рядок. Заповни його.")};
 $("bold").onclick=()=>{bold=!bold;review=false;render()};
 $("color").onclick=()=>{colored=!colored;review=false;render()};
 $("reset").onclick=initial;
-$("hint").onclick=()=>msg("У готовому меню має бути 4 рядки в порядку: піца, сік, салат, чай. Порівняй ціни з описом, видали каву та оформи заголовки.");
+$("hint").onclick=()=>msg("У готовому меню має бути 4 рядки: піца, сік, салат і чай. Порядок рядків неважливий. Порівняй ціни з описом, видали каву та оформи заголовки.");
 function recent(){const data=read(),x=data.at(-1);$("result").textContent=x?"Остання перевірка: "+x.klass+", "+x.group+" група, "+x.surname+" "+x.firstname+" — "+x.score+"/12, спроба "+x.attempt+".":"Перевірок ще немає."}
 $("check").onclick=()=>{
  const klass=$("klass").value,group=$("group").value,surname=$("surname").value.trim().replace(/\s+/g," "),firstname=$("firstname").value.trim().replace(/\s+/g," ");
  if(!klass||!group||!surname||!firstname){msg("Обери клас і групу, введи прізвище та ім’я.","error");return}
  attempt++;review=true;const score=count();const entry={date:new Date().toLocaleString("uk-UA"),klass,group,surname,firstname,exercise:"table-editing-v1",score,total:12,attempt,durationSeconds:Math.round((Date.now()-started)/1000)};
  const data=read();data.push(entry);const ok=store(data);render();recent();
- msg("Результат: "+score+"/12. "+(score===12?"Таблиця готова!":"Перевір виділені клітинки, рядки й оформлення.")+(ok?"":" Не вдалося зберегти локально."),score===12?"success":"error");
+ msg("Результат: "+score+"/12. "+(score===12?"Таблиця готова!":"Перевір виділені клітинки, чи видалено каву, чи додано рядок та чи оформлено заголовки.")+(ok?"":" Не вдалося зберегти локально."),score===12?"success":"error");
  if(SERVER_READY){fetch(ENDPOINT,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(entry)}).then(()=>msg("Локально збережено. Запит надіслано, але запис у Google Таблиці потрібно перевірити.","success")).catch(()=>msg("Збережено локально, але передати результат не вдалося.","error"))}
 };
 $("clear").onclick=()=>{if(confirm("Очистити локальну історію цієї вправи?")){store([]);recent()}};
