@@ -111,4 +111,4 @@ $("check").onclick=()=>{
 $("clear").onclick=()=>{if(confirm("Очистити локальну історію цієї вправи?")){save([]);showResult()}};
 $("export").onclick=()=>{const all=read();if(!all.length){say("Немає результатів для експорту.");return}const cols=["date","klass","group","surname","firstname","exercise","score","total","attempt","durationSeconds"];const safe=v=>{let s=String(v??"");if(/^[=+@-]/.test(s))s="'"+s;return '"'+s.replaceAll('"','""')+'"'};const csv="\uFEFF"+cols.join(";")+"\r\n"+all.map(x=>cols.map(k=>safe(x[k])).join(";")).join("\r\n"),url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"})),a=document.createElement("a");a.href=url;a.download="monday-menu-results.csv";a.click();setTimeout(()=>URL.revokeObjectURL(url),500)};
 renderReference();reset();showResult();
-</script></main></body></html>
+</script><script src="./student-profile.js"></script></main></body></html>
