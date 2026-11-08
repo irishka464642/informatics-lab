@@ -11,7 +11,7 @@ const HEADERS = ["Дата отримання","Клас","Група","Пріз
 const PROP_PREFIX = "RESULTS_SHEET_";
 
 // Запустити один раз в Apps Script під обліковим записом учителя.
-// Створює шість ОКРЕМИХ Google Таблиць, зберігає їх ID в Script Properties.
+// Знаходить шість уже створених приватних журналів у папці та зберігає їх ID в Script Properties.
 function setupJournals() {
  const props=PropertiesService.getScriptProperties();
  const folderIter=DriveApp.getFoldersByName("Informatics Lab — журнали результатів");
