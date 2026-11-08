@@ -166,4 +166,4 @@ $("check").onclick=()=>{
 $("clearHistory").onclick=()=>{if(confirm("Видалити історію цієї вправи з цього браузера?")){persist([]);latest()}};
 $("export").onclick=()=>{const list=local();if(!list.length){notice("Немає результатів для експорту.");return}const keys=["date","klass","group","surname","firstname","exercise","score","total","attempt","durationSeconds"];const safe=v=>{let s=String(v??"");if(/^[=+@-]/.test(s))s="'"+s;return '"'+s.replaceAll('"','""')+'"'};const csv="\uFEFF"+keys.join(";")+"\r\n"+list.map(e=>keys.map(k=>safe(e[k])).join(";")).join("\r\n");const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"})),a=document.createElement("a");a.href=url;a.download="table-builder-results.csv";a.click();setTimeout(()=>URL.revokeObjectURL(url),500)};
 make(2,2);latest();
-</script></main></body></html>
+</script><script src="./student-profile.js"></script></main></body></html>
