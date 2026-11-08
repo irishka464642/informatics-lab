@@ -106,7 +106,7 @@ $("check").onclick=()=>{
  attempt++;review=true;const points=score();
  const entry={date:new Date().toLocaleString("uk-UA"),klass,group,surname,firstname,exercise:"table-editing-v1",score:points,total:16,attempt,durationSeconds:Math.round((Date.now()-started)/1000)};
  const all=read();all.push(entry);const saved=save(all);
- render();showResult();say("Результат: "+points+"/16. "+(points===16?"Меню на понеділок відтворено правильно!":"Порівняй страви та ціни зі зразком, перевір кількість рядків і оформлення.")+(saved?"":" Не вдалося зберегти результат."),points===12?"success":"error");
+ render();showResult();say("Результат: "+points+"/16. "+(points===16?"Меню на понеділок відтворено правильно!":"Порівняй страви та ціни зі зразком, перевір кількість рядків і оформлення.")+(saved?"":" Не вдалося зберегти результат."),points===16?"success":"error");
 };
 $("clear").onclick=()=>{if(confirm("Очистити локальну історію цієї вправи?")){save([]);showResult()}};
 $("export").onclick=()=>{const all=read();if(!all.length){say("Немає результатів для експорту.");return}const cols=["date","klass","group","surname","firstname","exercise","score","total","attempt","durationSeconds"];const safe=v=>{let s=String(v??"");if(/^[=+@-]/.test(s))s="'"+s;return '"'+s.replaceAll('"','""')+'"'};const csv="\uFEFF"+cols.join(";")+"\r\n"+all.map(x=>cols.map(k=>safe(x[k])).join(";")).join("\r\n"),url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"})),a=document.createElement("a");a.href=url;a.download="monday-menu-results.csv";a.click();setTimeout(()=>URL.revokeObjectURL(url),500)};
