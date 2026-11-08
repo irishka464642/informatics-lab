@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f5f7fc">
+<title>Відредагуй таблицю · Informatics Lab</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#f5f7fc;color:#19253b}*{box-sizing:border-box}body{margin:0}main{max-width:850px;margin:auto;padding:16px 13px 45px}header{background:linear-gradient(115deg,#214e9d,#6875bb);border-radius:20px;color:white;padding:22px}h1{font-size:clamp(24px,5vw,35px);margin:9px 0}h2{font-size:19px;margin:0 0 12px}header p{margin-bottom:0}.panel{background:white;border:1px solid #dfe5f1;padding:18px;border-radius:16px;margin:15px 0}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}label{display:block;font-weight:650}input,select{display:block;width:100%;font:inherit;padding:10px 8px;background:white;color:#162841;border:1px solid #a4b1c7;border-radius:9px;margin-top:6px}button{font:inherit;cursor:pointer;min-height:42px;touch-action:manipulation}button:focus-visible,select:focus-visible{outline:3px solid orange;outline-offset:2px}.muted{color:#53617b}.small{font-size:13px}.directions{line-height:1.75;background:#f3f6fc;padding:14px 18px;border-radius:12px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.btn{border:0;border-radius:10px;padding:10px 13px;font-weight:650}.primary{background:#244dac;color:white}.light{background:#eaf0ff;color:#24417c}.outline{border:1px solid #94a5c0;background:white}.active{background:#244dac;color:white}.tablewrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:330px}th,td{border:1px solid #aab5c9;padding:8px 7px;text-align:left}th{background:#f1f2f5;font-weight:400;transition:.15s}th.bold{font-weight:800}th.colored{background:#d4e4ff;color:#15396f}td select{min-width:0;margin:0;font-size:14px;max-width:100%}td.action{width:43px;text-align:center}.remove{background:#fff0f1;color:#ab2644;border:1px solid #dcb1b9;border-radius:8px;padding:6px 9px;min-height:42px}.notice{padding:12px;border-radius:10px;background:#f0f4fc;line-height:1.5;margin-top:12px}.success{background:#dff5e8}.error{background:#fff0e4}.good{outline:2px solid #2e9f64}.bad{outline:2px solid #da6370}.nav{display:inline-block;color:#264db5;margin:10px 0;text-decoration:none;font-weight:650}footer{text-align:center;color:#69768b;font-size:13px;margin-top:23px}@media(max-width:450px){.panel{padding:13px}.fields{grid-template-columns:1fr 1fr}.fields label{font-size:14px}}
+</style></head><body><main>
+<a class="nav" href="./index.html">← Вправа 1: розклад гуртків</a>
+<header><div>Інформатика · 6 клас · Урок 18</div><h1>Відредагуй таблицю</h1><p>Виправ меню шкільного кафе та зроби таблицю зручною для читання.</p></header>
+<section class="panel"><h2>1. Дані учня</h2><div class="fields">
+<label>Клас<select id="klass"><option value="">Оберіть клас</option><option>6-А</option><option>6-Б</option><option>6-В</option></select></label>
+<label>Група<select id="group"><option value="">Оберіть групу</option><option value="1">1 група</option><option value="2">2 група</option></select></label>
+<label>Прізвище<input id="surname" autocomplete="family-name" maxlength="60" placeholder="Прізвище"></label>
+<label>Ім’я<input id="firstname" autocomplete="given-name" maxlength="60" placeholder="Ім’я"></label>
+</div><p class="muted small">Результати зберігаються локально. Надсилання в журнал стане доступним після оновлення Google Apps Script учителем.</p></section>
+<section class="panel"><h2>2. Знайди й виправ помилки</h2>
+<div class="directions">Правильне меню: <b>піца — 45 грн, сік — 25 грн, салат — 40 грн, чай — 20 грн.</b> Кави в шкільному меню немає.<br>Виправ назви й ціни, <b>видали зайвий рядок</b> і <b>додай відсутній</b>. Потім зроби заголовки <b>жирними</b> та виділи їх <b>кольором</b>.</div>
+</section>
+<section class="panel"><h2>3. Редагуй таблицю</h2>
+<div class="toolbar"><button id="bold" class="btn light" aria-pressed="false">Жирні заголовки</button><button id="color" class="btn light" aria-pressed="false">Колір заголовків</button></div>
+<div class="tablewrap"><table aria-label="Меню шкільного кафе"><thead><tr><th class="head">Страва</th><th class="head">Ціна, грн</th><th class="head">Дія</th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="toolbar" style="margin-top:13px"><button id="add" class="btn light">＋ Додати рядок</button><button id="reset" class="btn outline">Почати знову</button></div>
+<div class="toolbar"><button id="check" class="btn primary">Перевірити</button><button id="hint" class="btn light">Підказка</button></div>
+<div id="status" class="notice" role="status" aria-live="polite">Виконай завдання й натисни «Перевірити».</div>
+</section>
+<section class="panel"><h2>Мій результат</h2><div class="notice" id="result">Перевірок ще немає.</div><div class="toolbar" style="margin-top:12px"><button id="export" class="btn light">Завантажити CSV</button><button id="clear" class="btn outline">Очистити локальну історію</button></div><p class="small muted">Поки приймач не оновлено, записи другої вправи не відправляються в Google Таблиці.</p></section>
+<footer>Informatics Lab · 6-А, 6-Б, 6-В</footer>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const ENDPOINT="https://script.google.com/macros/s/AKfycbwCzkd-5oDGBjO6gBnhxKECgtmDAFnpuXEAAI81C-b1IMoK2wNy-r5aFSrs6AwEpeFp/exec";
+const SERVER_READY=false; // змінити на true лише після нового розгортання приймача Apps Script
+const KEY="informatics_lab_table_editing_v1";
+const target=[["Піца","45"],["Сік","25"],["Салат","40"],["Чай","20"]];
+const dishChoices=["","Піца","Сік","Салат","Салта","Чай","Кава"];
+const priceChoices=["","20","25","30","40","45","52"];
+let rows=[],bold=false,colored=false,added=false,deletedExtra=false,attempt=0,started=Date.now(),review=false;
+function initial(){rows=[{id:1,dish:"Піца",price:"45"},{id:2,dish:"Сік",price:"52"},{id:3,dish:"Салта",price:"40"},{id:4,dish:"Кава",price:"30"}];bold=false;colored=false;added=false;deletedExtra=false;attempt=0;started=Date.now();review=false;render();msg("Виконай завдання й натисни «Перевірити».")}
+function msg(t,type=""){const el=$("status");el.className="notice "+type;el.textContent=t}
+function read(){try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return []}}
+function store(data){try{localStorage.setItem(KEY,JSON.stringify(data.slice(-500)));return true}catch{return false}}
+function select(choices,current,label,onChange){const el=document.createElement("select");el.setAttribute("aria-label",label);for(const x of choices){const op=document.createElement("option");op.value=x;op.textContent=x||"— оберіть —";el.append(op)}el.value=current;el.onchange=()=>{onChange(el.value);review=false;render()};return el}
+function render(){
+ const body=$("rows");body.replaceChildren();
+ for(const [i,row] of rows.entries()){const tr=document.createElement("tr");
+ for(const [col,choices,key] of [[0,dishChoices,"dish"],[1,priceChoices,"price"]]){const td=document.createElement("td");const sel=select(choices,row[key],"Рядок "+(i+1)+", "+(col===0?"страва":"ціна"),v=>row[key]=v);if(review){const expected=target[i];sel.classList.add(expected&&vEqual(row,key,expected,col)?"good":"bad")}td.append(sel);tr.append(td)}
+ const act=document.createElement("td");act.className="action";const b=document.createElement("button");b.className="remove";b.textContent="×";b.title="Видалити рядок";b.setAttribute("aria-label","Видалити рядок "+(i+1));b.onclick=()=>{if(rows.length===1){msg("Має залишитися хоча б один рядок.");return}if(row.dish==="Кава")deletedExtra=true;rows.splice(i,1);review=false;render();msg("Рядок видалено.")};act.append(b);tr.append(act);body.append(tr)}
+ document.querySelectorAll(".head").forEach(x=>{x.classList.toggle("bold",bold);x.classList.toggle("colored",colored)});
+ $("bold").classList.toggle("active",bold);$("color").classList.toggle("active",colored);
+ $("bold").setAttribute("aria-pressed",String(bold));$("color").setAttribute("aria-pressed",String(colored));
+ $("add").disabled=rows.length>=6;
+}
+function vEqual(row,key,expected,col){return row[key]===expected[col]}
+function count(){let points=0;for(let i=0;i<4;i++){const r=rows[i];if(r&&r.dish===target[i][0])points++;if(r&&r.price===target[i][1])points++}if(added)points++;if(deletedExtra&&!rows.some(r=>r.dish==="Кава"))points++;if(bold)points++;if(colored)points++;return points}
+$("add").onclick=()=>{if(rows.length>=6)return;rows.push({id:Date.now()+Math.random(),dish:"",price:""});added=true;review=false;render();msg("Додано порожній рядок. Заповни його.")};
+$("bold").onclick=()=>{bold=!bold;review=false;render()};
+$("color").onclick=()=>{colored=!colored;review=false;render()};
+$("reset").onclick=initial;
+$("hint").onclick=()=>msg("У готовому меню має бути 4 рядки в порядку: піца, сік, салат, чай. Порівняй ціни з описом, видали каву та оформи заголовки.");
+function recent(){const data=read(),x=data.at(-1);$("result").textContent=x?"Остання перевірка: "+x.klass+", "+x.group+" група, "+x.surname+" "+x.firstname+" — "+x.score+"/12, спроба "+x.attempt+".":"Перевірок ще немає."}
+$("check").onclick=()=>{
+ const klass=$("klass").value,group=$("group").value,surname=$("surname").value.trim().replace(/\s+/g," "),firstname=$("firstname").value.trim().replace(/\s+/g," ");
+ if(!klass||!group||!surname||!firstname){msg("Обери клас і групу, введи прізвище та ім’я.","error");return}
+ attempt++;review=true;const score=count();const entry={date:new Date().toLocaleString("uk-UA"),klass,group,surname,firstname,exercise:"table-editing-v1",score,total:12,attempt,durationSeconds:Math.round((Date.now()-started)/1000)};
+ const data=read();data.push(entry);const ok=store(data);render();recent();
+ msg("Результат: "+score+"/12. "+(score===12?"Таблиця готова!":"Перевір виділені клітинки, рядки й оформлення.")+(ok?"":" Не вдалося зберегти локально."),score===12?"success":"error");
+ if(SERVER_READY){fetch(ENDPOINT,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(entry)}).then(()=>msg("Локально збережено. Запит надіслано, але запис у Google Таблиці потрібно перевірити.","success")).catch(()=>msg("Збережено локально, але передати результат не вдалося.","error"))}
+};
+$("clear").onclick=()=>{if(confirm("Очистити локальну історію цієї вправи?")){store([]);recent()}};
+$("export").onclick=()=>{const data=read();if(!data.length){msg("Немає результатів для експорту.");return}const keys=["date","klass","group","surname","firstname","exercise","score","total","attempt","durationSeconds"];const safe=v=>{let s=String(v??"");if(/^[=+@-]/.test(s))s="'"+s;return '"'+s.replaceAll('"','""')+'"'};const csv="\uFEFF"+keys.join(";")+"\r\n"+data.map(r=>keys.map(k=>safe(r[k])).join(";")).join("\r\n");const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"})),a=document.createElement("a");a.href=url;a.download="table-editing-results.csv";a.click();setTimeout(()=>URL.revokeObjectURL(url),500)};
+recent();initial();
+</script></main></body></html>
