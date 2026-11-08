@@ -3,6 +3,7 @@
 <title>Меню на понеділок · Informatics Lab</title>
 <style>
 :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#1c2d45;background:#f4f6fb}*{box-sizing:border-box}body{margin:0}main{max-width:900px;margin:auto;padding:16px 13px 60px}header{background:linear-gradient(115deg,#22467d,#5673ba);border-radius:20px;padding:23px;color:#fff}h1{font-size:clamp(25px,5vw,36px);margin:8px 0}h2{font-size:19px;margin:0 0 13px}.panel{background:#fff;border:1px solid #dce4f1;border-radius:16px;padding:19px;margin:15px 0}.nav{display:inline-block;color:#244a9c;text-decoration:none;font-weight:700;margin-bottom:12px}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.fields label{font-weight:650}input,select{font:inherit;border:1px solid #a6b4c9;border-radius:9px;background:white;color:#223752;padding:10px;width:100%;min-width:0;margin-top:5px}button{font:inherit;cursor:pointer;touch-action:manipulation}button:focus-visible,select:focus-visible{outline:3px solid #ffb027;outline-offset:2px}.hint{color:#526178}.tiny{font-size:13px}.sheet{overflow:auto}table{border-collapse:collapse;width:100%;min-width:340px}th,td{border:1px solid #b4c0d3;padding:8px;text-align:left}th{background:#eff2f9}td:first-child{font-weight:650}.reference th{font-weight:750}.reference td{font-weight:400}.refnote{background:#eef3fb;border-radius:12px;padding:13px;line-height:1.6}.cat{border:1px solid #d9e2f0;border-radius:13px;margin:12px 0;overflow:hidden}.cathead{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#eaf0fa;padding:10px 12px}.cathead strong{font-size:16px}.count{font-size:13px;color:#566479}.count.bad{color:#b02f42}.count.good{color:#0c7845}.lines{padding:8px 10px}.line{display:grid;grid-template-columns:minmax(0,1fr) minmax(90px,125px) 42px;gap:8px;align-items:center;margin:7px 0}.line select{margin:0;padding:10px 6px;font-size:14px}.line button{border:1px solid #d9afb8;background:#fff0f3;color:#a82941;border-radius:9px;height:44px}.line select.wrong{border:2px solid #cf5760;background:#fff0f1}.add{margin:0 10px 11px;background:#eaf0ff;color:#234da1;border:1px solid #b1c3e7;border-radius:10px;padding:9px 12px;min-height:44px}.add:disabled{opacity:.5}.actions{display:flex;gap:9px;flex-wrap:wrap;margin:13px 0}.btn{border:0;border-radius:10px;min-height:44px;padding:11px 14px;font-weight:700}.primary{background:#244eac;color:white}.soft{background:#eaf0ff;color:#23478c}.outline{background:white;border:1px solid #9badc7;color:#2c4772}.active{background:#234eaa;color:#fff}.head-preview th{font-weight:400}.head-preview th.bold{font-weight:800}.head-preview th.colored{background:#cddfff;color:#193c78}.notice{background:#f0f3fb;border-radius:10px;padding:13px;line-height:1.5;margin-top:12px}.success{background:#dff7e7}.error{background:#fff0e9}footer{text-align:center;color:#64718b;font-size:13px;margin-top:23px}@media(max-width:450px){.panel{padding:14px}.line{grid-template-columns:minmax(0,1fr) 92px 38px;gap:5px}.line select{font-size:13px;padding:9px 4px}.line button{width:38px}.fields{gap:8px}}
+.menu-board{margin-top:15px;border:1px solid #e9d9bf;background:linear-gradient(160deg,#fff8eb,#fffdf7);border-radius:20px;padding:19px;box-shadow:0 6px 20px #8f662014}.menu-board-heading{display:flex;gap:13px;align-items:center;padding-bottom:16px;border-bottom:2px dashed #d6b77f}.menu-board-heading strong{font-size:clamp(18px,4vw,24px);color:#60411d}.menu-stamp{font-size:11px;letter-spacing:.08em;color:#79521e;border:1px solid #d4ae70;border-radius:8px;background:#fff0d3;font-weight:800;padding:8px 10px}.menu-symbol{font-size:32px;margin-left:auto}.menu-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 24px;padding-top:7px}.menu-section{padding:9px 0}.menu-category{font-size:16px;color:#77501c;margin:0 0 8px}.menu-bullets{padding-left:24px;margin:0}.menu-bullets li{padding:4px 0 5px;display:list-item;line-height:1.45}.menu-bullets li::marker{color:#c68d36}.menu-bullets li strong{float:right;font-size:14px;white-space:nowrap;padding-left:10px;color:#694b25}@media(max-width:560px){.menu-list{grid-template-columns:1fr}.menu-board{padding:15px}.menu-bullets li strong{float:none;display:inline-block;margin-left:8px}.menu-stamp{padding:6px}}
 </style></head><body><main>
 <a class="nav" href="./index.html">← До вправи «Розклад гуртків»</a>
 <header><div>Інформатика · 6 клас · Редагування та форматування таблиць</div><h1>Меню шкільного кафе: понеділок</h1><p>Відтвори меню на конкретний день. Знайди зайві та пропущені рядки, виправ страви й ціни.</p></header>
@@ -12,10 +13,10 @@
 <label>Прізвище<input id="surname" maxlength="60" placeholder="Прізвище" autocomplete="family-name"></label>
 <label>Ім’я<input id="firstname" maxlength="60" placeholder="Ім’я" autocomplete="given-name"></label></div>
 <p class="hint tiny">Результати зберігаються в цьому браузері. Автоматичне надсилання другої вправи ще не ввімкнено — потрібне оновлення Google Apps Script.</p></section>
-<section class="panel"><h2>2. Меню на понеділок — зразок</h2><p class="hint">За цим переліком відредагуй таблицю нижче. У ній мають бути саме ці страви та ціни.</p><div class="sheet"><table class="reference" aria-label="Затверджене меню на понеділок"><thead><tr><th>Категорія</th><th>Страва</th><th>Ціна</th></tr></thead><tbody id="reference"></tbody></table></div>
+<section class="panel"><h2>2. Меню на понеділок</h2><p class="hint">Це затверджений список для шкільного кафе. Прочитай його та відтвори в таблиці нижче — із правильними стравами й цінами.</p><div class="menu-board"><div class="menu-board-heading"><span class="menu-stamp">ПОНЕДІЛОК</span><div><strong>Сьогодні в кафе</strong><div class="tiny">Обери, що смакуватиме!</div></div><span class="menu-symbol" aria-hidden="true">🍽️</span></div><div id="reference" class="menu-list" aria-label="Затверджене меню на понеділок"></div></div>
 <p class="refnote tiny">На тиждень передбачено п’ять різних супів: <b>пн — борщ; вт — курячий суп; ср — суп із фрикадельками; чт — овочевий суп; пт — гороховий суп.</b> У списках вибору є страви й для інших днів — не переплутай із понеділком.</p></section>
 <section class="panel"><h2>3. Виправ таблицю меню</h2>
-<p class="hint">Спочатку порахуй рядки. У таблиці навмисно є <b>третій гарнір</b> і <b>бракує одного салату</b>. Зайвий рядок видали, відсутній додай. Перевір також ціну кожної страви. Порядок рядків усередині категорії неважливий.</p>
+<p class="hint">Спочатку порахуй рядки в кожній категорії. Десь є <b>зайвий рядок</b>, а десь <b>бракує страв</b>. Видали зайве, додай пропущене й виправ ціни. Порядок рядків усередині категорії неважливий.</p>
 <div class="actions"><button id="bold" class="btn soft" aria-pressed="false">Жирні заголовки</button><button id="color" class="btn soft" aria-pressed="false">Колір заголовків</button></div>
 <div class="sheet"><table class="head-preview" aria-label="Попередній перегляд заголовків таблиці"><thead><tr><th class="head">Категорія</th><th class="head">Страва</th><th class="head">Ціна, грн</th></tr></thead></table></div>
 <div id="categories"></div>
@@ -26,14 +27,14 @@
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const KEY="informatics_lab_monday_menu_v1";
+const KEY="informatics_lab_monday_menu_v2";
 const defs=[
  {key:"soup",title:"Перша страва",need:1,options:["Борщ","Курячий суп","Суп із фрикадельками","Овочевий суп","Гороховий суп"],target:[["Борщ","38"]],initial:[["Курячий суп","38"]]},
  {key:"side",title:"Гарнір",need:2,options:["Картопляне пюре","Гречка","Рис","Макарони","Булгур"],target:[["Картопляне пюре","30"],["Гречка","28"]],initial:[["Картопляне пюре","30"],["Гречка","28"],["Рис","30"]]},
  {key:"meat",title:"М’ясна страва",need:2,options:["Котлета","Куряче філе","Тефтелі","Нагетси","Тушкована курка"],target:[["Котлета","48"],["Куряче філе","55"]],initial:[["Котлета","48"],["Куряче філе","50"]]},
  {key:"salad",title:"Салат",need:3,options:["Овочевий салат","Вінегрет","Капустяний салат","Морквяний салат","Салат із буряка"],target:[["Овочевий салат","32"],["Вінегрет","27"],["Капустяний салат","24"]],initial:[["Овочевий салат","32"],["Вінегрет","27"]]},
- {key:"drink",title:"Напій",need:1,options:["Чай","Сік","Вода"],target:[["Чай","15"]],initial:[["Чай","25"]]},
- {key:"bakery",title:"Випічка",need:1,options:["Піца","Пиріжок з картоплею","Пиріжок з капустою","Сосиска в тісті"],target:[["Пиріжок з картоплею","22"]],initial:[["Піца","22"]]}
+ {key:"drink",title:"Напій",need:2,options:["Чай","Сік","Вода"],target:[["Чай","15"],["Сік","25"]],initial:[["Чай","25"]]},
+ {key:"bakery",title:"Випічка",need:4,options:["Піца","Пиріжок з картоплею","Пиріжок з капустою","Сосиска в тісті"],target:[["Піца","45"],["Пиріжок з картоплею","22"],["Пиріжок з капустою","22"],["Сосиска в тісті","35"]],initial:[["Піца","40"],["Пиріжок з картоплею","22"],["Сосиска в тісті","35"]]}
 ];
 const prices=["","15","18","20","22","24","25","27","28","30","32","35","38","40","45","48","50","55","60"];
 let state={},bold=false,colored=false,attempt=0,started=Date.now(),review=false,uid=0;
@@ -44,7 +45,21 @@ function row(dish,price){return{id:++uid,dish,price}}
 function reset(){state=Object.fromEntries(defs.map(d=>[d.key,d.initial.map(p=>row(...p))]));bold=false;colored=false;attempt=0;started=Date.now();review=false;render();say("Знайди помилки та відредагуй меню.")}
 function drop(choices,current,aria,callback){const el=document.createElement("select");el.setAttribute("aria-label",aria);for(const val of ["",...choices]){const option=document.createElement("option");option.value=val;option.textContent=val||"— Обери —";el.append(option)}el.value=current;el.onchange=()=>{callback(el.value);review=false;render()};return el}
 function renderReference(){
- const body=$("reference");for(const d of defs)for(const [dish,price] of d.target){const tr=document.createElement("tr");for(const val of [d.title,dish,price+" грн"]){const td=document.createElement("td");td.textContent=val;tr.append(td)}body.append(tr)}
+ const root=$("reference");root.replaceChildren();
+ const icons={soup:"🍲",side:"🥔",meat:"🍗",salad:"🥗",drink:"🥤",bakery:"🥐"};
+ for(const d of defs){
+  const section=document.createElement("section");section.className="menu-section";
+  const heading=document.createElement("h3");heading.className="menu-category";
+  heading.textContent=(icons[d.key]||"•")+" "+(d.key==="side"?"Гарніри":d.key==="meat"?"М’ясні страви":d.key==="salad"?"Салати":d.key==="drink"?"Напої":d.title);
+  section.append(heading);
+  const list=document.createElement("ul");list.className="menu-bullets";
+  for(const [dish,price] of d.target){
+   const li=document.createElement("li");const name=document.createElement("span");name.textContent=dish;
+   const cost=document.createElement("strong");cost.textContent=price+" грн";
+   li.append(name,cost);list.append(li)
+  }
+  section.append(list);root.append(section)
+ }
 }
 function render(){
  const root=$("categories");root.replaceChildren();
@@ -71,27 +86,27 @@ function render(){
  for(const [id,on] of [["bold",bold],["color",colored]]){$(id).classList.toggle("active",on);$(id).setAttribute("aria-pressed",String(on))}
 }
 function score(){
- // 10 балів: по одному за кожну правильну пару (назва+ціна).
+ // 14 балів: по одному за кожну правильну пару (назва+ціна).
  // Кожен зайвий рядок віднімає бал, навіть коли всі необхідні пари є.
  let points=0,extras=0;
  for(const d of defs){const rows=state[d.key];const matched=new Set();
   for(const item of rows){const key=item.dish+"\u0000"+item.price;if(d.target.some(t=>t[0]===item.dish&&t[1]===item.price)&&!matched.has(key)){matched.add(key);points++}}
   extras+=Math.max(0,rows.length-d.need);
  }
- return Math.max(0,Math.min(12,points-extras+Number(bold)+Number(colored)))
+ return Math.max(0,Math.min(16,points-extras+Number(bold)+Number(colored)))
 }
-function showResult(){const data=read(),x=data.at(-1);$("results").textContent=x?"Остання перевірка: "+x.klass+", "+x.group+" група, "+x.surname+" "+x.firstname+" — "+x.score+"/12; спроба "+x.attempt+".":"Перевірок ще немає."}
+function showResult(){const data=read(),x=data.at(-1);$("results").textContent=x?"Остання перевірка: "+x.klass+", "+x.group+" група, "+x.surname+" "+x.firstname+" — "+x.score+"/16; спроба "+x.attempt+".":"Перевірок ще немає."}
 $("bold").onclick=()=>{bold=!bold;review=false;render()};
 $("color").onclick=()=>{colored=!colored;review=false;render()};
 $("reset").onclick=reset;
-$("hint").onclick=()=>say("Порівняй кожну пару «страва — ціна» зі зразком понеділка. Особливо перевір суп, напій, випічку, м’ясну страву, кількість гарнірів і салатів.");
+$("hint").onclick=()=>say("Порівняй кожну пару «страва — ціна» зі списком понеділка. Має бути 1 суп, 2 гарніри, 2 м’ясні страви, 3 салати, 2 напої і 4 види випічки.");
 $("check").onclick=()=>{
  const klass=$("klass").value,group=$("group").value,surname=$("surname").value.trim().replace(/\s+/g," "),firstname=$("firstname").value.trim().replace(/\s+/g," ");
  if(!klass||!group||!surname||!firstname){say("Спочатку обери клас і групу, введи прізвище та ім’я.","error");return}
  attempt++;review=true;const points=score();
- const entry={date:new Date().toLocaleString("uk-UA"),klass,group,surname,firstname,exercise:"table-editing-v1",score:points,total:12,attempt,durationSeconds:Math.round((Date.now()-started)/1000)};
+ const entry={date:new Date().toLocaleString("uk-UA"),klass,group,surname,firstname,exercise:"table-editing-v1",score:points,total:16,attempt,durationSeconds:Math.round((Date.now()-started)/1000)};
  const all=read();all.push(entry);const saved=save(all);
- render();showResult();say("Результат: "+points+"/12. "+(points===12?"Меню на понеділок відтворено правильно!":"Порівняй страви та ціни зі зразком, перевір кількість рядків і оформлення.")+(saved?"":" Не вдалося зберегти результат."),points===12?"success":"error");
+ render();showResult();say("Результат: "+points+"/16. "+(points===16?"Меню на понеділок відтворено правильно!":"Порівняй страви та ціни зі зразком, перевір кількість рядків і оформлення.")+(saved?"":" Не вдалося зберегти результат."),points===12?"success":"error");
 };
 $("clear").onclick=()=>{if(confirm("Очистити локальну історію цієї вправи?")){save([]);showResult()}};
 $("export").onclick=()=>{const all=read();if(!all.length){say("Немає результатів для експорту.");return}const cols=["date","klass","group","surname","firstname","exercise","score","total","attempt","durationSeconds"];const safe=v=>{let s=String(v??"");if(/^[=+@-]/.test(s))s="'"+s;return '"'+s.replaceAll('"','""')+'"'};const csv="\uFEFF"+cols.join(";")+"\r\n"+all.map(x=>cols.map(k=>safe(x[k])).join(";")).join("\r\n"),url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"})),a=document.createElement("a");a.href=url;a.download="monday-menu-results.csv";a.click();setTimeout(()=>URL.revokeObjectURL(url),500)};
