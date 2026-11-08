@@ -1,102 +1,99 @@
 <!doctype html>
-<html lang="uk">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f5f7fc">
-<title>Меню шкільного кафе · Informatics Lab</title>
+<html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Меню на понеділок · Informatics Lab</title>
 <style>
-:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#f4f6fb;color:#1d2c43}*{box-sizing:border-box}body{margin:0}main{max-width:850px;margin:auto;padding:16px 13px 60px}h1{font-size:clamp(25px,5vw,36px);margin:6px 0}h2{font-size:18px;margin:0 0 12px}.nav{color:#294da3;text-decoration:none;font-weight:700;display:inline-block;margin-bottom:13px}header{background:linear-gradient(120deg,#183c78,#4e6caf);padding:24px;color:#fff;border-radius:19px}header p{margin:9px 0 0;line-height:1.5}.panel{background:#fff;border:1px solid #dfe5ef;border-radius:16px;padding:19px;margin:15px 0}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{font-weight:650}input,select{display:block;width:100%;font:inherit;background:#fff;border:1px solid #a5b3c7;color:#25334a;border-radius:9px;padding:10px;margin-top:5px}button{font:inherit;cursor:pointer;touch-action:manipulation}button:focus-visible,select:focus-visible{outline:3px solid #e69b17;outline-offset:2px}.description{background:#f0f4fb;border-radius:12px;padding:14px 17px;line-height:1.65}.desc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 13px;margin:8px 0 0}.muted{color:#53637b}.tiny{font-size:13px}.category{border:1px solid #dae1ed;border-radius:13px;margin:12px 0;overflow:hidden}.category-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:11px 12px;background:#eaf0fa}.category-name{font-weight:750}.count{font-size:12px;color:#52617a}.count.ok{color:#13703e}.count.bad{color:#a53d2a}.lines{padding:8px 10px}.line{display:flex;align-items:center;gap:9px;margin:6px 0}.line select{margin:0;flex:1;min-width:0}.line .delete{width:42px;flex-shrink:0;border:1px solid #d8b2b8;border-radius:9px;background:#fff0f2;color:#9d2540;min-height:42px}.add{border:1px solid #a8bee1;border-radius:9px;background:#f2f6ff;color:#244d9e;padding:8px 12px;margin:4px 0 5px 10px;min-height:42px}.add:disabled{opacity:.4}.cell-error{border:2px solid #c9535d;background:#fff1f1}.toolbar{display:flex;flex-wrap:wrap;gap:9px;margin:12px 0}.btn{min-height:44px;border:0;border-radius:10px;padding:11px 14px;font-weight:700}.primary{background:#2753ae;color:#fff}.soft{background:#e8eeff;color:#244783}.outline{background:white;border:1px solid #9eb0ca;color:#364c70}.active{background:#254ca5;color:#fff}.notice{border-radius:10px;padding:13px;background:#edf2fb;line-height:1.55;margin-top:11px}.success{background:#e0f5e9}.error{background:#fff0e8}.mini-table{border-collapse:collapse;width:100%;margin-top:6px}th,td{border:1px solid #abb8cd;padding:9px;text-align:left}th{background:#edf1f8;font-weight:400}th.bold{font-weight:800}th.colored{background:#c9dcfa;color:#153769}.summary{padding:10px;border:1px solid #d5dfef;border-radius:11px}.small-help{font-size:13px;color:#647089}footer{text-align:center;font-size:13px;color:#64718a}@media(max-width:480px){.panel{padding:14px}.fields{gap:9px}.category-head{align-items:flex-start}.line{gap:6px}.desc-grid{grid-template-columns:1fr}}
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#1c2d45;background:#f4f6fb}*{box-sizing:border-box}body{margin:0}main{max-width:900px;margin:auto;padding:16px 13px 60px}header{background:linear-gradient(115deg,#22467d,#5673ba);border-radius:20px;padding:23px;color:#fff}h1{font-size:clamp(25px,5vw,36px);margin:8px 0}h2{font-size:19px;margin:0 0 13px}.panel{background:#fff;border:1px solid #dce4f1;border-radius:16px;padding:19px;margin:15px 0}.nav{display:inline-block;color:#244a9c;text-decoration:none;font-weight:700;margin-bottom:12px}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.fields label{font-weight:650}input,select{font:inherit;border:1px solid #a6b4c9;border-radius:9px;background:white;color:#223752;padding:10px;width:100%;min-width:0;margin-top:5px}button{font:inherit;cursor:pointer;touch-action:manipulation}button:focus-visible,select:focus-visible{outline:3px solid #ffb027;outline-offset:2px}.hint{color:#526178}.tiny{font-size:13px}.sheet{overflow:auto}table{border-collapse:collapse;width:100%;min-width:340px}th,td{border:1px solid #b4c0d3;padding:8px;text-align:left}th{background:#eff2f9}td:first-child{font-weight:650}.reference th{font-weight:750}.reference td{font-weight:400}.refnote{background:#eef3fb;border-radius:12px;padding:13px;line-height:1.6}.cat{border:1px solid #d9e2f0;border-radius:13px;margin:12px 0;overflow:hidden}.cathead{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#eaf0fa;padding:10px 12px}.cathead strong{font-size:16px}.count{font-size:13px;color:#566479}.count.bad{color:#b02f42}.count.good{color:#0c7845}.lines{padding:8px 10px}.line{display:grid;grid-template-columns:minmax(0,1fr) minmax(90px,125px) 42px;gap:8px;align-items:center;margin:7px 0}.line select{margin:0;padding:10px 6px;font-size:14px}.line button{border:1px solid #d9afb8;background:#fff0f3;color:#a82941;border-radius:9px;height:44px}.line select.wrong{border:2px solid #cf5760;background:#fff0f1}.add{margin:0 10px 11px;background:#eaf0ff;color:#234da1;border:1px solid #b1c3e7;border-radius:10px;padding:9px 12px;min-height:44px}.add:disabled{opacity:.5}.actions{display:flex;gap:9px;flex-wrap:wrap;margin:13px 0}.btn{border:0;border-radius:10px;min-height:44px;padding:11px 14px;font-weight:700}.primary{background:#244eac;color:white}.soft{background:#eaf0ff;color:#23478c}.outline{background:white;border:1px solid #9badc7;color:#2c4772}.active{background:#234eaa;color:#fff}.head-preview th{font-weight:400}.head-preview th.bold{font-weight:800}.head-preview th.colored{background:#cddfff;color:#193c78}.notice{background:#f0f3fb;border-radius:10px;padding:13px;line-height:1.5;margin-top:12px}.success{background:#dff7e7}.error{background:#fff0e9}footer{text-align:center;color:#64718b;font-size:13px;margin-top:23px}@media(max-width:450px){.panel{padding:14px}.line{grid-template-columns:minmax(0,1fr) 92px 38px;gap:5px}.line select{font-size:13px;padding:9px 4px}.line button{width:38px}.fields{gap:8px}}
 </style></head><body><main>
 <a class="nav" href="./index.html">← До вправи «Розклад гуртків»</a>
-<header><div>Інформатика · 6 клас · Редагування таблиць</div><h1>Меню шкільного кафе</h1><p>У таблиці є зайві рядки та пропущені страви. Приведи меню до вимог і відформатуй заголовки.</p></header>
+<header><div>Інформатика · 6 клас · Редагування та форматування таблиць</div><h1>Меню шкільного кафе: понеділок</h1><p>Відтвори меню на конкретний день. Знайди зайві та пропущені рядки, виправ страви й ціни.</p></header>
 <section class="panel"><h2>1. Дані учня</h2><div class="fields">
-<label class="field">Клас<select id="klass"><option value="">Оберіть клас</option><option>6-А</option><option>6-Б</option><option>6-В</option></select></label>
-<label class="field">Група<select id="group"><option value="">Оберіть групу</option><option value="1">1 група</option><option value="2">2 група</option></select></label>
-<label class="field">Прізвище<input id="surname" maxlength="60" autocomplete="family-name" placeholder="Прізвище"></label>
-<label class="field">Ім’я<input id="firstname" maxlength="60" autocomplete="given-name" placeholder="Ім’я"></label>
-</div><p class="tiny muted">Дані й результат зберігаються в браузері. Автоматичне надсилання результатів цієї вправи ввімкнемо після оновлення приймача Google Apps Script.</p></section>
-<section class="panel"><h2>2. Вимоги до меню</h2><div class="description">У шкільному кафе мають бути страви з усіх шести категорій. <b>Обирай страви зі спадних списків</b>. У межах однієї категорії страви не повинні повторюватися.
-<div class="desc-grid"><span>🍲 Перша страва — <b>1 суп</b></span><span>🥔 Гарнір — <b>2 різні</b></span><span>🍗 М’ясна страва — <b>2 різні</b></span><span>🥗 Салат — <b>3 різні</b></span><span>🥤 Напій — <b>1</b></span><span>🥐 Випічка — <b>1</b></span></div>
-</div><p class="muted tiny">У готовій таблиці має бути 10 рядків зі стравами. Зверни увагу: зараз гарнірів забагато, а салатів замало.</p></section>
-<section class="panel"><h2>3. Відредагуй таблицю</h2>
-<div class="toolbar"><button id="bold" class="btn soft" aria-pressed="false">Жирні заголовки</button><button id="color" class="btn soft" aria-pressed="false">Колір заголовків</button></div>
-<table class="mini-table" aria-label="Заголовки меню"><thead><tr><th class="heading">Категорія</th><th class="heading">Страва на вибір</th></tr></thead></table>
+<label>Клас<select id="klass"><option value="">Оберіть клас</option><option>6-А</option><option>6-Б</option><option>6-В</option></select></label>
+<label>Група<select id="group"><option value="">Оберіть групу</option><option value="1">1 група</option><option value="2">2 група</option></select></label>
+<label>Прізвище<input id="surname" maxlength="60" placeholder="Прізвище" autocomplete="family-name"></label>
+<label>Ім’я<input id="firstname" maxlength="60" placeholder="Ім’я" autocomplete="given-name"></label></div>
+<p class="hint tiny">Результати зберігаються в цьому браузері. Автоматичне надсилання другої вправи ще не ввімкнено — потрібне оновлення Google Apps Script.</p></section>
+<section class="panel"><h2>2. Меню на понеділок — зразок</h2><p class="hint">За цим переліком відредагуй таблицю нижче. У ній мають бути саме ці страви та ціни.</p><div class="sheet"><table class="reference" aria-label="Затверджене меню на понеділок"><thead><tr><th>Категорія</th><th>Страва</th><th>Ціна</th></tr></thead><tbody id="reference"></tbody></table></div>
+<p class="refnote tiny">На тиждень передбачено п’ять різних супів: <b>пн — борщ; вт — курячий суп; ср — суп із фрикадельками; чт — овочевий суп; пт — гороховий суп.</b> У списках вибору є страви й для інших днів — не переплутай із понеділком.</p></section>
+<section class="panel"><h2>3. Виправ таблицю меню</h2>
+<p class="hint">Спочатку порахуй рядки. У таблиці навмисно є <b>третій гарнір</b> і <b>бракує одного салату</b>. Зайвий рядок видали, відсутній додай. Перевір також ціну кожної страви. Порядок рядків усередині категорії неважливий.</p>
+<div class="actions"><button id="bold" class="btn soft" aria-pressed="false">Жирні заголовки</button><button id="color" class="btn soft" aria-pressed="false">Колір заголовків</button></div>
+<div class="sheet"><table class="head-preview" aria-label="Попередній перегляд заголовків таблиці"><thead><tr><th class="head">Категорія</th><th class="head">Страва</th><th class="head">Ціна, грн</th></tr></thead></table></div>
 <div id="categories"></div>
-<div class="toolbar"><button class="btn primary" id="check">Перевірити</button><button class="btn soft" id="hint">Підказка</button><button class="btn outline" id="reset">Почати знову</button></div>
-<div id="status" class="notice" role="status" aria-live="polite">Виправ кількість рядків, обери страви та оформи заголовки.</div>
-</section>
-<section class="panel"><h2>Мій результат</h2><div id="result" class="notice">Перевірок ще немає.</div>
-<div class="toolbar"><button class="btn soft" id="export">Завантажити результати CSV</button><button class="btn outline" id="clear">Очистити локальну історію</button></div>
-<p class="tiny muted">Поки приймач не оновлено, результати другої вправи не надсилаються у Google Таблиці.</p></section>
-<footer>Informatics Lab · 6-А · 6-Б · 6-В</footer>
+<div class="actions"><button id="check" class="btn primary">Перевірити</button><button id="hint" class="btn soft">Підказка</button><button id="reset" class="btn outline">Почати знову</button></div>
+<div id="status" class="notice" role="status" aria-live="polite">Знайди помилки та відредагуй меню.</div></section>
+<section class="panel"><h2>Мій результат</h2><div id="results" class="notice">Перевірок ще немає.</div><div class="actions"><button id="export" class="btn soft">Завантажити результати CSV</button><button id="clear" class="btn outline">Очистити історію на пристрої</button></div>
+<p class="hint tiny">Це тренажер редагування таблиці. Практику вставлення й форматування таблиць у текстовому документі проводимо окремо.</p></section><footer>Informatics Lab · 6-А · 6-Б · 6-В</footer>
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const KEY="informatics_lab_table_editing_v2";
-const ENDPOINT="https://script.google.com/macros/s/AKfycbwCzkd-5oDGBjO6gBnhxKECgtmDAFnpuXEAAI81C-b1IMoK2wNy-r5aFSrs6AwEpeFp/exec";
-const SERVER_READY=false;
+const KEY="informatics_lab_monday_menu_v1";
 const defs=[
- {key:"soup",title:"🍲 Перша страва",need:1,choices:["Борщ","Суп із фрикадельками","Овочевий суп"],initial:["Борщ"]},
- {key:"side",title:"🥔 Гарнір",need:2,choices:["Картопляне пюре","Гречка","Рис","Макарони"],initial:["Картопляне пюре","Гречка","Рис"]},
- {key:"meat",title:"🍗 М’ясні страви",need:2,choices:["Котлета","Куряче філе","Тефтелі","Курячі нагетси"],initial:["Котлета","Куряче філе"]},
- {key:"salad",title:"🥗 Салати",need:3,choices:["Овочевий","Вінегрет","Капустяний","Морквяний"],initial:["Овочевий","Вінегрет"]},
- {key:"drink",title:"🥤 Напій",need:1,choices:["Чай","Сік","Вода"],initial:["Чай"]},
- {key:"bakery",title:"🥐 Випічка",need:1,choices:["Піца","Пиріжок з картоплею","Пиріжок з капустою","Сосиска в тісті"],initial:["Піца"]}
+ {key:"soup",title:"Перша страва",need:1,options:["Борщ","Курячий суп","Суп із фрикадельками","Овочевий суп","Гороховий суп"],target:[["Борщ","38"]],initial:[["Курячий суп","38"]]},
+ {key:"side",title:"Гарнір",need:2,options:["Картопляне пюре","Гречка","Рис","Макарони","Булгур"],target:[["Картопляне пюре","30"],["Гречка","28"]],initial:[["Картопляне пюре","30"],["Гречка","28"],["Рис","30"]]},
+ {key:"meat",title:"М’ясна страва",need:2,options:["Котлета","Куряче філе","Тефтелі","Нагетси","Тушкована курка"],target:[["Котлета","48"],["Куряче філе","55"]],initial:[["Котлета","48"],["Куряче філе","50"]]},
+ {key:"salad",title:"Салат",need:3,options:["Овочевий салат","Вінегрет","Капустяний салат","Морквяний салат","Салат із буряка"],target:[["Овочевий салат","32"],["Вінегрет","27"],["Капустяний салат","24"]],initial:[["Овочевий салат","32"],["Вінегрет","27"]]},
+ {key:"drink",title:"Напій",need:1,options:["Чай","Сік","Вода"],target:[["Чай","15"]],initial:[["Чай","25"]]},
+ {key:"bakery",title:"Випічка",need:1,options:["Піца","Пиріжок з картоплею","Пиріжок з капустою","Сосиска в тісті"],target:[["Пиріжок з картоплею","22"]],initial:[["Піца","22"]]}
 ];
-let state={},bold=false,colored=false,attempt=0,started=Date.now(),review=false;
+const prices=["","15","18","20","22","24","25","27","28","30","32","35","38","40","45","48","50","55","60"];
+let state={},bold=false,colored=false,attempt=0,started=Date.now(),review=false,uid=0;
 function read(){try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return []}}
-function write(v){try{localStorage.setItem(KEY,JSON.stringify(v.slice(-500)));return true}catch{return false}}
-function message(t,kind=""){const el=$("status");el.className="notice "+kind;el.textContent=t}
-function reset(){state=Object.fromEntries(defs.map(d=>[d.key,[...d.initial]]));bold=false;colored=false;attempt=0;started=Date.now();review=false;render();message("Виправ кількість рядків, обери страви та оформи заголовки.")}
-function choice(d,value,onChange,index){const select=document.createElement("select");select.setAttribute("aria-label",d.title+", рядок "+(index+1));const option=document.createElement("option");option.textContent="— Обери страву —";option.value="";select.append(option);for(const v of d.choices){const o=document.createElement("option");o.textContent=v;o.value=v;select.append(o)}select.value=value;select.onchange=()=>onChange(select.value);return select}
+function save(a){try{localStorage.setItem(KEY,JSON.stringify(a.slice(-400)));return true}catch{return false}}
+function say(text,kind=""){const el=$("status");el.textContent=text;el.className="notice "+kind}
+function row(dish,price){return{id:++uid,dish,price}}
+function reset(){state=Object.fromEntries(defs.map(d=>[d.key,d.initial.map(p=>row(...p))]));bold=false;colored=false;attempt=0;started=Date.now();review=false;render();say("Знайди помилки та відредагуй меню.")}
+function drop(choices,current,aria,callback){const el=document.createElement("select");el.setAttribute("aria-label",aria);for(const val of ["",...choices]){const option=document.createElement("option");option.value=val;option.textContent=val||"— Обери —";el.append(option)}el.value=current;el.onchange=()=>{callback(el.value);review=false;render()};return el}
+function renderReference(){
+ const body=$("reference");for(const d of defs)for(const [dish,price] of d.target){const tr=document.createElement("tr");for(const val of [d.title,dish,price+" грн"]){const td=document.createElement("td");td.textContent=val;tr.append(td)}body.append(tr)}
+}
 function render(){
  const root=$("categories");root.replaceChildren();
  for(const def of defs){
-  const values=state[def.key],unique=new Set(values.filter(Boolean));
-  const section=document.createElement("section");section.className="category";
-  const head=document.createElement("div");head.className="category-head";
-  const name=document.createElement("span");name.className="category-name";name.textContent=def.title;
-  const counter=document.createElement("span");counter.className="count"+(review?(values.length===def.need&&unique.size===def.need?" ok":" bad"):"");counter.textContent=values.length+" із "+def.need+" рядків";
-  head.append(name,counter);section.append(head);
+  const rows=state[def.key],block=document.createElement("section");block.className="cat";
+  const head=document.createElement("div");head.className="cathead";const strong=document.createElement("strong");strong.textContent=def.title;
+  const count=document.createElement("span");count.className="count"+(review?(rows.length===def.need?" good":" bad"):"");count.textContent=rows.length+" / "+def.need+" рядків";head.append(strong,count);block.append(head);
   const lines=document.createElement("div");lines.className="lines";
-  values.forEach((v,i)=>{
-   const line=document.createElement("div");line.className="line";const dropdown=choice(def,v,next=>{state[def.key][i]=next;review=false;render()},i);
-   if(review&&(!v||values.indexOf(v)!==i||values.length>def.need&&i>=def.need))dropdown.classList.add("cell-error");
-   const del=document.createElement("button");del.className="delete";del.textContent="×";del.title="Видалити рядок";del.setAttribute("aria-label","Видалити "+def.title+", рядок "+(i+1));
-   del.onclick=()=>{state[def.key].splice(i,1);review=false;render();message("Рядок видалено.")};
-   line.append(dropdown,del);lines.append(line)
+  rows.forEach((r,index)=>{
+   const line=document.createElement("div");line.className="line";
+   const dish=drop(def.options,r.dish,def.title+", страва "+(index+1),v=>r.dish=v);
+   const price=drop(prices.filter(Boolean),r.price,def.title+", ціна "+(index+1),v=>r.price=v);
+   const target=def.target.find(p=>p[0]===r.dish);
+   if(review&&!target)dish.classList.add("wrong");
+   if(review&&(!target||target[1]!==r.price))price.classList.add("wrong");
+   const del=document.createElement("button");del.type="button";del.textContent="×";del.setAttribute("aria-label","Видалити рядок "+(index+1)+" категорії "+def.title);del.onclick=()=>{state[def.key]=state[def.key].filter(x=>x.id!==r.id);review=false;render();say("Рядок видалено.")};
+   line.append(dish,price,del);lines.append(line);
   });
-  section.append(lines);
-  const add=document.createElement("button");add.className="add";add.textContent="＋ Додати рядок";add.disabled=values.length>=6;add.onclick=()=>{state[def.key].push("");review=false;render();message("Рядок додано. Обери страву.")};section.append(add);root.append(section)
+  block.append(lines);
+  const add=document.createElement("button");add.type="button";add.className="add";add.textContent="＋ Додати рядок";add.disabled=rows.length>=6;add.onclick=()=>{rows.push(row("",""));review=false;render();say("Новий рядок додано. Обери страву й ціну.")};
+  block.append(add);root.append(block)
  }
- document.querySelectorAll(".heading").forEach(el=>{el.classList.toggle("bold",bold);el.classList.toggle("colored",colored)});
+ document.querySelectorAll(".head").forEach(e=>{e.classList.toggle("bold",bold);e.classList.toggle("colored",colored)});
  for(const [id,on] of [["bold",bold],["color",colored]]){$(id).classList.toggle("active",on);$(id).setAttribute("aria-pressed",String(on))}
 }
 function score(){
- // 10 балів за коректні неповторювані позиції меню, 2 за форматування.
- // Зайві рядки знижують результат у відповідній категорії.
- let points=0;
- for(const d of defs){
-  const values=state[d.key];
-  const unique=[...new Set(values.filter(v=>d.choices.includes(v)))];
-  const extras=Math.max(0,values.length-d.need);
-  points+=Math.max(0,Math.min(d.need,unique.length)-extras);
+ // 10 балів: по одному за кожну правильну пару (назва+ціна).
+ // Кожен зайвий рядок віднімає бал, навіть коли всі необхідні пари є.
+ let points=0,extras=0;
+ for(const d of defs){const rows=state[d.key];const matched=new Set();
+  for(const item of rows){const key=item.dish+"\u0000"+item.price;if(d.target.some(t=>t[0]===item.dish&&t[1]===item.price)&&!matched.has(key)){matched.add(key);points++}}
+  extras+=Math.max(0,rows.length-d.need);
  }
- return Math.min(12,points+Number(bold)+Number(colored))
+ return Math.max(0,Math.min(12,points-extras+Number(bold)+Number(colored)))
 }
-function last(){const data=read(),x=data.at(-1);$("result").textContent=x?"Остання перевірка: "+x.klass+", "+x.group+" група, "+x.surname+" "+x.firstname+" — "+x.score+"/12, спроба "+x.attempt+".":"Перевірок ще немає."}
+function showResult(){const data=read(),x=data.at(-1);$("results").textContent=x?"Остання перевірка: "+x.klass+", "+x.group+" група, "+x.surname+" "+x.firstname+" — "+x.score+"/12; спроба "+x.attempt+".":"Перевірок ще немає."}
 $("bold").onclick=()=>{bold=!bold;review=false;render()};
 $("color").onclick=()=>{colored=!colored;review=false;render()};
 $("reset").onclick=reset;
-$("hint").onclick=()=>message("Порахуй кількість рядків у кожній категорії. Гарнірів має бути два, а салатів три. Страви в одній категорії не повторюй. Не забудь обидві кнопки форматування.");
+$("hint").onclick=()=>say("Порівняй кожну пару «страва — ціна» зі зразком понеділка. Особливо перевір суп, напій, випічку, м’ясну страву, кількість гарнірів і салатів.");
 $("check").onclick=()=>{
  const klass=$("klass").value,group=$("group").value,surname=$("surname").value.trim().replace(/\s+/g," "),firstname=$("firstname").value.trim().replace(/\s+/g," ");
- if(!klass||!group||!surname||!firstname){message("Обери клас і групу, введи прізвище та ім’я.","error");return}
+ if(!klass||!group||!surname||!firstname){say("Спочатку обери клас і групу, введи прізвище та ім’я.","error");return}
  attempt++;review=true;const points=score();
  const entry={date:new Date().toLocaleString("uk-UA"),klass,group,surname,firstname,exercise:"table-editing-v1",score:points,total:12,attempt,durationSeconds:Math.round((Date.now()-started)/1000)};
- const all=read();all.push(entry);const ok=write(all);render();last();
- message("Результат: "+points+"/12. "+(points===12?"Меню відповідає всім вимогам!":"Перевір кількість рядків, повтори страв і заголовки.")+(ok?"":" Не вдалося зберегти локально."),points===12?"success":"error");
- if(SERVER_READY)fetch(ENDPOINT,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(entry)}).then(()=>message("Збережено локально. Запит надіслано; запис у журналі потрібно перевірити.","success")).catch(()=>message("Збережено локально, але надсилання не вдалося.","error"))
+ const all=read();all.push(entry);const saved=save(all);
+ render();showResult();say("Результат: "+points+"/12. "+(points===12?"Меню на понеділок відтворено правильно!":"Порівняй страви та ціни зі зразком, перевір кількість рядків і оформлення.")+(saved?"":" Не вдалося зберегти результат."),points===12?"success":"error");
 };
-$("clear").onclick=()=>{if(confirm("Очистити локальну історію?")){write([]);last()}};
-$("export").onclick=()=>{const entries=read();if(!entries.length){message("Немає результатів для експорту.");return}const keys=["date","klass","group","surname","firstname","exercise","score","total","attempt","durationSeconds"];const cell=v=>{let s=String(v??"");if(/^[=+@-]/.test(s))s="'"+s;return '"'+s.replaceAll('"','""')+'"'};const csv="\uFEFF"+keys.join(";")+"\r\n"+entries.map(r=>keys.map(k=>cell(r[k])).join(";")).join("\r\n");const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"})),a=document.createElement("a");a.href=url;a.download="cafe-menu-results.csv";a.click();setTimeout(()=>URL.revokeObjectURL(url),500)};
-reset();last();
+$("clear").onclick=()=>{if(confirm("Очистити локальну історію цієї вправи?")){save([]);showResult()}};
+$("export").onclick=()=>{const all=read();if(!all.length){say("Немає результатів для експорту.");return}const cols=["date","klass","group","surname","firstname","exercise","score","total","attempt","durationSeconds"];const safe=v=>{let s=String(v??"");if(/^[=+@-]/.test(s))s="'"+s;return '"'+s.replaceAll('"','""')+'"'};const csv="\uFEFF"+cols.join(";")+"\r\n"+all.map(x=>cols.map(k=>safe(x[k])).join(";")).join("\r\n"),url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"})),a=document.createElement("a");a.href=url;a.download="monday-menu-results.csv";a.click();setTimeout(()=>URL.revokeObjectURL(url),500)};
+renderReference();reset();showResult();
 </script></main></body></html>
