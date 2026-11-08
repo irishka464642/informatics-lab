@@ -45,9 +45,10 @@ function doPost(e){
   const surname=clean(x.surname,60);
   const firstname=clean(x.firstname,60);
   if(!/^[\p{L}’' -]{2,60}$/u.test(surname)||!/^[\p{L}’' -]{2,60}$/u.test(firstname))throw new Error("invalid name");
-  if(x.exercise!=="table-ordering-v1")throw new Error("invalid exercise");
+  const totals={"table-ordering-v1":12,"table-editing-v1":12};
+  if(!Object.prototype.hasOwnProperty.call(totals,x.exercise))throw new Error("invalid exercise");
   const score=Number(x.score),total=Number(x.total),attempt=Number(x.attempt),duration=Number(x.durationSeconds);
-  if(!Number.isInteger(score)||score<0||score>12||total!==12||!Number.isInteger(attempt)||attempt<1||attempt>100||!Number.isInteger(duration)||duration<0||duration>86400)throw new Error("invalid score");
+  if(!Number.isInteger(score)||score<0||score>totals[x.exercise]||total!==totals[x.exercise]||!Number.isInteger(attempt)||attempt<1||attempt>100||!Number.isInteger(duration)||duration<0||duration>86400)throw new Error("invalid score");
   const id=PropertiesService.getScriptProperties().getProperty(PROP_PREFIX+key);
   if(!id)throw new Error("not configured");
   // Видаляємо початкові =, +, -, @, щоб ім'я не стало формулою в таблиці.
