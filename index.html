@@ -23,7 +23,7 @@ const items=records.flat().map((text,id)=>({text,id}));
 const $=id=>document.getElementById(id);
 const KEY="informatics_lab_tables_results_v1";
 // Вкажіть адресу розгорнутого Apps Script лише після налаштування приватних журналів.
-const RESULTS_ENDPOINT="";
+const RESULTS_ENDPOINT="https://script.google.com/macros/s/AKfycbwCzkd-5oDGBjO6gBnhxKECgtmDAFnpuXEAAI81C-b1IMoK2wNy-r5aFSrs6AwEpeFp/exec";
 let order=[],placed=Array(12).fill(null),selected=null,attempt=0,started=Date.now(),checked=false;
 function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function read(){try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return []}}
