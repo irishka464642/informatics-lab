@@ -10,15 +10,15 @@
 </style>
 </head>
 <body><main>
-<header><div>Інформатика · 6 клас · Робота з таблицями</div><h1>Наведи лад у таблиці</h1><p>Прочитай відомості про гуртки, потім розмісти перемішані картки в правильних клітинках.</p></header>
-<section class="panel"><h2>1. Хто виконує вправу?</h2><div class="fields"><label>Клас<select id="klass"><option value="">Оберіть клас</option><option>6-А</option><option>6-Б</option><option>6-В</option></select></label><label>Група<select id="group"><option value="">Оберіть групу</option><option value="1">1 група</option><option value="2">2 група</option></select></label><label>Прізвище<input id="surname" maxlength="60" placeholder="Наприклад, Петренко" autocomplete="family-name"></label><label>Ім’я<input id="firstname" maxlength="60" placeholder="Наприклад, Марія" autocomplete="given-name"></label></div><p class="tiny">Поки немає підключення до журналів, результати зберігаються лише на цьому пристрої. На спільному телефоні після передавання результатів очисть історію.</p></section>
-<section class="panel"><h2>2. Прочитай інформацію</h2><div class="source">Робототехніка — понеділок, кабінет 12.<br>Малювання — середа, кабінет 8.<br>Волейбол — п’ятниця, спортзал.<br>Театр — вівторок, актова зала.</div><p class="muted">Вибери картку, потім натисни на відповідну клітинку. Щоб змінити відповідь, натисни на заповнену клітинку.</p><div class="bank" id="bank"></div></section>
-<section class="panel"><h2>3. Заповни таблицю</h2><div class="tablewrap"><table aria-label="Таблиця гуртків"><thead><tr><th>Гурток</th><th>День</th><th>Місце</th></tr></thead><tbody id="grid"></tbody></table></div><div class="actions"><button class="btn primary" id="check">Перевірити</button><button class="btn secondary" id="hint">Підказка</button><button class="btn outline" id="reset">Почати знову</button></div><div class="notice" id="status" role="status" aria-live="polite">Заповнено 0 із 12 клітинок.</div></section>
+<header><div>Інформатика · 6 клас · Робота з таблицями</div><h1>Розклад гуртків на тиждень</h1><p>Упорядкуй гуртки за днями тижня: від понеділка до п’ятниці. Потім заповни таблицю.</p></header>
+<section class="panel"><h2>1. Хто виконує вправу?</h2><div class="fields"><label>Клас<select id="klass"><option value="">Оберіть клас</option><option>6-А</option><option>6-Б</option><option>6-В</option></select></label><label>Група<select id="group"><option value="">Оберіть групу</option><option value="1">1 група</option><option value="2">2 група</option></select></label><label>Прізвище<input id="surname" maxlength="60" placeholder="Наприклад, Петренко" autocomplete="family-name"></label><label>Ім’я<input id="firstname" maxlength="60" placeholder="Наприклад, Марія" autocomplete="given-name"></label></div><p class="tiny">Результати зберігаються в браузері й надсилаються до журналу вчителя за наявності інтернету. На спільному телефоні після роботи очисть локальну історію.</p></section>
+<section class="panel"><h2>2. Прочитай оголошення</h2><div class="source">У п’ятницю працює гурток волейболу в спортзалі.<br>У середу малювання відбувається в кабінеті 8.<br>У понеділок робототехніка проходить у кабінеті 12.<br>У вівторок театр збирається в актовій залі.<br>У четвер гуртків немає.</div><p class="muted"><strong>Завдання:</strong> розмісти заняття за порядком днів тижня (понеділок → вівторок → середа → п’ятниця). Четвер пропускаємо, бо гуртків немає. Вибери картку, потім натисни на потрібну клітинку. Щоб змінити відповідь, натисни на заповнену клітинку.</p><div class="bank" id="bank"></div></section>
+<section class="panel"><h2>3. Склади розклад за днями тижня</h2><div class="tablewrap"><table aria-label="Таблиця гуртків"><thead><tr><th>Гурток</th><th>День</th><th>Місце</th></tr></thead><tbody id="grid"></tbody></table></div><div class="actions"><button class="btn primary" id="check">Перевірити</button><button class="btn secondary" id="hint">Підказка</button><button class="btn outline" id="reset">Почати знову</button></div><div class="notice" id="status" role="status" aria-live="polite">Заповнено 0 із 12 клітинок.</div></section>
 <section class="panel"><h2>Мій результат</h2><div class="notice" id="results">Перевірок ще немає.</div><div class="actions"><button class="btn secondary" id="export">Завантажити результати CSV</button><button class="btn outline" id="clear">Очистити історію на цьому пристрої</button></div><p class="tiny">CSV містить лише результати з цього браузера. На спільному телефоні передавання файлу потребує допомоги вчителя. Очищення даних браузера видалить локальну історію.</p></section>
 <footer>Інтерактивні вправи з інформатики · 6-А, 6-Б, 6-В</footer>
 </main><script>
 "use strict";
-const records=[["Робототехніка","понеділок","кабінет 12"],["Малювання","середа","кабінет 8"],["Волейбол","п’ятниця","спортзал"],["Театр","вівторок","актова зала"]];
+const records=[["Робототехніка","понеділок","кабінет 12"],["Театр","вівторок","актова зала"],["Малювання","середа","кабінет 8"],["Волейбол","п’ятниця","спортзал"]];
 const items=records.flat().map((text,id)=>({text,id}));
 const $=id=>document.getElementById(id);
 const KEY="informatics_lab_tables_results_v1";
@@ -57,7 +57,7 @@ async function sendResult(entry){
   message("Результат збережено локально. Надсилання виконано, але підтвердження від журналу недоступне — перевір його у вчителя.","success");
  }catch(e){message("Збережено локально. Надсилання не вдалося: перевір інтернет і повідом учителя.","error")}
 }
-$("hint").onclick=()=>message("У кожному рядку — один гурток. Перший стовпець — назва, другий — день, третій — місце.");
+$("hint").onclick=()=>message("У кожному рядку — один гурток. Рядки йдуть за днями тижня: понеділок, вівторок, середа, п’ятниця. Четвер без занять. Стовпці: гурток, день, місце.");
 $("reset").onclick=start;
 $("clear").onclick=()=>{if(confirm("Очистити всю історію результатів на цьому пристрої?")){write([]);showResults()}};
 $("export").onclick=()=>{
