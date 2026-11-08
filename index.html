@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f5f7fc">
+<title>Наведи лад у таблиці · Інформатика</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#19253b;background:#f5f7fc}*{box-sizing:border-box}body{margin:0}main{max-width:900px;margin:auto;padding:18px 14px 55px}header{background:linear-gradient(125deg,#2349a3,#596ac7);color:white;padding:25px;border-radius:22px}header p{opacity:.93}h1{margin:8px 0;font-size:clamp(26px,5vw,38px)}h2{font-size:19px;margin:0 0 13px}.panel{background:white;padding:20px;margin:15px 0;border-radius:18px;border:1px solid #e1e6f1;box-shadow:0 3px 14px #14233b0b}.muted{color:#526078}.fields{display:flex;gap:12px;flex-wrap:wrap}.fields label{flex:1;min-width:150px;font-weight:650}input,select{margin-top:7px;width:100%;border:1px solid #aebad0;border-radius:10px;padding:11px;font:inherit;background:white}button{font:inherit;cursor:pointer;touch-action:manipulation}button:focus-visible{outline:3px solid #ffa530;outline-offset:2px}.bank{display:flex;flex-wrap:wrap;gap:9px}.chip{border:1px solid #9dacd6;border-radius:12px;background:#eef2ff;color:#1a3469;padding:11px 13px;min-height:44px}.chip.selected{background:#264eae;color:white}.chip:disabled{opacity:.27}.tablewrap{overflow:auto}table{border-collapse:separate;border-spacing:5px;width:100%;min-width:320px}th{background:#e7ecf8;padding:10px;border-radius:8px;text-align:left;font-size:14px}td{width:33.333%;padding:0}.cell{width:100%;min-height:59px;padding:8px 5px;border:1px dashed #9caac4;background:#f7f9fc;color:#27364e;border-radius:10px;font-size:clamp(12px,3vw,15px);overflow-wrap:anywhere}.cell.filled{background:#edf1ff;border-style:solid}.cell.right{background:#dff6e9;border-color:#2b9962}.cell.wrong{background:#ffebed;border-color:#d45363}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.btn{border:0;border-radius:11px;padding:12px 15px;min-height:44px;font-weight:650}.primary{background:#244eac;color:#fff}.secondary{background:#e8eeff;color:#213d7b}.outline{background:#fff;border:1px solid #aab6cc;color:#31445e}.notice{background:#f2f5fc;border-radius:10px;padding:13px;margin-top:12px;line-height:1.5}.success{background:#dff6e9}.error{background:#fff1dc}.tiny{font-size:13px;color:#647088}.source{border-left:4px solid #9bafe2;padding-left:12px;line-height:1.8}footer{font-size:13px;color:#53617b;text-align:center;margin-top:22px}@media(max-width:480px){.panel{padding:15px}.cell{min-height:68px}header{padding:20px}}
+</style>
+</head>
+<body><main>
+<header><div>Інформатика · 6 клас · Робота з таблицями</div><h1>Наведи лад у таблиці</h1><p>Прочитай відомості про гуртки, потім розмісти перемішані картки в правильних клітинках.</p></header>
+<section class="panel"><h2>1. Хто виконує вправу?</h2><div class="fields"><label>Клас<select id="klass"><option value="">Оберіть клас</option><option>6-А</option><option>6-Б</option><option>6-В</option></select></label><label>Навчальний код (без прізвища)<input id="student" maxlength="20" placeholder="Наприклад, 12" autocomplete="off"></label></div><p class="tiny">Результати зберігаються лише у браузері цього пристрою. Поки що автоматичного надсилання вчителю немає.</p></section>
+<section class="panel"><h2>2. Прочитай інформацію</h2><div class="source">Робототехніка — понеділок, кабінет 12.<br>Малювання — середа, кабінет 8.<br>Волейбол — п’ятниця, спортзал.<br>Театр — вівторок, актова зала.</div><p class="muted">Вибери картку, потім натисни на відповідну клітинку. Щоб змінити відповідь, натисни на заповнену клітинку.</p><div class="bank" id="bank"></div></section>
+<section class="panel"><h2>3. Заповни таблицю</h2><div class="tablewrap"><table aria-label="Таблиця гуртків"><thead><tr><th>Гурток</th><th>День</th><th>Місце</th></tr></thead><tbody id="grid"></tbody></table></div><div class="actions"><button class="btn primary" id="check">Перевірити</button><button class="btn secondary" id="hint">Підказка</button><button class="btn outline" id="reset">Почати знову</button></div><div class="notice" id="status" role="status" aria-live="polite">Заповнено 0 із 12 клітинок.</div></section>
+<section class="panel"><h2>Мій результат</h2><div class="notice" id="results">Перевірок ще немає.</div><div class="actions"><button class="btn secondary" id="export">Завантажити результати CSV</button><button class="btn outline" id="clear">Очистити історію на цьому пристрої</button></div><p class="tiny">CSV містить лише результати з цього браузера. На спільному телефоні передавання файлу потребує допомоги вчителя. Очищення даних браузера видалить локальну історію.</p></section>
+<footer>Інтерактивні вправи з інформатики · 6-А, 6-Б, 6-В</footer>
+</main><script>
+"use strict";
+const records=[["Робототехніка","понеділок","кабінет 12"],["Малювання","середа","кабінет 8"],["Волейбол","п’ятниця","спортзал"],["Театр","вівторок","актова зала"]];
+const items=records.flat().map((text,id)=>({text,id}));
+const $=id=>document.getElementById(id);
+const KEY="informatics_lab_tables_results_v1";
+let order=[],placed=Array(12).fill(null),selected=null,attempt=0,started=Date.now(),checked=false;
+function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function read(){try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return []}}
+function write(v){try{localStorage.setItem(KEY,JSON.stringify(v));return true}catch{return false}}
+function message(t,kind=""){const el=$("status");el.className="notice "+kind;el.textContent=t}
+function draw(){
+ const bank=$("bank");bank.replaceChildren();
+ for(const id of order){const b=document.createElement("button");b.className="chip"+(selected===id?" selected":"");b.textContent=items[id].text;b.disabled=placed.includes(id);b.setAttribute("aria-pressed",String(selected===id));b.onclick=()=>{selected=selected===id?null:id;checked=false;draw()};bank.append(b)}
+ const grid=$("grid");grid.replaceChildren();
+ for(let r=0;r<4;r++){const tr=document.createElement("tr");for(let c=0;c<3;c++){const idx=r*3+c,td=document.createElement("td"),b=document.createElement("button");b.className="cell"+(placed[idx]!==null?" filled":"")+(checked?(placed[idx]===idx?" right":" wrong"):"");b.textContent=placed[idx]===null?"＋":items[placed[idx]].text;b.setAttribute("aria-label","Рядок "+(r+1)+", "+["Гурток","День","Місце"][c]);b.onclick=()=>{if(placed[idx]!==null){selected=placed[idx];placed[idx]=null;message("Картку повернуто до набору.")}else if(selected!==null){placed[idx]=selected;selected=null;message("Картку розміщено.")}else message("Спочатку вибери картку над таблицею.");checked=false;draw()};td.append(b);tr.append(td)}grid.append(tr)}
+ if(!$("status").textContent.startsWith("Правильно")&&!checked){$("status").textContent="Заповнено "+placed.filter(x=>x!==null).length+" із 12 клітинок."}
+}
+function start(){placed=Array(12).fill(null);selected=null;attempt=0;started=Date.now();checked=false;order=shuffle(items.map(x=>x.id));message("Заповнено 0 із 12 клітинок.");draw()}
+function showResults(){const data=read();const last=data.at(-1);$("results").textContent=last?"Остання перевірка: "+last.klass+", код "+last.student+" — "+last.score+"/12; спроба "+last.attempt+"; "+last.date+". Усього записів: "+data.length+".":"Перевірок ще немає."}
+$("check").onclick=()=>{
+ const klass=$("klass").value,student=$("student").value.trim();
+ if(!klass||!student){message("Спочатку обери клас і введи навчальний код.","error");return}
+ if(placed.some(v=>v===null)){message("Заповни всі 12 клітинок, а тоді перевіряй.","error");return}
+ checked=true;attempt++;
+ const score=placed.filter((id,idx)=>id===idx).length,entry={date:new Date().toLocaleString("uk-UA"),klass,student,score,total:12,attempt,durationSeconds:Math.round((Date.now()-started)/1000)};
+ const data=read();data.push(entry);const saved=write(data.slice(-500));
+ message(score===12?"Правильно! Усі 12 клітинок на місці.":"Правильно "+score+" із 12. Червоні клітинки потрібно виправити."+(saved?"":" Не вдалося зберегти результат."),score===12?"success":"error");draw();showResults()
+};
+$("hint").onclick=()=>message("У кожному рядку — один гурток. Перший стовпець — назва, другий — день, третій — місце.");
+$("reset").onclick=start;
+$("clear").onclick=()=>{if(confirm("Очистити всю історію результатів на цьому пристрої?")){write([]);showResults()}};
+$("export").onclick=()=>{
+ const data=read();if(!data.length){message("Немає результатів для експорту.");return}
+ const keys=["date","klass","student","score","total","attempt","durationSeconds"];
+ const cell=v=>{let x=String(v??"");if(/^[=+@-]/.test(x))x="'"+x;return '"'+x.replaceAll('"','""')+'"'}
+ const csv="\uFEFF"+keys.join(";")+"\r\n"+data.map(row=>keys.map(k=>cell(row[k])).join(";")).join("\r\n");
+ const blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="tables-results.csv";a.click();setTimeout(()=>URL.revokeObjectURL(url),500)
+};
+showResults();start();
+</script></body></html>
