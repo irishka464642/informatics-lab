@@ -11,7 +11,7 @@
 </head>
 <body><main>
 <header><div>Інформатика · 6 клас · Робота з таблицями</div><h1>Наведи лад у таблиці</h1><p>Прочитай відомості про гуртки, потім розмісти перемішані картки в правильних клітинках.</p></header>
-<section class="panel"><h2>1. Хто виконує вправу?</h2><div class="fields"><label>Клас<select id="klass"><option value="">Оберіть клас</option><option>6-А</option><option>6-Б</option><option>6-В</option></select></label><label>Прізвище<input id="surname" maxlength="60" placeholder="Наприклад, Петренко" autocomplete="family-name"></label><label>Ім’я<input id="firstname" maxlength="60" placeholder="Наприклад, Марія" autocomplete="given-name"></label></div><p class="tiny">Результати та введені ім’я і прізвище зберігаються лише у браузері цього пристрою. Якщо телефон спільний, після передавання результатів очисть історію. Автоматичного надсилання вчителю поки немає.</p></section>
+<section class="panel"><h2>1. Хто виконує вправу?</h2><div class="fields"><label>Клас<select id="klass"><option value="">Оберіть клас</option><option>6-А</option><option>6-Б</option><option>6-В</option></select></label><label>Група<select id="group"><option value="">Оберіть групу</option><option value="1">1 група</option><option value="2">2 група</option></select></label><label>Прізвище<input id="surname" maxlength="60" placeholder="Наприклад, Петренко" autocomplete="family-name"></label><label>Ім’я<input id="firstname" maxlength="60" placeholder="Наприклад, Марія" autocomplete="given-name"></label></div><p class="tiny">Поки немає підключення до журналів, результати зберігаються лише на цьому пристрої. На спільному телефоні після передавання результатів очисть історію.</p></section>
 <section class="panel"><h2>2. Прочитай інформацію</h2><div class="source">Робототехніка — понеділок, кабінет 12.<br>Малювання — середа, кабінет 8.<br>Волейбол — п’ятниця, спортзал.<br>Театр — вівторок, актова зала.</div><p class="muted">Вибери картку, потім натисни на відповідну клітинку. Щоб змінити відповідь, натисни на заповнену клітинку.</p><div class="bank" id="bank"></div></section>
 <section class="panel"><h2>3. Заповни таблицю</h2><div class="tablewrap"><table aria-label="Таблиця гуртків"><thead><tr><th>Гурток</th><th>День</th><th>Місце</th></tr></thead><tbody id="grid"></tbody></table></div><div class="actions"><button class="btn primary" id="check">Перевірити</button><button class="btn secondary" id="hint">Підказка</button><button class="btn outline" id="reset">Почати знову</button></div><div class="notice" id="status" role="status" aria-live="polite">Заповнено 0 із 12 клітинок.</div></section>
 <section class="panel"><h2>Мій результат</h2><div class="notice" id="results">Перевірок ще немає.</div><div class="actions"><button class="btn secondary" id="export">Завантажити результати CSV</button><button class="btn outline" id="clear">Очистити історію на цьому пристрої</button></div><p class="tiny">CSV містить лише результати з цього браузера. На спільному телефоні передавання файлу потребує допомоги вчителя. Очищення даних браузера видалить локальну історію.</p></section>
@@ -22,6 +22,8 @@ const records=[["Робототехніка","понеділок","кабіне�
 const items=records.flat().map((text,id)=>({text,id}));
 const $=id=>document.getElementById(id);
 const KEY="informatics_lab_tables_results_v1";
+// Вкажіть адресу розгорнутого Apps Script лише після налаштування приватних журналів.
+const RESULTS_ENDPOINT="";
 let order=[],placed=Array(12).fill(null),selected=null,attempt=0,started=Date.now(),checked=false;
 function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function read(){try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return []}}
@@ -35,22 +37,32 @@ function draw(){
  if(!$("status").textContent.startsWith("Правильно")&&!checked){$("status").textContent="Заповнено "+placed.filter(x=>x!==null).length+" із 12 клітинок."}
 }
 function start(){placed=Array(12).fill(null);selected=null;attempt=0;started=Date.now();checked=false;order=shuffle(items.map(x=>x.id));message("Заповнено 0 із 12 клітинок.");draw()}
-function showResults(){const data=read();const last=data.at(-1);$("results").textContent=last?"Остання перевірка: "+last.klass+", "+(last.surname?last.surname+" "+last.firstname:"код "+last.student)+" — "+last.score+"/12; спроба "+last.attempt+"; "+last.date+". Усього записів: "+data.length+".":"Перевірок ще немає."}
+function showResults(){const data=read();const last=data.at(-1);$("results").textContent=last?"Остання перевірка: "+last.klass+", "+(last.group?last.group+" група, ":"")+(last.surname?last.surname+" "+last.firstname:"код "+last.student)+" — "+last.score+"/12; спроба "+last.attempt+"; "+last.date+". Усього записів: "+data.length+".":"Перевірок ще немає."}
 $("check").onclick=()=>{
- const klass=$("klass").value,surname=$("surname").value.trim().replace(/\s+/g," "),firstname=$("firstname").value.trim().replace(/\s+/g," ");
- if(!klass||!surname||!firstname){message("Спочатку обери клас, введи прізвище та ім’я.","error");return}
+ const klass=$("klass").value,group=$("group").value,surname=$("surname").value.trim().replace(/\s+/g," "),firstname=$("firstname").value.trim().replace(/\s+/g," ");
+ if(!klass||!group||!surname||!firstname){message("Спочатку обери клас і групу, введи прізвище та ім’я.","error");return}
  if(placed.some(v=>v===null)){message("Заповни всі 12 клітинок, а тоді перевіряй.","error");return}
  checked=true;attempt++;
- const score=placed.filter((id,idx)=>id===idx).length,entry={date:new Date().toLocaleString("uk-UA"),klass,surname,firstname,score,total:12,attempt,durationSeconds:Math.round((Date.now()-started)/1000)};
+ const score=placed.filter((id,idx)=>id===idx).length,entry={date:new Date().toLocaleString("uk-UA"),klass,group,surname,firstname,exercise:"table-ordering-v1",score,total:12,attempt,durationSeconds:Math.round((Date.now()-started)/1000)};
  const data=read();data.push(entry);const saved=write(data.slice(-500));
- message(score===12?"Правильно! Усі 12 клітинок на місці.":"Правильно "+score+" із 12. Червоні клітинки потрібно виправити."+(saved?"":" Не вдалося зберегти результат."),score===12?"success":"error");draw();showResults()
+ message(score===12?"Правильно! Усі 12 клітинок на місці.":"Правильно "+score+" із 12. Червоні клітинки потрібно виправити."+(saved?"":" Не вдалося зберегти результат."),score===12?"success":"error");draw();showResults();
+ if(RESULTS_ENDPOINT){message("Результат збережено на пристрої. Триває надсилання в журнал…");sendResult(entry)}
 };
+async function sendResult(entry){
+ // Без секретів у публічному HTML. Сервер повинен перевіряти всі поля й обмежувати зловживання.
+ try{
+  const payload=JSON.stringify(entry);
+  // Apps Script Web App: text/plain у режимі no-cors, тож браузер не може підтвердити доставку.
+  await fetch(RESULTS_ENDPOINT,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:payload});
+  message("Результат збережено локально. Надсилання виконано, але підтвердження від журналу недоступне — перевір його у вчителя.","success");
+ }catch(e){message("Збережено локально. Надсилання не вдалося: перевір інтернет і повідом учителя.","error")}
+}
 $("hint").onclick=()=>message("У кожному рядку — один гурток. Перший стовпець — назва, другий — день, третій — місце.");
 $("reset").onclick=start;
 $("clear").onclick=()=>{if(confirm("Очистити всю історію результатів на цьому пристрої?")){write([]);showResults()}};
 $("export").onclick=()=>{
  const data=read();if(!data.length){message("Немає результатів для експорту.");return}
- const keys=["date","klass","surname","firstname","score","total","attempt","durationSeconds"];
+ const keys=["date","klass","group","surname","firstname","exercise","score","total","attempt","durationSeconds"];
  const cell=v=>{let x=String(v??"");if(/^[=+@-]/.test(x))x="'"+x;return '"'+x.replaceAll('"','""')+'"'}
  const csv="\uFEFF"+keys.join(";")+"\r\n"+data.map(row=>keys.map(k=>cell(row[k])).join(";")).join("\r\n");
  const blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="tables-results.csv";a.click();setTimeout(()=>URL.revokeObjectURL(url),500)
