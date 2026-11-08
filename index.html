@@ -68,4 +68,4 @@ $("export").onclick=()=>{
  const blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="tables-results.csv";a.click();setTimeout(()=>URL.revokeObjectURL(url),500)
 };
 showResults();start();
-</script></body></html>
+</script><script src="./student-profile.js"></script></body></html>
