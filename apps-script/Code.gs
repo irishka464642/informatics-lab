@@ -14,23 +14,22 @@ const PROP_PREFIX = "RESULTS_SHEET_";
 // Створює шість ОКРЕМИХ Google Таблиць, зберігає їх ID в Script Properties.
 function setupJournals() {
  const props=PropertiesService.getScriptProperties();
+ const folderIter=DriveApp.getFoldersByName("Informatics Lab — журнали результатів");
+ if(!folderIter.hasNext())throw new Error("Не знайдено папку журналів в цьому Google-акаунті");
+ const folder=folderIter.next();
  const links=[];
  GROUPS.forEach(key=>{
-   const prop=PROP_PREFIX+key;
-   let id=props.getProperty(prop);
-   if(!id){
-     const [klass,group]=key.split(":");
-     const sheetFile=SpreadsheetApp.create("Informatics Lab — "+klass+" — "+group+" група");
-     id=sheetFile.getId();
-     const tab=sheetFile.getSheets()[0];
-     tab.setName("Результати");
-     tab.getRange(1,1,1,HEADERS.length).setValues([HEADERS]).setFontWeight("bold");
-     tab.setFrozenRows(1);
-     props.setProperty(prop,id);
-   }
-   links.push(key+": https://docs.google.com/spreadsheets/d/"+id+"/edit");
+   const [klass,group]=key.split(":");
+   const name="Informatics Lab — "+klass+" — група "+group;
+   const found=folder.getFilesByName(name);
+   if(!found.hasNext())throw new Error("Не знайдено готовий журнал: "+name);
+   const file=found.next(),id=file.getId();
+   const doc=SpreadsheetApp.openById(id);
+   if(!doc.getSheetByName("Результати"))throw new Error("Немає вкладки Результати: "+name);
+   props.setProperty(PROP_PREFIX+key,id);
+   links.push(key+": "+doc.getUrl());
  });
- Logger.log(links.join("\n"));
+ Logger.log("Підключено "+links.length+" наявних журналів:\n"+links.join("\n"));
 }
 
 function doPost(e){
