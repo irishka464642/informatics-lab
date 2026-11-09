@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Python Quest 7 — Кодова пригода</title>
+<style>
+:root{font-family:system-ui,-apple-system,sans-serif;color:#eef4ff;background:#0c142a}*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 50% 0,#203868,#0b1429 70%);min-height:100vh}
+main{max-width:760px;margin:auto;padding:16px 14px 40px}header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+h1{font-size:clamp(23px,6vw,36px);margin:10px 0 4px}h2{margin:10px 0}p{line-height:1.5}
+.tag{display:inline-block;background:#203e69;padding:6px 10px;border-radius:30px;color:#bceaff;font-size:13px}
+.panel{background:#152642;border:1px solid #35527e;border-radius:20px;padding:18px;margin:15px 0;box-shadow:0 14px 35px #050a1a66}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.stars{font-weight:800;color:#ffd97a}
+.track{height:12px;border-radius:20px;background:#091529;overflow:hidden;margin:14px 0}.fill{height:100%;background:linear-gradient(90deg,#48cae4,#b8f36d);transition:width .45s}
+.stage{min-height:175px;position:relative;overflow:hidden;border-radius:16px;background:linear-gradient(#244575 0 62%,#36734d 62% 75%,#264d38 75%);display:grid;place-items:center;border:2px solid #416598}
+.stage:before{content:'✦　　☁️　　　　　　　✦';position:absolute;top:8px;opacity:.6;letter-spacing:12px}
+.scene{font-size:clamp(48px,15vw,95px);filter:drop-shadow(0 8px 3px #09211d);transition:transform .45s;z-index:1}
+.scene.win{animation:jump .55s ease}@keyframes jump{50%{transform:translateY(-24px) rotate(-6deg)}}
+.map{display:flex;justify-content:space-between;gap:4px;margin:14px 0}.node{border-radius:12px;background:#203452;color:#a9bed9;padding:9px 5px;flex:1;text-align:center;font-size:12px;font-weight:750}.node.active{background:#2b7394;color:white;outline:2px solid #70eaff}.node.done{background:#386747;color:#baf8cc}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0a1427;border:1px solid #3d567a;border-radius:12px;padding:13px;line-height:1.6;font-size:15px;color:#d2e8ff}
+textarea{width:100%;min-height:135px;border-radius:12px;border:2px solid #5480a8;background:#07162b;color:#ebf8ff;resize:vertical;padding:13px;font:16px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;outline:none}
+textarea:focus{border-color:#75e5ff}
+button{cursor:pointer;border:0;border-radius:13px;padding:14px 18px;font-size:16px;font-weight:800;touch-action:manipulation}
+.primary{background:#b6f57b;color:#102b17;flex:1}.secondary{background:#284466;color:#eff8ff}.buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.feedback{border-radius:12px;padding:12px;margin-top:12px;background:#23334d;min-height:46px;line-height:1.5}
+.feedback.ok{background:#204e38;color:#c1ffdc}.feedback.err{background:#60323a;color:#ffe3e7}
+small{color:#aac5df}footer{text-align:center;color:#9db5d1;margin-top:18px;font-size:12px}
+details{margin-top:12px;color:#bdd2ed}summary{cursor:pointer;padding:7px}#ending{display:none;text-align:center}
+</style></head>
+<body><main>
+<header><div><span class="tag">7 клас · смартфон · Python</span><h1>🐍 Python Quest 7</h1><small>Кодова пригода: 5 місій</small></div><div class="stars" id="score">⭐ 0 / 5</div></header>
+<div class="track"><div class="fill" id="bar" style="width:0%"></div></div>
+<div class="map" id="map" aria-label="Карта місій"></div>
+<div class="stage"><div class="scene" id="scene" aria-label="Ігрова сцена">🧙‍♂️　🔒</div></div>
+<section class="panel" id="game">
+<div class="top"><span class="tag" id="number">Місія 1</span><span class="tag" id="skill">Змінні</span></div>
+<h2 id="title"></h2><p id="story"></p>
+<strong>🧩 Завдання: напиши код</strong><pre id="starter"></pre>
+<textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Редактор коду Python"></textarea>
+<details><summary>💡 Підказка</summary><p id="hint"></p></details>
+<div class="buttons"><button class="primary" id="check">▶ Перевірити код</button><button class="secondary" id="reset">↺ Відновити</button></div>
+<div id="feedback" class="feedback" role="status" aria-live="polite">Допоможи герою пройти місію!</div>
+<div class="buttons" id="nextWrap" hidden><button class="primary" id="next">Наступна місія →</button></div>
+</section>
+<section class="panel" id="ending"><div style="font-size:70px">🏆🐉✨</div><h2>Квест пройдено!</h2><p>Ти допоміг герою, використавши змінні, арифметику, введення та виведення даних.</p><p class="stars">⭐⭐⭐⭐⭐</p><button class="primary" id="again">Грати знову</button></section>
+<footer>Навчальна гра для 7 класу · Без реєстрації та збереження персональних даних. Перевіряються навчальні шаблони Python, а не виконується довільний код.</footer>
+</main>
+<script>
+const missions=[
+{title:"Скриня з монетами",skill:"Змінні та присвоювання",story:"Чарівник знайшов 7 монет. Запиши їх кількість у змінну coins — і скриня відкриється!",starter:"# Створи змінну coins зі значенням 7",initial:"coins = ",hint:"Присвоювання записують так: name = 7",scene:"🧙‍♂️　📦",validate:s=>/^coins\s*=\s*7\s*$/m.test(s),error:"Створи змінну coins і присвой їй число 7. Наприклад: coins = 7"},
+{title:"Міст через річку",skill:"Додавання",story:"Є 7 дощок на одному березі та 5 на іншому. Обчисли їх загальну кількість у змінній total.",starter:"a = 7\nb = 5\n# Обчисли total через a і b",initial:"a = 7\nb = 5\ntotal = ",hint:"Використай a + b. Числа вже записані у змінних.",scene:"🧙‍♂️　🌉",validate:s=>/^a\s*=\s*7\s*$/m.test(s)&&/^b\s*=\s*5\s*$/m.test(s)&&/^total\s*=\s*a\s*\+\s*b\s*$/m.test(s),error:"Збережи a = 7 і b = 5, а для total використай додавання змінних: a + b."},
+{title:"Магічна крамниця",skill:"Множення",story:"Одне зілля коштує 9 монет. Герой хоче купити 3. Обчисли загальну вартість у змінній cost.",starter:"price = 9\ncount = 3\n# Обчисли cost",initial:"price = 9\ncount = 3\ncost = ",hint:"Для множення в Python використовують зірочку *.",scene:"🧙‍♂️　🧪",validate:s=>/^price\s*=\s*9\s*$/m.test(s)&&/^count\s*=\s*3\s*$/m.test(s)&&/^cost\s*=\s*price\s*\*\s*count\s*$/m.test(s),error:"Вартість — це ціна, помножена на кількість. Використай price * count."},
+{title:"Брама чисел",skill:"input() та int()",story:"Брама просить у героя ціле число. Отримай відповідь із клавіатури та перетвори її на число.",starter:"# Запиши ціле число у змінну number\n# Використай input() та int()",initial:"number = ",hint:"input() отримує текст, int() перетворює його на ціле число: int(input())",scene:"🧙‍♂️　🚪",validate:s=>/^number\s*=\s*int\s*\(\s*input\s*\(\s*(?:['\"][^'\"]*['\"])?\s*\)\s*\)\s*$/m.test(s),error:"Потрібно зчитати дані через input() і перетворити на ціле число через int(): number = int(input())."},
+{title:"Драконів пароль",skill:"print() та обчислення",story:"Дракон відпустить героя, якщо той покаже суму двох чисел. Допиши останній рядок програми!",starter:"x = 12\ny = 8\n# Виведи суму x і y",initial:"x = 12\ny = 8\nprint(",hint:"Виведи результат додавання змінних: print(x + y)",scene:"🧙‍♂️　🐉",validate:s=>/^x\s*=\s*12\s*$/m.test(s)&&/^y\s*=\s*8\s*$/m.test(s)&&/^print\s*\(\s*x\s*\+\s*y\s*\)\s*$/m.test(s),error:"Перевір, що x = 12, y = 8, а в print() записане додавання x + y."}
+];
+let level=0,completed=new Set(),locked=false;
+const el=id=>document.getElementById(id);
+function draw(){const m=missions[level];el("number").textContent="Місія "+(level+1);el("skill").textContent=m.skill;el("title").textContent=m.title;el("story").textContent=m.story;el("starter").textContent=m.starter;el("code").value=m.initial;el("scene").textContent=m.scene;el("scene").classList.remove("win");el("feedback").textContent="Напиши код і натисни «Перевірити код».";el("feedback").className="feedback";el("hint").textContent=m.hint;el("nextWrap").hidden=true;el("check").disabled=false;el("map").innerHTML=missions.map((_,i)=>'<div class="node '+(completed.has(i)?'done':i===level?'active':'')+'">'+(completed.has(i)?'✓':i+1)+'</div>').join("");el("score").textContent="⭐ "+completed.size+" / 5";el("bar").style.width=(completed.size/missions.length*100)+"%";locked=false}
+el("check").onclick=()=>{if(locked)return;const s=el("code").value.trim();const ok=missions[level].validate(s);el("feedback").className="feedback "+(ok?"ok":"err");el("feedback").textContent=ok?"✅ Чудово! Код правильний. Шлях відкрито!":"🔍 "+missions[level].error;if(ok){locked=true;completed.add(level);el("scene").classList.add("win");el("check").disabled=true;el("nextWrap").hidden=false;el("next").textContent=level===missions.length-1?"Завершити квест 🏆":"Наступна місія →";el("score").textContent="⭐ "+completed.size+" / 5";el("bar").style.width=(completed.size/missions.length*100)+"%";el("map").children[level].className="node done"}};
+el("next").onclick=()=>{if(!locked)return;if(level===missions.length-1){el("game").style.display="none";el("ending").style.display="block"}else{level++;draw()}};
+el("reset").onclick=()=>{el("code").value=missions[level].initial;el("feedback").textContent="Спробуй знову!";el("feedback").className="feedback"};
+el("again").onclick=()=>{level=0;completed=new Set();el("ending").style.display="none";el("game").style.display="block";draw()};
+draw();
+</script></body></html>
