@@ -144,7 +144,7 @@ function insertToken(token){
  if(["+","-","*","/","="].includes(token))insert=" "+token+" ";
  if(["coins","a","b","total","price","count","cost","discount","number","x","y","z","p"].includes(token)){
    const before=editor.value.slice(0,start);
-   if(before&&!/[\s=(+\-*/]$/.test(before))insert=" "+token;
+   if(before&&!/[\s=(+*\/-]$/.test(before))insert=" "+token;
  }
  editor.setRangeText(insert,start,end,"end");
  editor.focus({preventScroll:true});keepCaret();
