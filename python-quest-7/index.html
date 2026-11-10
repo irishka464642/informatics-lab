@@ -64,7 +64,7 @@ footer{text-align:center;color:#a0b6d0;font-size:12px;margin:18px 0}
 <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><span class="tag" id="missionNumber"></span><span class="tag" id="skill"></span></div>
 <h2 id="title"></h2><p id="story"></p>
 <strong>⌨️ Допиши Python-код:</strong><pre id="task"></pre>
-<textarea id="editor" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" aria-label="Редактор Python"></textarea>
+<textarea id="editor" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" aria-label="Редактор Python" placeholder="Тут поки порожньо. Складай програму кнопками нижче або вводь вручну."></textarea>
 <div class="codepad" id="codepad" aria-label="Кнопки для складання коду">
 <div class="codepad-head"><strong>🎮 Складай код кнопками</strong><small>Або вводь вручну</small></div>
 <div id="padTokens"></div>
@@ -123,13 +123,13 @@ const tokenHelp={
 };
 const num=(...v)=>v.map(x=>String(x));
 const padConfig=[
-{vars:["coins","="],ops:[],numbers:num(7,5,9)},
-{vars:["a","b","total","="],ops:["+","-","*","/"],numbers:num(7,5)},
-{vars:["price","count","cost","="],ops:["+","-","*","/"],numbers:num(9,3)},
-{vars:["number","="],commands:["int(input())","float(input())","print(","input()"],ops:[]},
-{vars:["x","y"],commands:["print(","input(","int(","float("],ops:["+","-","*","/"],symbols:[")"]},
-{vars:["a","b","p","="],commands:["print(","input("],ops:["+","-","*","/"],numbers:["2"],symbols:["(",")"]},
-{vars:["price","count","discount","total","="],commands:["print(","input("],ops:["+","-","*","/"],numbers:num(10)},
+{vars:["coins","="],ops:[],numbers:["7","5","9"]},
+{vars:["a","b","total","="],ops:["+","-","*","/"],numbers:["7","5"]},
+{vars:["price","count","cost","="],ops:["+","-","*","/"],numbers:["9","3"]},
+{vars:["number","="],commands:["int(input())","float(input())","print(","input()"],ops:[],symbols:[")"]},
+{vars:["x","y","="],commands:["print(","input(","int(","float("],ops:["+","-","*","/"],numbers:["12","8"],symbols:[")"]},
+{vars:["a","b","p","="],commands:["print(","input("],ops:["+","-","*","/"],numbers:["8","5","2"],symbols:["(",")"]},
+{vars:["price","count","discount","total","="],commands:["print(","input("],ops:["+","-","*","/"],numbers:["15","4","10"],symbols:[")"]},
 {vars:["x","y","z","="],commands:["print(","input("],ops:["+","-","*","/"],numbers:["2","3","4"],symbols:["(",")"]},
 {vars:["a","b","="],commands:["int(input())","float(input())","print(","input("],ops:["+","-","*","/"],symbols:[")"]}
 ];
@@ -198,11 +198,11 @@ document.querySelectorAll("[data-tool]").forEach(btn=>{
 
 function tidy(v){return v.trim().replace(/\s+/g," ")}
 function show(id){["intro","play","finish"].forEach(x=>$(x).hidden=x!==id)}
-function draw(){const m=missions[level];success=false;$("codepad").querySelectorAll("button").forEach(b=>b.disabled=false);$("missionNumber").textContent=(m.advanced?"🔥 Челендж":"🎯 Тренування")+" · Місія "+(level+1)+" з "+missions.length;$("skill").textContent=m.skill;$("title").textContent=m.title;$("story").textContent=m.story;$("task").textContent=m.task;$("editor").value=m.start;caretStart=caretEnd=m.start.length;renderPad();$("hint").textContent=m.hint;$("goal").textContent=m.goal;$("goal").classList.remove("clear");$("hero").classList.remove("step");$("help").open=false;$("help").hidden=!!m.advanced;$("check").disabled=false;$("feedback").className="feedback";$("feedback").textContent="Уведи код і натисни «Перевірити».";$("nextArea").hidden=true;$("map").innerHTML=missions.map((_,i)=>'<span class="node '+(i<done?"done":i===level?"active":"")+'">'+(i<done?"✓":i+1)+'</span>').join("");$("score").textContent="⭐ "+done+" / "+missions.length;$("bar").style.width=(done/missions.length*100)+"%"}
+function draw(){const m=missions[level];success=false;$("codepad").querySelectorAll("button").forEach(b=>b.disabled=false);$("missionNumber").textContent=(m.advanced?"🔥 Челендж":"🎯 Тренування")+" · Місія "+(level+1)+" з "+missions.length;$("skill").textContent=m.skill;$("title").textContent=m.title;$("story").textContent=m.story;$("task").textContent=m.task;$("editor").value="";caretStart=caretEnd=0;renderPad();$("hint").textContent=m.hint;$("goal").textContent=m.goal;$("goal").classList.remove("clear");$("hero").classList.remove("step");$("help").open=false;$("help").hidden=!!m.advanced;$("check").disabled=false;$("feedback").className="feedback";$("feedback").textContent="Уведи код і натисни «Перевірити».";$("nextArea").hidden=true;$("map").innerHTML=missions.map((_,i)=>'<span class="node '+(i<done?"done":i===level?"active":"")+'">'+(i<done?"✓":i+1)+'</span>').join("");$("score").textContent="⭐ "+done+" / "+missions.length;$("bar").style.width=(done/missions.length*100)+"%"}
 $("studentForm").addEventListener("submit",e=>{e.preventDefault();const form=e.currentTarget;if(!form.reportValidity())return;student={klass:$("studentClass").value,group:$("studentGroup").value,surname:tidy($("surname").value),first:tidy($("firstName").value)};if(!student.surname||!student.first)return;level=done=attempts=hints=0;show("play");$("score").hidden=false;draw()});
 $("help").addEventListener("toggle",()=>{if($("help").open&&!success)hints++});
 $("check").addEventListener("click",()=>{if(success)return;attempts++;const ok=missions[level].test($("editor").value.trim());$("feedback").className="feedback "+(ok?"ok":"bad");$("feedback").textContent=ok?"✅ Правильно! Місію виконано.":"🔍 "+describeMistake($("editor").value);if(!ok&&missions[level].advanced)$("help").hidden=false;if(ok){success=true;done++;$("codepad").querySelectorAll("button").forEach(b=>b.disabled=true);$("hero").classList.add("step");$("goal").classList.add("clear");$("check").disabled=true;$("nextArea").hidden=false;$("next").textContent=level===missions.length-1?"Завершити гру 🏆":level===4?"Розпочати челендж 🔥":"Далі →";$("score").textContent="⭐ "+done+" / "+missions.length;$("bar").style.width=(done/missions.length*100)+"%";$("map").children[level].className="node done";}});
-$("restore").addEventListener("click",()=>{if(success)return;$("editor").value=missions[level].start;caretStart=caretEnd=$("editor").value.length;$("tokenInfo").textContent="Код відновлено — спробуй інші команди.";$("feedback").className="feedback";$("feedback").textContent="Код повернуто до початкового стану."});
+$("restore").addEventListener("click",()=>{if(success)return;$("editor").value="";caretStart=caretEnd=0;$("tokenInfo").textContent="Код відновлено — спробуй інші команди.";$("feedback").className="feedback";$("feedback").textContent="Код повернуто до початкового стану."});
 $("next").addEventListener("click",()=>{if(!success)return;if(level===missions.length-1){$("studentSummary").textContent=student.klass+" · група "+student.group+" · "+student.surname+" "+student.first;$("result").textContent="⭐ Результат: "+done+" / "+missions.length+" місій · перевірок коду: "+attempts;show("finish")}else{level++;draw()}});
 function report(){return "CODE QUEST 7\n"+student.klass+", група "+student.group+"\n"+student.surname+" "+student.first+"\nРезультат: "+done+"/"+missions.length+" місій\nКількість перевірок: "+attempts}
 $("copy").addEventListener("click",async()=>{const text=report();try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text)}else{const t=document.createElement("textarea");t.value=text;document.body.appendChild(t);t.select();if(!document.execCommand("copy"))throw Error("copy");t.remove()}$("copyStatus").textContent="✅ Результат скопійовано."}catch(e){$("copyStatus").textContent="Не вдалося скопіювати. Зроби скриншот підсумку."}$("copyStatus").hidden=false});
