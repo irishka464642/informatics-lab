@@ -185,6 +185,23 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
  .game-scene[data-phase="overload"] .scene-result-icon{transform:translate(-50%,-50%) scale(1)!important}
 }
 
+
+/* Клавіатура окремих Python-токенів для смартфонів */
+.codepad-head strong{font-size:16px;color:#e6d4ff}
+.codepad-head small{color:#b6d6ee}
+.pad-group{margin:13px 0 0;padding-top:11px;border-top:1px solid #48698766}
+.pad-group .pad-label{font-size:12px;letter-spacing:.02em;color:#cbdef5}
+.pad-row{gap:7px}
+.token:not(.utility){font-size:15px;min-width:45px;min-height:46px;padding:8px 12px;border-width:1px;box-shadow:0 3px 0 #08172a}
+.token.command{background:#174f55;border-color:#56b5a8;color:#c0fff2}
+.token.variable{background:#284978;border-color:#6595cc;color:#eaf4ff}
+.token.operation{background:#543e6e;border-color:#ad8bdc;color:#ffebff}
+.token.symbol{background:#514f32;border-color:#c2b968;color:#fff8cf}
+.token.literal{background:#285e47;border-color:#79c29b;color:#ebfff2;max-width:100%;white-space:normal;overflow-wrap:anywhere;text-align:left}
+.token.utility{background:#243d54;color:#dcefff;font-size:13px}
+.token:active{transform:translateY(2px);box-shadow:none}
+@media(max-width:480px){.token:not(.utility){padding:8px 11px}.token.literal{font-size:13px}.codepad-head small{text-align:left}}
+
 </style></head><body><main>
 <header><div><span class="tag">Інформатика · 7 клас · Python</span><h1>⚡ CODE QUEST 7</h1><small>Місії 10–16 · Епізод 2 · Python</small></div><div id="score" class="score" hidden>⭐ 0/7</div></header>
 <section id="intro" class="panel">
@@ -214,13 +231,16 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
 </div>
 <textarea id="editor" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" aria-label="Редактор Python" placeholder="Тут поки порожньо. Складай програму рядками або вводь вручну."></textarea>
 <div class="codepad" id="codepad" aria-label="Кнопки для складання коду">
-<div class="codepad-head"><strong>🎮 Складай рядки коду</strong><small>Або вводь вручну</small></div>
+<div class="codepad-head"><strong>🧩 Складай Python-код з окремих елементів</strong><small>Натискай кнопки по черзі або вводь вручну</small></div>
 <div id="padTokens"></div>
 <div class="pad-row" style="margin-top:11px">
 <button type="button" class="token utility" data-tool="newline">↵ Новий рядок</button>
+<button type="button" class="token utility" data-tool="indent">⇥ Відступ +4</button>
+<button type="button" class="token utility" data-tool="dedent">⇤ Менше відступ</button>
+<button type="button" class="token utility" data-tool="space">␣ Пробіл</button>
 <button type="button" class="token utility" data-tool="backspace">⌫ Стерти</button>
 </div>
-<div id="tokenInfo" class="token-info" aria-live="polite">Обирай рядки коду, серед них є зайві.</div></div>
+<div id="tokenInfo" class="token-info" aria-live="polite">Складай програму з окремих команд, змінних, знаків і дужок. Відступ після двокрапки з’явиться автоматично.</div></div>
 <details id="help"><summary>💡 Підказка</summary><p id="hint"></p></details>
 <div class="actions"><button class="primary" id="check">▶ Запустити код ⚡</button><button class="secondary" id="restore">↺ Очистити</button></div>
 <section id="gameScene" class="game-scene" data-phase="idle" data-kind="bridge" tabindex="-1" aria-label="Ігрова сцена: результат роботи коду">
@@ -431,43 +451,122 @@ function launchScene(codeOK){
 
 let caret=0,selEnd=0;
 ["click","keyup","input","select"].forEach(event=>editor.addEventListener(event,()=>{caret=editor.selectionStart;selEnd=editor.selectionEnd}));
+
+function editorCursor(pos){
+ caret=selEnd=Math.max(0,Math.min(editor.value.length,pos));
+ editor.setSelectionRange(caret,caret);
+ if(!(window.matchMedia&&window.matchMedia("(pointer:coarse)").matches))
+  editor.focus({preventScroll:true});
+}
 function insertText(s){
  if(success)return;
- const from=Math.min(caret,editor.value.length),to=Math.min(selEnd,editor.value.length);
+ const from=Math.max(0,Math.min(caret,editor.value.length));
+ const to=Math.max(from,Math.min(selEnd,editor.value.length));
  editor.setRangeText(s,from,to,"end");
- editor.focus({preventScroll:true});caret=editor.selectionStart;selEnd=editor.selectionEnd;
+ editorCursor(editor.selectionStart);
 }
-function insertLine(line){
- const current=editor.value;
- const pos=Math.min(caret,current.length);
- const left=current.slice(0,pos);
- const prefix=left.length&&!left.endsWith("\n")?"\n":"";
- insertText(prefix+line+"\n");
+function tokenText(t){
+ let pos=Math.min(caret,editor.value.length);
+ let before=editor.value.slice(0,pos);
+ const curr=before.slice(before.lastIndexOf("\n")+1);
+ if((t==="elif"||t==="else")&&curr.trim()===""&&curr.length>=4){
+  const start=pos-curr.length;
+  editor.setRangeText(curr.slice(0,-4),start,pos,"end");
+  editorCursor(editor.selectionStart);
+  return tokenText(t);
+ }
+ if(["=","==","!=",">","<",">=","<=","+","-","*","/"].includes(t)){
+  const left=before&&!/[\s(]$/.test(before)?" ":"";
+  insertText(left+t+" ");
+  return;
+ }
+ if(t==="("||t===")"||t===":"){insertText(t);return;}
+ const left=before&&/[A-Za-z0-9_'")\]]$/.test(before)?" ":"";
+ const right=t==="if"||t==="elif"?" ":"";
+ insertText(left+t+right);
+}
+function indentLine(direction){
+ if(success)return;
+ const pos=Math.max(0,Math.min(caret,editor.value.length));
+ const begin=editor.value.lastIndexOf("\n",pos-1)+1;
+ const spaces=(editor.value.slice(begin).match(/^ */)||[""])[0].length;
+ if(direction>0){
+  editor.setRangeText("    ",begin,begin,"end");
+  editorCursor(pos+4);
+  $("tokenInfo").textContent="Додано відступ із 4 пробілів.";
+ }else if(spaces>=4){
+  editor.setRangeText("",begin,begin+4,"end");
+  editorCursor(Math.max(begin,pos-4));
+  $("tokenInfo").textContent="Зменшено відступ на 4 пробіли.";
+ }else $("tokenInfo").textContent="Відступу в цьому рядку немає.";
+}
+function addNewline(){
+ const pos=Math.max(0,Math.min(caret,editor.value.length));
+ const line=editor.value.slice(editor.value.lastIndexOf("\n",pos-1)+1,pos);
+ const base=(line.match(/^ */)||[""])[0];
+ const colon=line.trimEnd().endsWith(":");
+ insertText("\n"+base+(colon?"    ":""));
+ $("tokenInfo").textContent=colon?"Додано новий рядок із відступом 4 пробіли.":"Новий рядок. Для else або elif зайвий відступ буде прибрано автоматично.";
+}
+function tokenGroups(m){
+ const keywords=new Set(["if","elif","else","print","int","input"]);
+ const commands=[],vars=[],numbers=[],strings=[],seen=new Set();
+ const pattern=/'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"|[A-Za-z_]\w*|\d+(?:\.\d+)?|==|!=|>=|<=|[=<>+\-*/():]/g;
+ for(const line of m.blocks)for(const token of line.match(pattern)||[]){
+  if(seen.has(token))continue;
+  seen.add(token);
+  if(/^['"]/.test(token))strings.push(token);
+  else if(keywords.has(token))commands.push(token);
+  else if(/^\d/.test(token))numbers.push(token);
+  else if(/^[A-Za-z_]/.test(token))vars.push(token);
+ }
+ const order=["if","elif","else","int","input","print"];
+ commands.sort((x,y)=>order.indexOf(x)-order.indexOf(y));
+ return [
+  {label:"🧠 Команди Python",kind:"command",values:commands},
+  {label:"🔤 Змінні та числа",kind:"variable",values:[...vars,...numbers]},
+  {label:"⚙️ Оператори та порівняння",kind:"operation",values:["=","==","<",">","<=",">=","!=","+","-"]},
+  {label:"⌨️ Дужки та двокрапка",kind:"symbol",values:["(",")",":"]},
+  {label:"💬 Текстові значення",kind:"literal",values:strings}
+ ];
 }
 function renderPad(){
  const root=$("padTokens");root.replaceChildren();
- const lab=document.createElement("div");lab.className="pad-label";lab.textContent="Натисни рядок, щоб додати його в редактор";root.append(lab);
- const row=document.createElement("div");row.className="pad-row";
- const options=missions[level].blocks.slice();
- // Зайві варіанти залишено, але рядки змішані для аналізу коду.
- options.forEach(line=>{
-  const b=document.createElement("button");b.type="button";b.className="token line";b.textContent=line;
-  b.addEventListener("pointerdown",e=>e.preventDefault());
-  b.addEventListener("click",()=>{insertLine(line);$("tokenInfo").textContent="Рядок додано. Перевір порядок, відступи й умови.";});
-  row.append(b);
- });
- root.append(row);$("tokenInfo").textContent="Усі потрібні рядки є на панелі, але є й помилкові варіанти.";
-}
-document.querySelectorAll("[data-tool]").forEach(b=>{
- b.addEventListener("pointerdown",e=>e.preventDefault());
- b.addEventListener("click",()=>{
- if(success)return;
- if(b.dataset.tool==="newline")insertText("\n");
- else{
-  const start=Math.min(caret,editor.value.length),end=Math.min(selEnd,editor.value.length);
-  editor.setRangeText("",start===end?Math.max(0,start-1):start,end,"end");
-  editor.focus({preventScroll:true});caret=editor.selectionStart;selEnd=editor.selectionEnd;
+ const guide=document.createElement("div");guide.className="pad-label";
+ guide.textContent="СКЛАДИ РЯДОК ПО ЧАСТИНАХ: energy → = → int → ( → input → ( → ) → )";
+ root.append(guide);
+ for(const group of tokenGroups(missions[level])){
+  if(!group.values.length)continue;
+  const box=document.createElement("div");box.className="pad-group";
+  const title=document.createElement("div");title.className="pad-label";title.textContent=group.label;
+  const row=document.createElement("div");row.className="pad-row";
+  for(const token of group.values){
+   const btn=document.createElement("button");btn.type="button";
+   btn.className="token "+group.kind;btn.textContent=token;
+   btn.setAttribute("aria-label","Вставити елемент: "+token);
+   btn.addEventListener("pointerdown",e=>e.preventDefault());
+   btn.addEventListener("click",()=>{
+    tokenText(token);
+    $("tokenInfo").textContent=token===":"?"Після двокрапки натисни «↵ Новий рядок».":(token==="elif"||token==="else"?"Відступ elif / else автоматично вирівнюється із if.":"Додано «"+token+"». Продовжуй збирати код!");
+   });
+   row.append(btn);
+  }
+  box.append(title,row);root.append(box);
  }
+ $("tokenInfo").textContent="Кожна кнопка — окремий елемент Python. Знаки й дужки додаються окремо, текстові повідомлення — як один рядковий літерал.";
+}
+document.querySelectorAll("[data-tool]").forEach(btn=>{
+ btn.addEventListener("pointerdown",e=>e.preventDefault());
+ btn.addEventListener("click",()=>{
+  if(success)return;
+  const t=btn.dataset.tool;
+  if(t==="newline"){addNewline();return;}
+  if(t==="indent"){indentLine(1);return;}
+  if(t==="dedent"){indentLine(-1);return;}
+  if(t==="space"){insertText(" ");return;}
+  const p=Math.min(caret,editor.value.length),end=Math.min(selEnd,editor.value.length);
+  editor.setRangeText("",p===end?Math.max(0,p-1):p,end,"end");
+  editorCursor(editor.selectionStart);
  });
 });
 function show(id){["intro","play","finish"].forEach(x=>$(x).hidden=x!==id)}
