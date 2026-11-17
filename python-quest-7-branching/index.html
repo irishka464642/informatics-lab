@@ -49,6 +49,141 @@ footer{text-align:center;color:#a0b6d0;font-size:12px;margin:18px 0}
 .tag.stage{color:#ffdb7b;background:#493f31}
 button:focus-visible,a:focus-visible{outline:3px solid #bdf3ff;outline-offset:2px}
 @media(max-width:480px){.token.line{font-size:12px;min-height:45px}}
+
+/* === CODE QUEST 7: повноцінні сюжетні ігрові сцени === */
+:root{color:#f2f9ff;background:#070e21}
+body{background:radial-gradient(ellipse at 48% -10%,#263e78 0,#0c142b 52%,#080d20 100%);}
+main{max-width:790px}
+h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
+.panel{background:linear-gradient(155deg,#152942,#101c34);border:1px solid #406284;box-shadow:0 14px 45px #0008}
+.primary{background:linear-gradient(115deg,#c2ff6f,#75d8a6);box-shadow:0 4px 0 #2d654b}
+.primary:not(:disabled):active{box-shadow:none;transform:translateY(3px)}
+#check{font-size:18px}
+#editor{min-height:145px;background:#07182d;border:2px solid #577fa4}
+#editor:disabled{opacity:.8}
+.try-panel{margin:14px 0;padding:14px;border:1px solid #416487;border-radius:15px;background:#0c2039}
+.try-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.try-head strong{font-size:15px;color:#f4dc92}
+.try-head span{color:#adcbeb;font-size:12px;max-width:290px}
+.try-choices{display:flex;gap:9px;flex-wrap:wrap;margin-top:11px}
+.try-option{border:1px solid #6d90b4;background:#1b3755;color:#d7edff;font-weight:850;min-height:43px;box-shadow:none;padding:8px 14px}
+.try-option[aria-pressed="true"]{border-color:#b6f885;color:#0d2719;background:#c7fa8a;box-shadow:0 0 20px #91ff7750}
+#gameScene{scroll-margin-top:12px}
+.game-scene{margin:16px 0 10px;position:relative;border:2px solid #608bb4;border-radius:20px;overflow:hidden;background:#091527;box-shadow:0 14px 35px #000b}
+.game-scene:focus{outline:0}
+.scene-hud{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:11px 14px;background:#0b1830;border-bottom:1px solid #335578;font-size:11px;font-weight:900;letter-spacing:.1em;color:#b3d8ff}
+.scene-live{color:#ffe296}
+.game-scene[data-phase="success"] .scene-live{color:#8fffbb}
+.game-scene[data-phase="low"] .scene-live,.game-scene[data-phase="overload"] .scene-live{color:#ffc074}
+.game-scene[data-phase="error"] .scene-live{color:#ff9c9c}
+.scene-world{height:260px;position:relative;overflow:hidden;isolation:isolate;background:radial-gradient(ellipse at 50% 10%,#345884,#102844 66%,#0b1b2f);border-bottom:1px solid #3e627f}
+.scene-world:before{content:"";position:absolute;inset:0;background-image:linear-gradient(#b2eeff16 1px,transparent 1px),linear-gradient(90deg,#b2eeff16 1px,transparent 1px);background-size:32px 32px;transform:perspective(220px) rotateX(0deg);opacity:.35}
+.scene-world:after{content:"✦";position:absolute;top:20px;right:10%;color:#a8eaff;font-size:18px;opacity:.7}
+.world-label{position:absolute;z-index:2;top:12px;left:12px;padding:6px 10px;border:1px solid #83e2ff5c;border-radius:8px;color:#b8eafa;background:#091c37bd;font:900 11px ui-monospace,monospace;letter-spacing:.07em}
+.scene-meter{display:flex;align-items:center;gap:12px;padding:11px 14px;background:#0d1c34}
+.scene-meter>span{min-width:72px;font:900 11px ui-monospace,monospace;color:#a6d3f1;letter-spacing:.08em}
+.scene-meter b{min-width:44px;text-align:right;font:900 15px ui-monospace,monospace;color:#d4f0ff}
+.scene-meter-track{flex:1;min-width:0;border:1px solid #3b5978;background:#061123;border-radius:10px;height:17px;overflow:hidden}
+#sceneMeterFill{height:100%;width:0%;background:linear-gradient(90deg,#3bcbeb,#caff6d);box-shadow:0 0 18px #73f7de;transition:width 1.2s ease}
+.game-scene[data-phase="low"] #sceneMeterFill{background:linear-gradient(90deg,#ff884d,#ffc364)}
+.game-scene[data-phase="overload"] #sceneMeterFill,.game-scene[data-phase="error"] #sceneMeterFill{background:linear-gradient(90deg,#ff5f57,#ffb17d)}
+.scene-message{display:flex;flex-direction:column;gap:4px;align-items:center;text-align:center;padding:16px 12px;background:linear-gradient(#132948,#0a1c34);min-height:92px}
+.scene-message strong{font-size:clamp(19px,5vw,26px);color:#f6fffb}
+.scene-message span{font-size:14px;color:#c5d7ee;max-width:580px}
+.game-scene[data-phase="success"] .scene-message strong{color:#bbff9f}
+.game-scene[data-phase="low"] .scene-message strong{color:#ffcf80}
+.game-scene[data-phase="overload"] .scene-message strong,.game-scene[data-phase="error"] .scene-message strong{color:#ff9b9b}
+.scene-console{background:#061326;color:#a7d4f2;font:12px/1.6 ui-monospace,Consolas,monospace;padding:9px 12px;border-top:1px solid #345578;overflow-wrap:anywhere}
+.scene-floor{position:absolute;bottom:0;left:0;right:0;height:34px;background:repeating-linear-gradient(105deg,#172d46 0 30px,#253a55 30px 32px)}
+.scene-focus{position:absolute;z-index:4;left:50%;top:49%;transform:translate(-50%,-50%);font-size:96px;filter:drop-shadow(0 8px 7px #0008);transition:transform .8s,filter .8s}
+.scene-glow{position:absolute;width:160px;height:160px;left:50%;top:45%;transform:translate(-50%,-50%);border-radius:50%;background:#49ccff2b;box-shadow:0 0 40px #70d4ff36;transition:all .7s}
+.game-scene[data-phase="running"] .scene-glow{animation:charge-pulse .55s ease-in-out infinite alternate}
+.game-scene[data-phase="success"] .scene-glow{background:#7dffad49;box-shadow:0 0 75px #a8ffbb}
+.game-scene[data-phase="low"] .scene-glow{background:#ffc36c48;box-shadow:0 0 45px #fda34b}
+.game-scene[data-phase="overload"] .scene-glow,.game-scene[data-phase="error"] .scene-glow{background:#ff60635a;box-shadow:0 0 70px #ff6262}
+.scene-result-icon{z-index:7;position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) scale(.1);font-size:100px;opacity:0;filter:drop-shadow(0 0 22px #ff7350);pointer-events:none}
+.game-scene[data-phase="overload"] .scene-result-icon{opacity:1;animation:burst .9s cubic-bezier(.2,.8,.2,1) forwards}
+.game-scene[data-phase="error"] .scene-world{animation:scene-shake .4s linear 2}
+.game-scene[data-phase="error"] .scene-result-icon{opacity:1;font-size:65px;transform:translate(-50%,-50%) scale(1);animation:none}
+.game-scene[data-phase="error"] .scene-result-icon:after{content:"⚠️"}
+.scene-result-icon:after{content:"💥"}
+/* Енергоміст: генератор, лава, прірва та міст */
+.lava-field{position:absolute;z-index:1;bottom:0;left:0;right:0;height:70px;background:repeating-linear-gradient(17deg,#a52620 0 20px,#f16b1f 20px 42px,#f5a733 42px 55px);animation:lava-drift 2.5s linear infinite}
+.river-trench{position:absolute;z-index:2;bottom:14px;left:26%;right:17%;height:88px;border-radius:45% 45% 4px 4px;background:radial-gradient(ellipse at 50% 75%,#ffeb83,#ff6b21 45%,#b82b25 70%,#4a112a);box-shadow:0 0 25px #ff5a246e}
+.rock-left,.rock-right{position:absolute;z-index:3;bottom:11px;height:72px;background:repeating-linear-gradient(150deg,#36485b 0 22px,#233248 22px 26px);border-top:11px solid #657287}
+.rock-left{left:0;width:29%}.rock-right{right:0;width:20%}
+.bridge-deck{position:absolute;z-index:5;left:28%;width:57%;bottom:71px;height:22px;transform:translateY(90px) rotate(-14deg);transform-origin:left center;border:3px solid #8bceea;border-radius:6px;background:repeating-linear-gradient(90deg,#8bdbf4 0 11px,#4578a0 11px 18px);box-shadow:0 0 16px #57d4fc;opacity:.3;transition:transform 1s cubic-bezier(.2,1.5,.5,1),opacity .45s}
+.game-scene[data-phase="success"][data-kind="bridge"] .bridge-deck{transform:translateY(0) rotate(0deg);opacity:1}
+.game-scene[data-phase="overload"][data-kind="bridge"] .bridge-deck{transform:translate(0,96px) rotate(33deg);opacity:.3}
+.power-tower{position:absolute;z-index:6;left:8%;bottom:70px;width:71px;height:125px;border:5px solid #91afc6;border-radius:15px 15px 5px 5px;background:linear-gradient(95deg,#15263d,#2b5179,#17253e);box-shadow:0 9px 0 #162037,0 0 13px #88b6d9}
+.power-tower:before{content:"⚡";position:absolute;z-index:4;top:31px;width:100%;text-align:center;font-size:32px;color:#d5ffff;filter:drop-shadow(0 0 9px #5ccdf2)}
+.power-tower:after{content:"";position:absolute;left:28px;top:-31px;width:7px;height:34px;background:#9bc8e8;box-shadow:0 -4px 0 5px #e1faff;border-radius:4px}
+.tower-charge{position:absolute;inset:auto 3px 3px;height:0;background:linear-gradient(0deg,#63e8ff,#a6ff74);box-shadow:0 0 14px #4dffdc;transition:height 1.1s;border-radius:3px}
+.game-scene[data-kind="bridge"][data-phase="low"] .tower-charge{height:28%}
+.game-scene[data-kind="bridge"][data-phase="success"] .tower-charge{height:73%}
+.game-scene[data-kind="bridge"][data-phase="overload"] .tower-charge{height:100%;background:#ff6666}
+.energy-cable{position:absolute;z-index:4;left:22%;right:15%;bottom:97px;border-top:4px dashed #79e8ff;opacity:.1}
+.game-scene[data-kind="bridge"][data-phase="success"] .energy-cable{opacity:1;animation:charge-pulse .45s infinite alternate}
+.game-scene[data-kind="bridge"][data-phase="overload"] .power-tower{animation:scene-shake .18s 4}
+/* Сховище та сейф */
+.machine-base{position:absolute;z-index:3;left:50%;bottom:33px;width:200px;height:23px;transform:translateX(-50%);border-radius:7px;background:#3b5d82;border-bottom:7px solid #142840;box-shadow:0 6px 13px #0007}
+.vault-body{position:absolute;z-index:4;width:165px;height:156px;left:50%;top:35px;transform:translateX(-50%);background:linear-gradient(140deg,#496d97,#162d4e 80%);border:12px solid #7397bc;border-radius:18px;box-shadow:0 13px 20px #0008}
+.vault-door{position:absolute;inset:5px;background:radial-gradient(circle,#425e82,#172c48);border:6px solid #8db6d7;border-radius:10px;transform-origin:6% center;transition:transform .9s ease,filter .5s}
+.vault-door:after{content:"⌾";position:absolute;left:38%;top:21%;font-size:68px;color:#bdeaff;text-shadow:0 0 10px #8edfff}
+.game-scene[data-phase="success"][data-kind="vault"] .vault-door{transform:perspective(300px) rotateY(-76deg);filter:brightness(1.3)}
+.game-scene[data-phase="success"][data-kind="chest"] .vault-door{transform:perspective(300px) rotateX(62deg);filter:brightness(1.2)}
+/* Магазин */
+.shop-counter{position:absolute;z-index:5;width:65%;max-width:290px;height:52px;left:50%;bottom:33px;transform:translateX(-50%);background:linear-gradient(#a36f47,#613b38);border:6px solid #d9aa6e;border-radius:8px}
+.shop-item{position:absolute;z-index:5;top:56px;left:50%;transform:translate(-50%,0) scale(.92);font-size:94px;filter:drop-shadow(0 0 15px #66e5ff);transition:transform 1s}
+.game-scene[data-kind="shop"][data-phase="success"] .shop-item{transform:translate(-50%,9px) scale(1.28);animation:loot-bob .8s ease-in-out 2}
+.game-scene[data-kind="shop"][data-phase="low"] .shop-item{filter:grayscale(1) brightness(.6)}
+/* Сканер загроз */
+.radar-ring{position:absolute;left:50%;top:47%;transform:translate(-50%,-50%);width:175px;height:175px;border:2px dashed #84ebff;border-radius:50%;box-shadow:0 0 21px #72d8f266}
+.radar-ring:after{content:"";position:absolute;inset:22px;border:2px solid #7eb0d7;border-radius:50%}
+.radar-needle{position:absolute;z-index:3;left:50%;top:47%;width:4px;height:85px;transform-origin:50% 0;transform:rotate(0);background:linear-gradient(#00ffdd,transparent);box-shadow:0 0 12px #2dedff;animation:radar-spin 2.5s linear infinite}
+.game-scene[data-kind="radar"][data-phase="overload"] .radar-ring{border-color:#ff5e5e;box-shadow:0 0 55px #ff3838}
+.game-scene[data-kind="radar"][data-phase="low"] .radar-ring{border-color:#ffcf74;box-shadow:0 0 40px #ffba53}
+/* Лабораторія */
+.lab-shelf{position:absolute;z-index:2;bottom:36px;left:12%;right:12%;height:18px;background:#5d7590;border-bottom:7px solid #344965}
+.lab-flask{position:absolute;z-index:3;left:50%;top:60px;width:108px;height:124px;transform:translateX(-50%);border:7px solid #94e3f8;border-top:0;border-radius:6px 6px 46px 46px;background:linear-gradient(0deg,#72dbf6 0 32%,#72dbf625 32%);box-shadow:0 0 35px #6bbbe163;transition:background .6s}
+.lab-flask:before{content:"";position:absolute;top:-42px;left:37px;width:22px;height:47px;border:6px solid #94e3f8;border-bottom:0}
+.lab-flask:after{content:"◯ ◦ ◯";position:absolute;bottom:25px;left:7px;font-size:20px;color:#dbffff;animation:loot-bob 1.2s linear infinite}
+.game-scene[data-kind="lab"][data-phase="success"] .lab-flask{background:linear-gradient(0deg,#8cff82 0 85%,#8cff821a 85%);box-shadow:0 0 55px #70ff84}
+.game-scene[data-kind="lab"][data-phase="low"] .lab-flask{background:linear-gradient(0deg,#ffb05a 0 37%,#ffb05a20 37%);box-shadow:0 0 35px #ffae50}
+/* Фінальні ворота */
+.portal-frame{position:absolute;left:50%;bottom:33px;width:205px;height:193px;transform:translateX(-50%);border:12px solid #80b4dc;border-bottom:0;border-radius:62px 62px 0 0;background:radial-gradient(ellipse at center,#42ffc96d,#10254e);box-shadow:0 0 25px #53e5e4}
+.portal-left,.portal-right{position:absolute;z-index:3;top:18px;bottom:0;width:50%;background:repeating-linear-gradient(0deg,#2a4e77 0 28px,#416d97 28px 32px);border:3px solid #89bbd6;transition:transform 1.1s ease}
+.portal-left{left:0;border-right:2px solid #c4e3f6}.portal-right{right:0;border-left:2px solid #c4e3f6}
+.game-scene[data-kind="gate"][data-phase="success"] .portal-left{transform:translateX(-94%)}
+.game-scene[data-kind="gate"][data-phase="success"] .portal-right{transform:translateX(94%)}
+.game-scene[data-kind="gate"][data-phase="success"] .portal-frame{box-shadow:0 0 60px #55ffd3}
+/* Загальні результати */
+.game-scene[data-phase="low"] .scene-focus{filter:grayscale(.65) brightness(.85) drop-shadow(0 6px 6px #0007)}
+.game-scene[data-phase="success"] .scene-focus{transform:translate(-50%,-58%) scale(1.25);filter:drop-shadow(0 0 20px #8cfdd1)}
+.game-scene[data-phase="overload"] .scene-focus{transform:translate(-50%,-50%) scale(.9);filter:drop-shadow(0 0 30px #ff6565)}
+.game-scene[data-phase="error"] .scene-focus{filter:grayscale(1) brightness(.7)}
+@keyframes charge-pulse{to{opacity:.5;filter:brightness(1.4)}}
+@keyframes lava-drift{to{background-position:72px 0}}
+@keyframes burst{0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}40%{opacity:1;transform:translate(-50%,-50%) scale(1.6)}100%{opacity:.65;transform:translate(-50%,-50%) scale(1.2)}}
+@keyframes scene-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-4px)}60%{transform:translateX(4px)}}
+@keyframes loot-bob{50%{transform:translate(-50%,-8px)}}
+@keyframes radar-spin{to{transform:rotate(360deg)}}
+@media (max-width:520px){
+ .scene-world{height:224px}
+ .power-tower{left:6%;width:54px;height:106px}
+ .power-tower:after{left:19px}
+ .bridge-deck{left:26%;width:60%}
+ .scene-hud{font-size:10px}
+ .scene-meter{gap:8px;padding:11px 9px}
+ .scene-message{padding:14px 9px}
+ .scene-message span{font-size:13px}
+ .try-option{flex:1;min-width:75px}
+}
+@media(prefers-reduced-motion:reduce){
+ .scene-world *,#sceneMeterFill{animation:none!important;transition:none!important}
+ .scene-result-icon{animation:none!important}
+}
+
 </style></head><body><main>
 <header><div><span class="tag">Інформатика · 7 клас · Python</span><h1>⚡ CODE QUEST 7</h1><small>Місії 10–16 · Епізод 2 · Python</small></div><div id="score" class="score" hidden>⭐ 0/7</div></header>
 <section id="intro" class="panel">
@@ -170,6 +305,127 @@ tests:[[[35,25],["10"]],[[25,25],["0"]],[[20,25],["Немає ресурсів"]
 ];
 let student=null,level=0,done=0,success=false,attempts=0,hints=0;
 const editor=$("editor");
+
+/* Візуальні об'єкти та симуляції, що відповідають кожній місії */
+const sceneCatalog={
+ 10:{kind:"bridge",name:"ЕНЕРГОМІСТ · СЕКТОР 01",meter:"ЗАРЯД",
+  world:'<div class="world-label">⚡ ЕНЕРГЕТИЧНИЙ РЕАКТОР</div><div class="lava-field"></div><div class="river-trench"></div><div class="rock-left"></div><div class="rock-right"></div><div class="bridge-deck"></div><div class="energy-cable"></div><div class="power-tower"><div class="tower-charge"></div></div><div class="scene-result-icon"></div>'},
+ 11:{kind:"chest",name:"СКЛАД · БОНУСНЕ СХОВИЩЕ",meter:"БОНУС",
+  world:'<div class="world-label">🪙 БОНУСНИЙ КОНТЕЙНЕР</div><div class="scene-glow"></div><div class="machine-base"></div><div class="vault-body"><div class="vault-door"></div></div><div class="scene-result-icon"></div><div class="scene-floor"></div>'},
+ 12:{kind:"vault",name:"СЕКРЕТНИЙ СЕЙФ · ДОСТУП",meter:"ДОСТУП",
+  world:'<div class="world-label">🔐 КОДОВЕ БЛОКУВАННЯ</div><div class="scene-glow"></div><div class="machine-base"></div><div class="vault-body"><div class="vault-door"></div></div><div class="scene-result-icon"></div><div class="scene-floor"></div>'},
+ 13:{kind:"shop",name:"МАГАЗИН · АПГРЕЙД",meter:"РЕСУРСИ",
+  world:'<div class="world-label">🛒 ТЕРМІНАЛ ПОКУПОК</div><div class="scene-glow"></div><div class="shop-item">🛡️</div><div class="shop-counter"></div><div class="scene-result-icon"></div><div class="scene-floor"></div>'},
+ 14:{kind:"radar",name:"РАДАР · РІВЕНЬ ЗАГРОЗИ",meter:"ЗАГРОЗА",
+  world:'<div class="world-label">📡 МОНІТОРИНГ БАЗИ</div><div class="radar-ring"></div><div class="radar-needle"></div><div class="scene-focus">📡</div><div class="scene-result-icon"></div><div class="scene-floor"></div>'},
+ 15:{kind:"lab",name:"НАУКОВА ЛАБОРАТОРІЯ · ГІПОТЕЗА",meter:"БЮДЖЕТ",
+  world:'<div class="world-label">🧪 КОМП’ЮТЕРНИЙ ЕКСПЕРИМЕНТ</div><div class="scene-glow"></div><div class="lab-shelf"></div><div class="lab-flask"></div><div class="scene-result-icon"></div><div class="scene-floor"></div>'},
+ 16:{kind:"gate",name:"ФІНАЛ · ВОРОТА БАЗИ",meter:"РЕСУРСИ",
+  world:'<div class="world-label">🚀 ФІНАЛЬНИЙ ШЛЮЗ</div><div class="scene-glow"></div><div class="portal-frame"><div class="portal-left"></div><div class="portal-right"></div></div><div class="scene-result-icon"></div><div class="scene-floor"></div>'}
+};
+const previewSets={10:[0,1,2],11:[0,1],12:[0,1],13:[0,1,2],14:[0,2,4],15:[0,1,2],16:[0,1,2]};
+let selectedTest=0,sceneTimer=null;
+function currentCase(){return missions[level].tests[selectedTest]}
+function initializeScene(m){
+ if(sceneTimer!==null){clearTimeout(sceneTimer);sceneTimer=null;}
+ const scene=$("gameScene"),config=sceneCatalog[m.id];
+ scene.dataset.kind=config.kind;scene.dataset.phase="idle";
+ $("sceneMission").textContent=config.name;$("sceneLive").textContent="● СИСТЕМА ОЧІКУЄ";
+ $("sceneWorld").innerHTML=config.world;
+ $("sceneMeterName").textContent=config.meter;
+ $("sceneMeterFill").style.width="0%";$("sceneMeterValue").textContent="0%";
+ $("sceneHeadline").textContent="Система очікує запуску";
+ $("sceneDescription").textContent="Запусти код — на сцені оживе результат програми.";
+ $("sceneConsole").textContent="Вхід: —  |  Виведення: —";
+ const picker=$("tryChoices");picker.replaceChildren();
+ selectedTest=m.id===10?1:(previewSets[m.id]||[0])[0];
+ for(const index of previewSets[m.id]||[0,1,2]){
+   const inputs=m.tests[index][0];
+   const b=document.createElement("button");b.type="button";b.className="try-option";
+   b.setAttribute("aria-pressed",String(index===selectedTest));
+   const prefix=m.id===10?(inputs[0]<15?"🪫 ":inputs[0]>25?"💥 ":"⚡ "):m.id===14?"📡 ":"🎲 ";
+   b.textContent=prefix+inputs.join(" / ");
+   b.title="Виконати програму з вхідними значеннями "+inputs.join(", ");
+   b.addEventListener("click",()=>{
+     selectedTest=index;
+     picker.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
+     $("sceneDescription").textContent="Обрано дані: "+inputs.join(", ")+". Натисни «Запустити код», щоб побачити наслідок.";
+   });
+   picker.append(b);
+ }
+}
+function sceneOutcome(id,inputs){
+ const n=Number(inputs[0]);
+ if(id===10)return n<15?"low":n>25?"overload":"success";
+ if(id===11)return n>20?"success":"low";
+ if(id===12)return n===42?"success":"low";
+ if(id===13)return n>=30?"success":"low";
+ if(id===14)return n>=80?"overload":n>=40?"low":"success";
+ if(id===15)return n>=25?"success":"low";
+ if(id===16)return n>=Number(inputs[1])?"success":"low";
+ return "success";
+}
+function sceneStory(m,phase,inputs){
+ const n=inputs[0];
+ const stories={
+ 10:{
+  low:["🪫 Заряду замало!","Генератор отримав лише "+n+" одиниць. Міст залишається над лавою. Спробуй заряд 18."],
+  success:["🌉 МІСТ ВІДКРИТО!","Генератор працює стабільно: "+n+" одиниць. Платформа з'єднує береги."],
+  overload:["💥 МІСТ ВИБУХНУВ!","Заряд "+n+" перевищив безпечні 25 одиниць. Система правильно повідомила про перевантаження."]
+ },
+ 11:{low:["📦 Контейнер закрито","За "+n+" монет бонус не нараховано. Перевірка завершена правильно."],success:["🎁 КОНТЕЙНЕР ВІДКРИТО!","За "+n+" монет система видала бонус."]},
+ 12:{low:["🔒 Сейф заблоковано","Код "+n+" не збігається із секретним. Система не відкриває замок."],success:["🔓 СЕЙФ ВІДКРИТО!","Код 42 збігся. Доступ до карти отримано."]},
+ 13:{low:["🪙 Замало кредитів","На рахунку "+n+" кредитів — апгрейд ціною 30 недоступний."],success:["🛡️ АПГРЕЙД ОТРИМАНО!","У магазині успішна покупка. Розрахунок показав решту."]},
+ 14:{low:["🟡 ЖОВТА ТРИВОГА","Рівень "+n+": сканер виявив небезпеку й показав попередження."],success:["🟢 БАЗА В БЕЗПЕЦІ","Рівень загрози "+n+". Сканер працює, загрози немає."],overload:["🔴 ЧЕРВОНА ТРИВОГА!","Рівень "+n+": сирена ввімкнулася. Потрібно укріпити базу."]},
+ 15:{low:["🧪 ГІПОТЕЗУ СПРОСТОВАНО","24 кредити не покривають вартість 25. Експеримент допоміг перевірити припущення."],success:["✅ ГІПОТЕЗУ ПІДТВЕРДЖЕНО","За "+n+" кредитів модуль ціною 25 можна придбати."]},
+ 16:{low:["🚧 ВОРОТА ЗАЧИНЕНІ","На рахунку "+n+" кредитів, а ключ коштує "+inputs[1]+"."],success:["🏆 ВОРОТА ВІДЧИНЕНО!","Ключ за "+inputs[1]+" кредитів оплачено. Фінальна брама відкрилася!"]}
+ };
+ return stories[m.id][phase]||["✅ Програму виконано","Система правильно обробила введені дані."];
+}
+function launchScene(codeOK){
+ const m=missions[level],entry=currentCase(),inputs=entry[0],scene=$("gameScene");
+ if(sceneTimer!==null)clearTimeout(sceneTimer);
+ scene.dataset.phase="running";
+ $("sceneLive").textContent="◉ ВИКОНАННЯ ПРОГРАМИ";
+ $("sceneHeadline").textContent="⚙️ Система обробляє код…";
+ $("sceneDescription").textContent="Перевіряємо алгоритм та заряджаємо механізм.";
+ $("sceneConsole").textContent="Вхід: "+inputs.join(", ")+"  |  Виконання…";
+ $("sceneMeterFill").style.width="0%";
+ $("sceneMeterValue").textContent="0%";
+ const reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+ scene.scrollIntoView({behavior:reduced?"auto":"smooth",block:"start"});
+ const delay=reduced?0:850;
+ sceneTimer=setTimeout(()=>{
+  const phase=codeOK?sceneOutcome(m.id,inputs):"error";
+  scene.dataset.phase=phase;
+  let output=[];
+  if(codeOK){try{output=execute(parsePython(editor.value),inputs)}catch(e){output=["Помилка виконання"]}}
+  let progress=0;
+  if(codeOK){
+   progress=m.id===10?Math.min(100,Math.round(Number(inputs[0])/30*100)):
+            m.id===14?Math.min(100,Number(inputs[0])):
+            m.id===15?Math.min(100,Math.round(Number(inputs[0])/30*100)):
+            m.id===16?Math.min(100,Math.round(Number(inputs[0])/Math.max(1,Number(inputs[1]))*100)):
+            phase==="success"?100:25;
+  }
+  $("sceneMeterFill").style.width=progress+"%";
+  $("sceneMeterValue").textContent=progress+"%";
+  $("sceneLive").textContent=codeOK?"● PYTHON-КОД ВИКОНАНО":"● ПОМИЛКА КОДУ";
+  $("sceneConsole").textContent=codeOK?
+    "Вхід: "+inputs.join(", ")+"  |  Виведення: "+output.join(" | "):
+    "Вхід: "+inputs.join(", ")+"  |  Код не пройшов перевірку";
+  if(!codeOK){
+    $("sceneHeadline").textContent="❌ СИСТЕМА НЕ ЗАПУСТИЛАСЯ";
+    $("sceneDescription").textContent="У коді є помилка. Генератор не заряджається! Прокрути нижче, прочитай підказку та спробуй ще раз.";
+  }else{
+    const story=sceneStory(m,phase,inputs);
+    $("sceneHeadline").textContent=story[0];
+    $("sceneDescription").textContent=story[1]+" Код пройшов усі навчальні тести. Можеш випробувати інші дані.";
+  }
+  sceneTimer=null;
+ },delay);
+}
+
 let caret=0,selEnd=0;
 ["click","keyup","input","select"].forEach(event=>editor.addEventListener(event,()=>{caret=editor.selectionStart;selEnd=editor.selectionEnd}));
 function insertText(s){
@@ -218,8 +474,8 @@ function draw(){
  $("skill").textContent=m.skill;$("title").textContent=m.title;$("story").textContent=m.story;$("task").textContent=m.task;
  editor.value="";caret=selEnd=0;renderPad();
  $("hint").textContent=m.hint;$("help").open=false;$("help").hidden=!!m.advanced;
- $("goal").textContent=m.goal;$("goal").classList.remove("clear");$("hero").classList.remove("step");
- $("check").disabled=false;$("feedback").className="feedback";$("feedback").textContent="Склади код і запусти навчальні тести.";
+ initializeScene(m);
+ $("check").disabled=false;$("check").textContent="▶ Запустити код ⚡";editor.disabled=false;$("restore").disabled=false;$("feedback").className="feedback";$("feedback").textContent="Склади код і запусти навчальні тести.";
  $("tests").hidden=true;$("tests").textContent="";$("nextArea").hidden=true;
  $("codepad").querySelectorAll("button").forEach(b=>b.disabled=false);
  $("map").innerHTML=missions.map((mm,i)=>'<span class="node '+(i<done?"done":i===level?"active":"")+'">'+(i<done?"✓":mm.id)+'</span>').join("");
@@ -349,12 +605,15 @@ $("studentForm").addEventListener("submit",e=>{
 });
 $("help").addEventListener("toggle",()=>{if($("help").open&&!success)hints++});
 $("check").addEventListener("click",()=>{
- if(success)return;
- attempts++;const ok=runCheck();
+ attempts++;
+ const ok=runCheck();
+ launchScene(ok);
  if(!ok){$("help").hidden=false;return;}
+ if(success)return; // повторні симуляції потрібні, щоб дослідити інші вхідні дані
  success=true;done++;
  $("codepad").querySelectorAll("button").forEach(b=>b.disabled=true);
- $("goal").classList.add("clear");$("hero").classList.add("step");$("check").disabled=true;
+ editor.disabled=true;$("restore").disabled=true;
+ $("check").textContent="▶ Запустити з іншими даними";
  $("nextArea").hidden=false;$("next").textContent=level===missions.length-1?"Завершити гру 🏆":"Наступна місія →";
  $("score").textContent="⭐ "+done+"/"+missions.length;
  $("bar").style.width=(done/missions.length*100)+"%";
