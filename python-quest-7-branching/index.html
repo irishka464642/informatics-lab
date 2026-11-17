@@ -359,15 +359,7 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
   <div><span class="section-eyebrow">КРОК 2 · СКЛАДИ ПРОГРАМУ</span><h3 id="editorLabel">⌨️ РЕДАКТОР КОДУ</h3></div>
  </div>
  <textarea id="editor" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" aria-label="Редактор Python" placeholder="Тут буде твоя програма Python. Складай її кнопками нижче або вводь вручну."></textarea>
- <p class="editor-note">🧩 Складай код за допомогою кнопок нижче або вводь текст самостійно.</p>
-</section>
-<section class="try-panel" id="tryPanel" aria-labelledby="testLabel">
- <div class="section-heading"><span class="section-number test-number" aria-hidden="true">3</span>
-  <div><span class="section-eyebrow">КРОК 3 · ОБЕРИ ЧИСЛА ДЛЯ ЗАПУСКУ</span><h3 id="testLabel">🧪 ТЕСТОВІ ДАНІ</h3></div>
- </div>
- <p class="test-instruction">Вибери число або набір чисел, з якими хочеш <strong>побачити роботу програми</strong> на ігровій сцені.</p>
- <div class="try-choices" id="tryChoices" role="group" aria-label="Тестові значення"></div>
- <p class="test-note">🔍 Правильність коду перевіряється на <strong>всіх</strong> тестах. Обрана кнопка визначає, який результат ти побачиш у грі.</p>
+ <p class="editor-note">🧩 Обирай готові рядки або окремі елементи Python одразу під редактором.</p>
 </section>
 <div class="codepad" id="codepad" aria-label="Кнопки для складання коду">
 <div class="codepad-head"><strong id="padMode">🎮 Складай рядки коду</strong><small id="padHint">Або вводь вручну</small></div>
@@ -380,6 +372,15 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
 <button type="button" class="token utility" data-tool="backspace">⌫ Стерти</button>
 </div>
 <div id="tokenInfo" class="token-info" aria-live="polite">Перші 5 місій — готові рядки. Наступні 5 — окремі команди та символи.</div></div>
+
+<section class="try-panel" id="tryPanel" aria-labelledby="testLabel">
+ <div class="section-heading"><span class="section-number test-number" aria-hidden="true">3</span>
+  <div><span class="section-eyebrow">КРОК 3 · ОБЕРИ ЧИСЛА ДЛЯ ЗАПУСКУ</span><h3 id="testLabel">🧪 ТЕСТОВІ ДАНІ</h3></div>
+ </div>
+ <p class="test-instruction">Вибери число або набір чисел, з якими хочеш <strong>побачити роботу програми</strong> на ігровій сцені.</p>
+ <div class="try-choices" id="tryChoices" role="group" aria-label="Тестові значення"></div>
+ <p class="test-note">🔍 Правильність коду перевіряється на <strong>всіх</strong> тестах. Обрана кнопка визначає, який результат ти побачиш у грі.</p>
+</section>
 <details id="help"><summary>💡 Підказка</summary><p id="hint"></p></details>
 <div class="actions"><button class="primary" id="check">▶ Запустити код ⚡</button><button class="secondary" id="restore">↺ Очистити</button></div>
 <section id="gameScene" class="game-scene" data-phase="idle" data-kind="bridge" tabindex="-1" aria-label="Ігрова сцена: результат роботи коду">
