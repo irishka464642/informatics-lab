@@ -241,6 +241,55 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
 .teacher-solution pre{margin:8px 0 0;color:#d5ffe3}
 @media(max-width:540px){.teacher-missions{grid-template-columns:1fr}.teacher-tools-row button{min-width:85px}.teacher-tools{padding:10px}}
 
+
+/* Чітка послідовність дій на кожному рівні: завдання → редактор → тести */
+.mission-story{padding:10px 12px 12px;border-left:3px solid #4c8ebd;color:#d0e1f4;background:#0c2039;border-radius:0 10px 10px 0}
+.section-heading{display:flex;align-items:center;gap:12px;min-width:0}
+.section-heading h3{font-size:clamp(18px,4.4vw,23px);margin:1px 0 0;font-weight:950;letter-spacing:.014em;line-height:1.24}
+.section-eyebrow{font-size:10px;letter-spacing:.105em;font-weight:950;display:block}
+.section-number{flex:0 0 40px;width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:21px;font-weight:950}
+.task-card{position:relative;margin:20px 0 17px;border:2px solid #edbc53;border-radius:18px;padding:17px 16px 14px;background:linear-gradient(145deg,#48321e 0%,#2b292f 40%,#192b3e 100%);box-shadow:0 0 0 3px #ecb95414,0 12px 32px #070e20a8;overflow:hidden}
+.task-card:before{content:"";position:absolute;top:0;right:0;width:160px;height:150px;background:radial-gradient(ellipse at top right,#ffcf6432,transparent 70%);pointer-events:none}
+.task-card .section-heading{position:relative;z-index:1;color:#fff3d1}
+.task-card .section-eyebrow{color:#ffe09a}
+.task-number{background:linear-gradient(145deg,#ffe098,#e6ae48);color:#432309;box-shadow:0 3px 0 #966525}
+.task-symbol{margin-left:auto;font-size:30px;filter:drop-shadow(0 0 8px #ecc05d77)}
+.task-body{position:relative;z-index:1;margin-top:13px;border:1px solid #c4a16a85;border-radius:12px;background:#fff8e8;padding:14px 15px}
+.task-body p{font:700 clamp(16px,4vw,19px)/1.65 system-ui,-apple-system,"Segoe UI",sans-serif;color:#253145;margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.task-footer{position:relative;z-index:1;margin-top:11px;font-size:13px;line-height:1.45;color:#f2dfb3}
+.task-footer b{color:#fff1c7}
+.editor-card{margin:17px 0 0;padding:15px 14px 12px;background:linear-gradient(155deg,#102e42,#0d2136);border:2px solid #4faec5;border-radius:18px;box-shadow:0 0 0 3px #5ed8ee0d}
+.editor-card .section-heading{margin-bottom:13px;color:#d6f9ff}
+.editor-card .section-eyebrow{color:#98d2e6}
+.editor-number{background:#57c0d7;color:#082d38;box-shadow:0 3px 0 #257b8d}
+.editor-card textarea{display:block;margin:0;width:100%;min-height:145px;border:2px solid #5eafc3;background:#061426;scroll-margin-top:15px}
+.editor-card textarea:focus{border-color:#e7dc8f;box-shadow:0 0 0 3px #e6d76c24}
+.editor-note{font-size:12px;color:#c0dff1;margin:10px 0 0}
+.try-panel{margin:14px 0 15px;padding:15px 14px;background:linear-gradient(140deg,#302849,#1b2844 65%,#192e43);border:2px solid #b192e9;border-radius:18px;box-shadow:0 0 0 3px #b192e911,0 6px 24px #04092050}
+.try-panel .section-heading{color:#f2e4ff}
+.try-panel .section-eyebrow{color:#cdb6fe}
+.test-number{background:#bd9ef5;color:#241141;box-shadow:0 3px 0 #7a5aae}
+.test-instruction{font-size:14px;line-height:1.48;color:#e0d8f4;margin:12px 0 10px}
+.test-instruction strong{color:#fff}
+.try-panel .try-choices{margin:11px 0;display:flex;flex-wrap:wrap;gap:9px}
+.try-panel .try-option{background:#241b42;color:#eee7ff;border:2px solid #a68add;box-shadow:0 3px 0 #130e29;border-radius:13px;min-height:47px;font-size:15px}
+.try-panel .try-option[aria-pressed="true"]{background:#d5b7ff;color:#25143b;border-color:#f6ddff;box-shadow:0 3px 0 #815bb0,0 0 20px #c78bff88}
+.try-panel .try-option:focus-visible{outline:3px solid #ffdc8d;outline-offset:3px}
+.test-note{padding:10px 11px;margin:11px 0 0;background:#130f2db8;color:#e4d9ff;font-size:12px;line-height:1.5;border:1px solid #7256a06e;border-radius:10px}
+.test-note strong{color:#ffffff}
+#codepad{margin-top:16px}
+@media(max-width:480px){
+ .task-card,.editor-card,.try-panel{border-radius:15px;padding:13px 11px}
+ .section-heading{gap:9px}
+ .section-number{flex-basis:36px;width:36px;height:36px;font-size:19px;border-radius:10px}
+ .task-body{padding:12px}
+ .task-body p{font-size:16px;line-height:1.55}
+ .task-symbol{font-size:24px}
+ .try-panel .try-option{flex:1;min-width:76px}
+ .test-instruction{font-size:13px}
+ .task-footer{font-size:12px}
+}
+
 </style></head><body><main>
 <header><div><span class="tag">Інформатика · 7 клас · Python</span><h1>⚡ CODE QUEST 7</h1><small>Місії 10–19 · Епізод 2 · Python</small></div><div id="score" class="score" hidden>⭐ 0/10</div></header>
 <section id="intro" class="panel">
@@ -296,13 +345,30 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
 
 <div class="panel">
 <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><span class="tag" id="missionNumber"></span><span class="tag" id="skill"></span></div>
-<h2 id="title"></h2><p id="story"></p>
-<strong>⌨️ Створи Python-код за умовою:</strong><pre id="task"></pre>
-<div class="try-panel" id="tryPanel">
- <div class="try-head"><strong>🎛️ Обери тестові дані</strong><span>Зміни їх після першого запуску й досліди результат</span></div>
+<h2 id="title"></h2><p id="story" class="mission-story"></p>
+<section class="task-card" aria-labelledby="taskLabel">
+ <div class="section-heading"><span class="section-number task-number" aria-hidden="true">1</span>
+  <div><span class="section-eyebrow">КРОК 1 · ПРОЧИТАЙ УМОВУ</span><h3 id="taskLabel">📜 ЗАВДАННЯ</h3></div>
+  <span class="task-symbol" aria-hidden="true">🎯</span>
+ </div>
+ <div class="task-body"><p id="task"></p></div>
+ <div class="task-footer">💡 Уважно прочитай, <b>що потрібно ввести</b> та <b>що має вивести програма</b>.</div>
+</section>
+<section class="editor-card" aria-labelledby="editorLabel">
+ <div class="section-heading"><span class="section-number editor-number" aria-hidden="true">2</span>
+  <div><span class="section-eyebrow">КРОК 2 · СКЛАДИ ПРОГРАМУ</span><h3 id="editorLabel">⌨️ РЕДАКТОР КОДУ</h3></div>
+ </div>
+ <textarea id="editor" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" aria-label="Редактор Python" placeholder="Тут буде твоя програма Python. Складай її кнопками нижче або вводь вручну."></textarea>
+ <p class="editor-note">🧩 Складай код за допомогою кнопок нижче або вводь текст самостійно.</p>
+</section>
+<section class="try-panel" id="tryPanel" aria-labelledby="testLabel">
+ <div class="section-heading"><span class="section-number test-number" aria-hidden="true">3</span>
+  <div><span class="section-eyebrow">КРОК 3 · ОБЕРИ ЧИСЛА ДЛЯ ЗАПУСКУ</span><h3 id="testLabel">🧪 ТЕСТОВІ ДАНІ</h3></div>
+ </div>
+ <p class="test-instruction">Вибери число або набір чисел, з якими хочеш <strong>побачити роботу програми</strong> на ігровій сцені.</p>
  <div class="try-choices" id="tryChoices" role="group" aria-label="Тестові значення"></div>
-</div>
-<textarea id="editor" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" aria-label="Редактор Python" placeholder="Тут поки порожньо. Складай програму рядками або вводь вручну."></textarea>
+ <p class="test-note">🔍 Правильність коду перевіряється на <strong>всіх</strong> тестах. Обрана кнопка визначає, який результат ти побачиш у грі.</p>
+</section>
 <div class="codepad" id="codepad" aria-label="Кнопки для складання коду">
 <div class="codepad-head"><strong id="padMode">🎮 Складай рядки коду</strong><small id="padHint">Або вводь вручну</small></div>
 <div id="padTokens"></div>
