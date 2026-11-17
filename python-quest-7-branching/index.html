@@ -392,13 +392,15 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
 </section>
 <div class="feedback" id="feedback" role="status" aria-live="polite">Уведи код і перевір його.</div><div id="tests" class="tests" hidden></div>
 <div class="actions" id="nextArea" hidden><button class="primary" id="next">Далі →</button></div>
+<div class="feedback" id="checkpointStatus" role="status" aria-live="polite" hidden></div>
+<div class="actions" id="checkpointActions" hidden><button type="button" class="secondary" id="retryCheckpoint">↻ Повторити збереження результатів</button></div>
 </div>
 </section>
 <section id="finish" class="panel" hidden style="text-align:center">
 <div class="character">🏆 ⚡</div><h2>Усі місії виконано!</h2>
 <div class="student-summary" id="studentSummary"></div>
 <p id="result"></p><p>Ти навчився перевіряти умови, створювати <code>if</code>, <code>else</code>, <code>elif</code> і проводити комп’ютерні експерименти.</p>
-<p class="muted">Звіт про пройдені місії, спроби та перевірені тестові дані надсилається до шкільного журналу після завершення гри. Якщо немає Інтернету, скопіюй результат або зроби скриншот.</p>
+<p class="muted">Проміжні результати надсилаються після 5-го рівня та після кожного наступного. Останній звіт містить усі пройдені місії й тестові дані. Якщо немає Інтернету, повтори надсилання або скопіюй результат.</p>
 <div id="sendStatus" class="feedback" role="status" aria-live="polite">Готуємо звіт для шкільної Google Таблиці…</div>
 <div class="actions"><button type="button" class="secondary" id="retrySend" hidden>↻ Повторити надсилання звіту</button></div>
 <div class="actions"><button class="primary" id="copy">📋 Скопіювати результат</button><button class="secondary" id="again">↺ Новий квест</button></div>
@@ -471,8 +473,10 @@ tests:[[[35,25],["10"]],[[25,25],["0"]],[[20,25],["Немає ресурсів"]
 ];
 let student=null,level=0,done=0,success=false,attempts=0,hints=0,teacherMode=false;
 const RESULTS_WEB_APP="https://script.google.com/macros/s/AKfycbwt-DCRbrBcXjx8hE3g1bT8f0HtN-3Y8CKvfabe8s7jVKVTHeYhdTx2MYFHF1spHfaqMw/exec";
-const GAME_VERSION="codequest7-episode2-10missions-tracking-v1";
-let gameStartedAt=0,levelStartedAt=0,submissionId="",sessionLevelStats=[],sessionRuns=[],reportSending=false;
+const GAME_VERSION="codequest7-episode2-10missions-checkpoint-v2";
+let gameStartedAt=0,levelStartedAt=0,submissionId="",sessionLevelStats=[],sessionRuns=[];
+let checkpointReports=new Map(),checkpointQueue=[],checkpointUploadBusy=false,lastCheckpointStage=0;
+
 function elapsedSeconds(since){return since?Math.max(0,Math.round((Date.now()-since)/1000)):0}
 function newStats(){
  return missions.map((m,i)=>({
@@ -503,8 +507,9 @@ function takeRunSnapshot(ok){
   secondsFromStart:elapsedSeconds(gameStartedAt)
  });
 }
-function makeReport(){
- const levels=sessionLevelStats.map(m=>({
+function makeReport(stage=done){
+ // Знімок має бути незмінним: пізніші запуски не змінюють уже сформований звіт.
+ const levels=sessionLevelStats.slice(0,stage).map(m=>({
   level:m.level,missionId:m.missionId,title:m.title,completed:m.completed,
   checks:m.checks,failed:m.failed,hints:m.hints,
   distinctDatasets:m.distinctDatasets,testRuns:m.testRuns,
@@ -512,45 +517,91 @@ function makeReport(){
   durationSeconds:m.durationSeconds,
   usedInputs:m.usedInputs.map(a=>a.slice())
  }));
- const sum=(key)=>levels.reduce((n,x)=>n+Number(x[key]||0),0);
+ const sum=key=>levels.reduce((n,x)=>n+Number(x[key]||0),0);
+ const checkpoint=String(stage).padStart(2,"0");
  return {
-  submissionId,
-  version:GAME_VERSION,
+  // Кожен рубіж має власний ID. Apps Script уже відкидає повторення такого ID.
+  submissionId:submissionId+"-L"+checkpoint,
+  version:GAME_VERSION+"-L"+checkpoint,
   student:{klass:student.klass,group:student.group,surname:student.surname,first:student.first},
   summary:{
-   completed:done,total:missions.length,checks:attempts,
+   completed:stage,total:missions.length,checks:sum("checks"),
    failedChecks:sum("failed"),hints:sum("hints"),
    durationMinutes:Math.round(elapsedSeconds(gameStartedAt)/6)/10,
    distinctDatasets:sum("distinctDatasets"),testRuns:sum("testRuns")
   },
-  levels,runs:sessionRuns.slice()
+  // Повні знімки потрібні, щоб останній збережений рубіж можна було аналізувати
+  // навіть тоді, коли збереження одного з попередніх рубежів не вдалося.
+  levels,runs:sessionRuns.filter(r=>r.level<=stage).map(r=>({
+   level:r.level,missionId:r.missionId,runIndex:r.runIndex,
+   inputs:r.inputs.slice(),codeValid:r.codeValid,executed:r.executed,
+   output:Array.isArray(r.output)?r.output.slice():r.output,
+   scenario:r.scenario,secondsFromStart:r.secondsFromStart
+  }))
  };
 }
-async function sendStudentReport(){
- if(teacherMode||!student||!submissionId||reportSending)return;
- reportSending=true;
- const status=$("sendStatus"),retry=$("retrySend");
- retry.disabled=true;retry.hidden=true;
- status.className="feedback";
- status.textContent="⏳ Надсилаємо результати в шкільну Google Таблицю…";
- try{
-  const payload=JSON.stringify(makeReport());
-  await fetch(RESULTS_WEB_APP,{
-   method:"POST",mode:"no-cors",cache:"no-store",redirect:"follow",
-   headers:{"Content-Type":"text/plain;charset=UTF-8"},
-   body:payload
-  });
-  // Apps Script не дозволяє читати підтвердження з браузера у режимі no-cors.
-  status.className="feedback ok";
-  status.textContent="📤 Запит на збереження надіслано. Через обмеження Google неможливо підтвердити запис із браузера. Учитель може перевірити його в таблиці.";
- }catch(err){
-  status.className="feedback bad";
-  status.textContent="⚠️ Не вдалося відправити запит. Перевір Інтернет і натисни «Повторити надсилання» або скопіюй результат.";
- }
- reportSending=false;
- retry.disabled=false;retry.hidden=false;
+function updateCheckpointFeedback(stage,state){
+ if(stage!==lastCheckpointStage)return;
+ const msg={
+  sending:"⏳ Зберігаємо прогрес після "+stage+" рівнів…",
+  sent:"📤 Прогрес "+stage+"/10: запит на збереження надіслано. Остаточне підтвердження можна побачити тільки в журналі вчителя.",
+  failed:"⚠️ Прогрес "+stage+"/10 не вдалося надіслати. Перевір Інтернет і натисни «Повторити збереження».",
+  pending:"⏳ Прогрес "+stage+"/10 поставлено в чергу на збереження."
+ };
+ const text=msg[state]||msg.pending;
+ const progress=$("checkpointStatus"),finish=$("sendStatus");
+ progress.hidden=false;progress.className="feedback "+(state==="failed"?"bad":state==="sent"?"ok":"");
+ progress.textContent=text;
+ finish.className=progress.className;
+ finish.textContent=text;
+ $("checkpointActions").hidden=false;
+ $("retryCheckpoint").disabled=state==="sending";
+ $("retrySend").hidden=false;
+ $("retrySend").disabled=state==="sending";
 }
-$("retrySend").addEventListener("click",sendStudentReport);
+function queueCheckpoint(stage,retry=false){
+ if(teacherMode||!student||!submissionId||stage<5||stage>missions.length)return;
+ if(!retry&&checkpointReports.has(stage))return;
+ if(!checkpointReports.has(stage))checkpointReports.set(stage,makeReport(stage));
+ lastCheckpointStage=Math.max(lastCheckpointStage,stage);
+ if(!checkpointQueue.some(x=>x.stage===stage)){
+  checkpointQueue.push({stage,report:checkpointReports.get(stage)});
+ }
+ updateCheckpointFeedback(stage,"pending");
+ drainCheckpointQueue(); // умисно не блокуємо перехід до наступної місії
+}
+async function drainCheckpointQueue(){
+ if(checkpointUploadBusy)return;
+ checkpointUploadBusy=true;
+ try{
+  while(checkpointQueue.length){
+   const item=checkpointQueue.shift();
+   updateCheckpointFeedback(item.stage,"sending");
+   try{
+    await fetch(RESULTS_WEB_APP,{
+     method:"POST",mode:"no-cors",cache:"no-store",redirect:"follow",
+     headers:{"Content-Type":"text/plain;charset=UTF-8"},
+     body:JSON.stringify(item.report),
+     keepalive:true
+    });
+    // У режимі no-cors Google Apps Script не дає браузеру прочитати
+    // відповідь сервера. "Надіслано" тут не означає "запис підтверджено".
+    updateCheckpointFeedback(item.stage,"sent");
+   }catch(err){
+    updateCheckpointFeedback(item.stage,"failed");
+   }
+  }
+ }finally{
+  checkpointUploadBusy=false;
+ }
+}
+function sendStudentReport(){queueCheckpoint(10,true);}
+$("retryCheckpoint").addEventListener("click",()=>{
+ if(lastCheckpointStage>=5)queueCheckpoint(lastCheckpointStage,true);
+});
+$("retrySend").addEventListener("click",()=>{
+ if(lastCheckpointStage>=5)queueCheckpoint(lastCheckpointStage,true);
+});
 const editor=$("editor");
 
 /* Візуальні об'єкти та симуляції, що відповідають кожній місії */
@@ -1065,6 +1116,10 @@ $("studentForm").addEventListener("submit",e=>{
  gameStartedAt=Date.now();levelStartedAt=0;
  submissionId="cq7-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,11);
  sessionLevelStats=newStats();sessionRuns=[];
+ checkpointReports=new Map();checkpointQueue=[];checkpointUploadBusy=false;lastCheckpointStage=0;
+ $("checkpointStatus").hidden=true;$("checkpointActions").hidden=true;
+ $("sendStatus").textContent="Очікуємо збереження фінального звіту…";
+ $("retrySend").hidden=true;
  show("play");$("score").hidden=false;draw();
 });
 $("help").addEventListener("toggle",()=>{
@@ -1103,11 +1158,11 @@ $("restore").addEventListener("click",()=>{
 $("next").addEventListener("click",()=>{
  if(!success)return;
  closeLevelTimer();
+ if(done>=5)queueCheckpoint(done);
  if(level===missions.length-1){
   $("studentSummary").textContent=student.klass+" · група "+student.group+" · "+student.surname+" "+student.first;
   $("result").textContent="⭐ Епізод 2: "+done+" з "+missions.length+" місій · перевірок коду: "+attempts;
   show("finish");
-  sendStudentReport();
  }else{level++;draw();}
 });
 function report(){
@@ -1119,7 +1174,8 @@ function report(){
  "Перевірок коду: "+attempts+"\n"+
  "Різних тестових наборів: "+data.summary.distinctDatasets+"\n"+
  "Запусків із тестовими даними: "+data.summary.testRuns+"\n"+
- "ID звіту: "+submissionId;
+ "ID сеансу: "+submissionId+"\n"+
+ "Останній рубіж: "+lastCheckpointStage+"/10";
 }
 $("copy").addEventListener("click",async()=>{
  const content=report();
@@ -1132,7 +1188,7 @@ $("copy").addEventListener("click",async()=>{
 });
 $("again").addEventListener("click",()=>{
  student=null;gameStartedAt=0;levelStartedAt=0;submissionId="";
- sessionLevelStats=[];sessionRuns=[];
+ sessionLevelStats=[];sessionRuns=[];checkpointReports=new Map();checkpointQueue=[];lastCheckpointStage=0;
  $("studentForm").reset();$("score").hidden=true;show("intro");
 });
 
