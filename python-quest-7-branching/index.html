@@ -1146,7 +1146,7 @@ $("check").addEventListener("click",()=>{
  $("codepad").querySelectorAll("button").forEach(b=>b.disabled=true);
  editor.disabled=true;$("restore").disabled=true;
  $("check").textContent="▶ Запустити з іншими даними";
- $("nextArea").hidden=false;$("next").textContent=level===missions.length-1?"Завершити гру 🏆":"Наступна місія →";
+ $("nextArea").hidden=false;$("next").textContent=level===missions.length-1?"Зберегти результат 🏆":done>=5?"Зберегти та перейти →":"Наступна місія →";
  $("score").textContent="⭐ "+done+"/"+missions.length;
  $("bar").style.width=(done/missions.length*100)+"%";
  $("map").children[level].className="node done";
