@@ -398,7 +398,9 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
 <div class="character">🏆 ⚡</div><h2>Усі місії виконано!</h2>
 <div class="student-summary" id="studentSummary"></div>
 <p id="result"></p><p>Ти навчився перевіряти умови, створювати <code>if</code>, <code>else</code>, <code>elif</code> і проводити комп’ютерні експерименти.</p>
-<p class="muted">Покажи цей екран учителю або зроби скриншот. Результат автоматично нікуди не надсилається.</p>
+<p class="muted">Звіт про пройдені місії, спроби та перевірені тестові дані надсилається до шкільного журналу після завершення гри. Якщо немає Інтернету, скопіюй результат або зроби скриншот.</p>
+<div id="sendStatus" class="feedback" role="status" aria-live="polite">Готуємо звіт для шкільної Google Таблиці…</div>
+<div class="actions"><button type="button" class="secondary" id="retrySend" hidden>↻ Повторити надсилання звіту</button></div>
 <div class="actions"><button class="primary" id="copy">📋 Скопіювати результат</button><button class="secondary" id="again">↺ Новий квест</button></div>
 <div class="feedback" id="copyStatus" hidden></div>
 </section>
@@ -468,6 +470,87 @@ tests:[[[35,25],["10"]],[[25,25],["0"]],[[20,25],["Немає ресурсів"]
 {"id":19,"title":"Фінал: енергокупол","skill":"Два введення · підсумковий виклик","goal":"🏆","advanced":true,"story":"Фінальна місія! Щоб захистити базу, активуй енергокупол. Для цього потужність power має бути не меншою за потребу need. Після правильного рішення купол розгорнеться над базою.","task":"Прочитай power і need через два int(input()). Якщо power >= need, виведи «Купол активовано», інакше — «Мало потужності». Перевір рівність чисел!","hint":"power = int(input())\nneed = int(input())\nif power >= need:\n    print('Купол активовано')\nelse:\n    print('Мало потужності')","blocks":["power = int(input())","need = int(input())","if power >= need:","    print('Купол активовано')","else:","    print('Мало потужності')","if power > need:","    print('Купол активовано')"],"tests":[[[60,40],["Купол активовано"]],[[20,40],["Мало потужності"]],[[40,40],["Купол активовано"]],[[100,80],["Купол активовано"]]],"structure":"ifelse"}
 ];
 let student=null,level=0,done=0,success=false,attempts=0,hints=0,teacherMode=false;
+const RESULTS_WEB_APP="https://script.google.com/macros/s/AKfycbwt-DCRbrBcXjx8hE3g1bT8f0HtN-3Y8CKvfabe8s7jVKVTHeYhdTx2MYFHF1spHfaqMw/exec";
+const GAME_VERSION="codequest7-episode2-10missions-tracking-v1";
+let gameStartedAt=0,levelStartedAt=0,submissionId="",sessionLevelStats=[],sessionRuns=[],reportSending=false;
+function elapsedSeconds(since){return since?Math.max(0,Math.round((Date.now()-since)/1000)):0}
+function newStats(){
+ return missions.map((m,i)=>({
+  level:i+1,missionId:m.id,title:m.title,completed:false,
+  checks:0,failed:0,hints:0,distinctDatasets:0,
+  testRuns:0,invalidRuns:0,selections:0,durationSeconds:0,usedInputs:[]
+ }));
+}
+function activeStats(){return !teacherMode&&student&&sessionLevelStats[level]||null;}
+function closeLevelTimer(){
+ const stats=activeStats();
+ if(stats&&levelStartedAt){stats.durationSeconds+=elapsedSeconds(levelStartedAt);levelStartedAt=0;}
+}
+function takeRunSnapshot(ok){
+ const stats=activeStats();if(!stats)return;
+ const inputs=currentCase()[0].slice();
+ const encoded=JSON.stringify(inputs);
+ stats.checks++;if(!ok)stats.failed++;
+ stats.testRuns++;if(!ok)stats.invalidRuns++;
+ if(!stats.usedInputs.some(x=>JSON.stringify(x)===encoded))stats.usedInputs.push(inputs);
+ stats.distinctDatasets=stats.usedInputs.length;
+ let output=[];
+ if(ok){try{output=execute(parsePython(editor.value),inputs)}catch(e){output=[];}}
+ if(sessionRuns.length<500)sessionRuns.push({
+  level:level+1,missionId:missions[level].id,runIndex:stats.testRuns,
+  inputs,codeValid:ok,executed:ok,output,
+  scenario:ok?sceneOutcome(missions[level].id,inputs):"error",
+  secondsFromStart:elapsedSeconds(gameStartedAt)
+ });
+}
+function makeReport(){
+ const levels=sessionLevelStats.map(m=>({
+  level:m.level,missionId:m.missionId,title:m.title,completed:m.completed,
+  checks:m.checks,failed:m.failed,hints:m.hints,
+  distinctDatasets:m.distinctDatasets,testRuns:m.testRuns,
+  invalidRuns:m.invalidRuns,selections:m.selections,
+  durationSeconds:m.durationSeconds,
+  usedInputs:m.usedInputs.map(a=>a.slice())
+ }));
+ const sum=(key)=>levels.reduce((n,x)=>n+Number(x[key]||0),0);
+ return {
+  submissionId,
+  version:GAME_VERSION,
+  student:{klass:student.klass,group:student.group,surname:student.surname,first:student.first},
+  summary:{
+   completed:done,total:missions.length,checks:attempts,
+   failedChecks:sum("failed"),hints:sum("hints"),
+   durationMinutes:Math.round(elapsedSeconds(gameStartedAt)/6)/10,
+   distinctDatasets:sum("distinctDatasets"),testRuns:sum("testRuns")
+  },
+  levels,runs:sessionRuns.slice()
+ };
+}
+async function sendStudentReport(){
+ if(teacherMode||!student||!submissionId||reportSending)return;
+ reportSending=true;
+ const status=$("sendStatus"),retry=$("retrySend");
+ retry.disabled=true;retry.hidden=true;
+ status.className="feedback";
+ status.textContent="⏳ Надсилаємо результати в шкільну Google Таблицю…";
+ try{
+  const payload=JSON.stringify(makeReport());
+  await fetch(RESULTS_WEB_APP,{
+   method:"POST",mode:"no-cors",cache:"no-store",redirect:"follow",
+   headers:{"Content-Type":"text/plain;charset=UTF-8"},
+   body:payload
+  });
+  // Apps Script не дозволяє читати підтвердження з браузера у режимі no-cors.
+  status.className="feedback ok";
+  status.textContent="📤 Запит на збереження надіслано. Через обмеження Google неможливо підтвердити запис із браузера. Учитель може перевірити його в таблиці.";
+ }catch(err){
+  status.className="feedback bad";
+  status.textContent="⚠️ Не вдалося відправити запит. Перевір Інтернет і натисни «Повторити надсилання» або скопіюй результат.";
+ }
+ reportSending=false;
+ retry.disabled=false;retry.hidden=false;
+}
+$("retrySend").addEventListener("click",sendStudentReport);
 const editor=$("editor");
 
 /* Візуальні об'єкти та симуляції, що відповідають кожній місії */
@@ -517,6 +600,8 @@ function initializeScene(m){
    b.textContent=prefix+inputs.join(" / ");
    b.title="Виконати програму з вхідними значеннями "+inputs.join(", ");
    b.addEventListener("click",()=>{
+     const chosen=activeStats();
+     if(chosen&&index!==selectedTest)chosen.selections++;
      selectedTest=index;
      picker.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
      $("sceneDescription").textContent="Обрано дані: "+inputs.join(", ")+". Натисни «Запустити код», щоб побачити наслідок.";
@@ -837,6 +922,7 @@ $("teacherDemo").addEventListener("click",runTeacherDemo);
 
 function draw(){
  const m=missions[level];success=false;
+ if(!teacherMode&&student&&sessionLevelStats[level])levelStartedAt=Date.now();
  $("teacherTools").hidden=!teacherMode;
  $("teacherSolution").hidden=true;$("teacherSolutionCode").textContent=teacherMode?teacherCodeFor(m):"";
  $("teacherReveal").textContent="👁 Показати розв’язок";
@@ -975,9 +1061,19 @@ $("studentForm").addEventListener("submit",e=>{
  teacherMode=false;
  student={klass:$("studentClass").value,group:$("studentGroup").value,surname:tidy($("surname").value),first:tidy($("firstName").value)};
  if(!student.surname||!student.first)return;
- level=done=attempts=hints=0;show("play");$("score").hidden=false;draw();
+ level=done=attempts=hints=0;
+ gameStartedAt=Date.now();levelStartedAt=0;
+ submissionId="cq7-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,11);
+ sessionLevelStats=newStats();sessionRuns=[];
+ show("play");$("score").hidden=false;draw();
 });
-$("help").addEventListener("toggle",()=>{if($("help").open&&!success)hints++});
+$("help").addEventListener("toggle",()=>{
+ if($("help").open&&!success){
+  if(teacherMode)return;
+  hints++;
+  const stats=activeStats();if(stats)stats.hints++;
+ }
+});
 $("check").addEventListener("click",()=>{
  if(teacherMode){
   const ok=runCheck();launchScene(ok);
@@ -986,10 +1082,12 @@ $("check").addEventListener("click",()=>{
  }
  attempts++;
  const ok=runCheck();
+ takeRunSnapshot(ok);
  launchScene(ok);
  if(!ok){$("help").hidden=false;return;}
  if(success)return; // повторні симуляції потрібні, щоб дослідити інші вхідні дані
  success=true;done++;
+ const finishedStats=activeStats();if(finishedStats)finishedStats.completed=true;
  $("codepad").querySelectorAll("button").forEach(b=>b.disabled=true);
  editor.disabled=true;$("restore").disabled=true;
  $("check").textContent="▶ Запустити з іншими даними";
@@ -1004,13 +1102,25 @@ $("restore").addEventListener("click",()=>{
 });
 $("next").addEventListener("click",()=>{
  if(!success)return;
+ closeLevelTimer();
  if(level===missions.length-1){
   $("studentSummary").textContent=student.klass+" · група "+student.group+" · "+student.surname+" "+student.first;
   $("result").textContent="⭐ Епізод 2: "+done+" з "+missions.length+" місій · перевірок коду: "+attempts;
   show("finish");
+  sendStudentReport();
  }else{level++;draw();}
 });
-function report(){return "CODE QUEST 7 — Лабіринт рішень (епізод 2)\n"+student.klass+", група "+student.group+"\n"+student.surname+" "+student.first+"\nРезультат: "+done+"/"+missions.length+" місій\nПеревірок коду: "+attempts;}
+function report(){
+ const data=makeReport();
+ return "CODE QUEST 7 — Лабіринт рішень (епізод 2)\n"+
+ student.klass+", група "+student.group+"\n"+
+ student.surname+" "+student.first+"\n"+
+ "Результат: "+done+"/"+missions.length+" місій\n"+
+ "Перевірок коду: "+attempts+"\n"+
+ "Різних тестових наборів: "+data.summary.distinctDatasets+"\n"+
+ "Запусків із тестовими даними: "+data.summary.testRuns+"\n"+
+ "ID звіту: "+submissionId;
+}
 $("copy").addEventListener("click",async()=>{
  const content=report();
  try{
@@ -1020,6 +1130,10 @@ $("copy").addEventListener("click",async()=>{
  }catch(e){$("copyStatus").textContent="Зроби скриншот — копіювання недоступне.";}
  $("copyStatus").hidden=false;
 });
-$("again").addEventListener("click",()=>{student=null;$("studentForm").reset();$("score").hidden=true;show("intro");});
+$("again").addEventListener("click",()=>{
+ student=null;gameStartedAt=0;levelStartedAt=0;submissionId="";
+ sessionLevelStats=[];sessionRuns=[];
+ $("studentForm").reset();$("score").hidden=true;show("intro");
+});
 
 </script></body></html>
