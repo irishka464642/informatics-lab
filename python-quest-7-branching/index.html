@@ -67,11 +67,15 @@ button:focus-visible,a:focus-visible{outline:3px solid #bdf3ff;outline-offset:2p
 </form></section>
 <section id="play" hidden>
 <div class="track"><div class="fill" id="bar"></div></div><div class="map" id="map"></div>
-<div class="arena" aria-label="Ігрове поле"><div class="path"></div><div class="hero" id="hero">🕹️</div><div class="goal" id="goal">📦</div></div>
+
 <div class="panel">
 <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><span class="tag" id="missionNumber"></span><span class="tag" id="skill"></span></div>
 <h2 id="title"></h2><p id="story"></p>
 <strong>⌨️ Створи Python-код за умовою:</strong><pre id="task"></pre>
+<div class="try-panel" id="tryPanel">
+ <div class="try-head"><strong>🎛️ Обери тестові дані</strong><span>Зміни їх після першого запуску й досліди результат</span></div>
+ <div class="try-choices" id="tryChoices" role="group" aria-label="Тестові значення"></div>
+</div>
 <textarea id="editor" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" aria-label="Редактор Python" placeholder="Тут поки порожньо. Складай програму рядками або вводь вручну."></textarea>
 <div class="codepad" id="codepad" aria-label="Кнопки для складання коду">
 <div class="codepad-head"><strong>🎮 Складай рядки коду</strong><small>Або вводь вручну</small></div>
@@ -82,7 +86,14 @@ button:focus-visible,a:focus-visible{outline:3px solid #bdf3ff;outline-offset:2p
 </div>
 <div id="tokenInfo" class="token-info" aria-live="polite">Обирай рядки коду, серед них є зайві.</div></div>
 <details id="help"><summary>💡 Підказка</summary><p id="hint"></p></details>
-<div class="actions"><button class="primary" id="check">▶ Перевірити</button><button class="secondary" id="restore">↺ Скинути код</button></div>
+<div class="actions"><button class="primary" id="check">▶ Запустити код ⚡</button><button class="secondary" id="restore">↺ Очистити</button></div>
+<section id="gameScene" class="game-scene" data-phase="idle" data-kind="bridge" tabindex="-1" aria-label="Ігрова сцена: результат роботи коду">
+ <div class="scene-hud"><span id="sceneMission">МІСІЯ · СИМУЛЯЦІЯ</span><span class="scene-live" id="sceneLive">● СИСТЕМА ОЧІКУЄ</span></div>
+ <div class="scene-world" id="sceneWorld"></div>
+ <div class="scene-meter"><span id="sceneMeterName">ЗАРЯД</span><div class="scene-meter-track"><div id="sceneMeterFill"></div></div><b id="sceneMeterValue">0%</b></div>
+ <div class="scene-message" role="status" aria-live="polite"><strong id="sceneHeadline">Очікуємо запуску програми</strong><span id="sceneDescription">Натисни «Запустити код» — і тут відбудеться дія!</span></div>
+ <div class="scene-console" id="sceneConsole">Вхід: —　 Виведення: —</div>
+</section>
 <div class="feedback" id="feedback" role="status" aria-live="polite">Уведи код і перевір його.</div><div id="tests" class="tests" hidden></div>
 <div class="actions" id="nextArea" hidden><button class="primary" id="next">Далі →</button></div>
 </div>
@@ -101,12 +112,12 @@ button:focus-visible,a:focus-visible{outline:3px solid #bdf3ff;outline-offset:2p
 const $=id=>document.getElementById(id);
 const missions=[
 {
-id:10,title:"Міст через лаву",skill:"if / else · >=",goal:"🌉",
-story:"До нового сектора веде енергоміст. Якщо є щонайменше 15 одиниць енергії, міст відкривається. Інакше команда має зарядити батарею.",
-task:"Програма читає energy як ціле число. Якщо energy >= 15, виведи «Міст відкрито», інакше — «Потрібна енергія». Перевір граничне значення 15.",
-hint:"energy = int(input())\nif energy >= 15:\n    print('Міст відкрито')\nelse:\n    print('Потрібна енергія')",
-blocks:["energy = int(input())","if energy >= 15:","    print('Міст відкрито')","else:","    print('Потрібна енергія')","if energy > 15:","    print('Потрібна енергія')"],
-tests:[[[18],["Міст відкрито"]],[[8],["Потрібна енергія"]],[[15],["Міст відкрито"]]],structure:"ifelse"
+id:10,title:"Міст через лаву",skill:"if / elif / else · Заряд",goal:"🌉",
+story:"Щоб перейти через лаву, активуй енергоміст. Якщо енергії менше 15 — генератор слабкий. Від 15 до 25 включно — міст відкривається. Понад 25 — небезпечне перевантаження!",
+task:"Прочитай energy через int(input()). Якщо energy < 15, виведи «Мало заряду». Якщо energy > 25 — «Перевантаження!». Інакше виведи «Міст відкрито». Перевір: 8, 18 і 30.",
+hint:"energy = int(input())\nif energy < 15:\n    print('Мало заряду')\nelif energy > 25:\n    print('Перевантаження!')\nelse:\n    print('Міст відкрито')",
+blocks:["energy = int(input())","if energy < 15:","    print('Мало заряду')","elif energy > 25:","    print('Перевантаження!')","else:","    print('Міст відкрито')","if energy >= 15:","    print('Міст відкрито')"],
+tests:[[[8],["Мало заряду"]],[[18],["Міст відкрито"]],[[30],["Перевантаження!"]],[[15],["Міст відкрито"]],[[25],["Міст відкрито"]],[[26],["Перевантаження!"]]],structure:"elif"
 },
 {
 id:11,title:"Бонус у сховищі",skill:"Неповне розгалуження",goal:"🎁",
