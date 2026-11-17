@@ -222,7 +222,7 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
 <section id="intro" class="panel">
 <div class="character">🎮 ⚡ 🖥️</div>
 <h2>Лабіринт рішень</h2>
-<p>Після фінального калькулятора відкрилася нова зона цифрової арени! Тепер база потребує рішень: коли відкрити міст, як перевірити код і чи вистачить ресурсів. Пройди 10 нових місій із командами <strong>if, else, elif</strong>, а наприкінці перевір власну гіпотезу. <a class="backlink" href="../python-quest-7/">↩ Повернутися до епізоду 1</a></p>
+<p>Після фінального калькулятора відкрилася нова зона цифрової арени! Тепер база потребує рішень: коли відкрити міст, як перевірити код і чи вистачить ресурсів. Пройди 10 нових місій із командами <strong>if, else, elif</strong>. У рівнях 1–5 збирай програму готовими рядками, а в рівнях 6–10 — з окремих команд, змінних, знаків і дужок. Після кожного запуску побачиш результат на ігровій сцені. <a class="backlink" href="../python-quest-7/">↩ Повернутися до епізоду 1</a></p>
 <h2 style="font-size:20px">Профіль гравця</h2>
 <form id="studentForm">
 <div class="fields">
@@ -643,7 +643,7 @@ function renderPad(){
 function show(id){["intro","play","finish"].forEach(x=>$(x).hidden=x!==id)}
 function draw(){
  const m=missions[level];success=false;
- $("missionNumber").textContent=(m.advanced?"🔥 Челендж":"🎯 Тренування")+" · Місія "+m.id+" із 19";
+ $("missionNumber").textContent=(level>=5?"🧩 Складання з елементів":"🎯 Готові рядки")+" · Рівень "+(level+1)+"/"+missions.length+" (місія "+m.id+")";
  $("skill").textContent=m.skill;$("title").textContent=m.title;$("story").textContent=m.story;$("task").textContent=m.task;
  editor.value="";caret=selEnd=0;renderPad();
  $("hint").textContent=m.hint;$("help").open=false;$("help").hidden=!!m.advanced;
