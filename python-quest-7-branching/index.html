@@ -185,12 +185,28 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
  .game-scene[data-phase="overload"] .scene-result-icon{transform:translate(-50%,-50%) scale(1)!important}
 }
 
+
+/* Додаткові сцени для рівнів 17–19 */
+.drone-landing{position:absolute;left:15%;right:15%;bottom:37px;height:29px;background:repeating-linear-gradient(90deg,#4d627c 0 18px,#a9dcf3 18px 23px);border:3px solid #7b9ec3;border-radius:7px}
+.scene-focus.drone{z-index:5;left:22%;top:51%;font-size:88px}
+.game-scene[data-kind="drone"][data-phase="success"] .drone{transform:translate(165%,-120%) scale(1.07);transition:transform 1.8s ease-out;filter:drop-shadow(0 5px 10px #aaffee)}
+.game-scene[data-kind="drone"][data-phase="low"] .drone{transform:translate(-50%,-44%) rotate(-13deg);filter:grayscale(.5)}
+.reactor-chamber{position:absolute;left:50%;top:50%;width:190px;height:190px;transform:translate(-50%,-50%);border:12px solid #7999b9;border-radius:24px;background:radial-gradient(circle,#63e2ff80,#09243d);box-shadow:0 0 30px #4bbcff}
+.reactor-core{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:105px;height:105px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#f1ffff,#63baff 45%,#1b5ad4 80%);box-shadow:0 0 35px #78d7ff;transition:all .9s}
+.game-scene[data-kind="reactor"][data-phase="success"] .reactor-core{background:radial-gradient(circle,#efffe5,#98ff7b 50%,#30b98b);box-shadow:0 0 65px #73ff9a;animation:charge-pulse .65s infinite alternate}
+.game-scene[data-kind="reactor"][data-phase="low"] .reactor-core{background:radial-gradient(circle,#b5f1ff,#5573cf 60%,#1e3b8e);box-shadow:0 0 17px #88baff}
+.game-scene[data-kind="reactor"][data-phase="overload"] .reactor-core{background:radial-gradient(circle,#fff6bc,#ff7b49 55%,#f31e45);box-shadow:0 0 70px #f51b38;animation:scene-shake .2s infinite}
+.dome-base{position:absolute;z-index:3;left:50%;bottom:29px;transform:translateX(-50%);font-size:96px;filter:drop-shadow(0 8px 6px #091025)}
+.dome-shield{position:absolute;z-index:5;left:50%;bottom:20px;width:210px;height:178px;transform:translateX(-50%) scale(.4);transform-origin:center bottom;opacity:0;border-radius:120px 120px 25px 25px;border:7px solid #7cf9e0;background:radial-gradient(ellipse at 50% 0,#83fff245,#3cc9e82b);box-shadow:0 0 50px #6aeed8, inset 0 0 35px #81e9f4;transition:transform 1.2s,opacity .8s}
+.game-scene[data-kind="dome"][data-phase="success"] .dome-shield{opacity:1;transform:translateX(-50%) scale(1)}
+.game-scene[data-kind="dome"][data-phase="low"] .dome-shield{opacity:.22;transform:translateX(-50%) scale(.6);border-color:#ffbf75}
+
 </style></head><body><main>
-<header><div><span class="tag">Інформатика · 7 клас · Python</span><h1>⚡ CODE QUEST 7</h1><small>Місії 10–16 · Епізод 2 · Python</small></div><div id="score" class="score" hidden>⭐ 0/7</div></header>
+<header><div><span class="tag">Інформатика · 7 клас · Python</span><h1>⚡ CODE QUEST 7</h1><small>Місії 10–19 · Епізод 2 · Python</small></div><div id="score" class="score" hidden>⭐ 0/10</div></header>
 <section id="intro" class="panel">
 <div class="character">🎮 ⚡ 🖥️</div>
 <h2>Лабіринт рішень</h2>
-<p>Після фінального калькулятора відкрилася нова зона цифрової арени! Тепер база потребує рішень: коли відкрити міст, як перевірити код і чи вистачить ресурсів. Пройди 7 нових місій із командами <strong>if, else, elif</strong>, а наприкінці перевір власну гіпотезу. <a class="backlink" href="../python-quest-7/">↩ Повернутися до епізоду 1</a></p>
+<p>Після фінального калькулятора відкрилася нова зона цифрової арени! Тепер база потребує рішень: коли відкрити міст, як перевірити код і чи вистачить ресурсів. Пройди 10 нових місій із командами <strong>if, else, elif</strong>, а наприкінці перевір власну гіпотезу. <a class="backlink" href="../python-quest-7/">↩ Повернутися до епізоду 1</a></p>
 <h2 style="font-size:20px">Профіль гравця</h2>
 <form id="studentForm">
 <div class="fields">
@@ -296,13 +312,16 @@ blocks:["budget = int(input())","cost = 25","if budget >= cost:","    print('Г�
 tests:[[[24],["Гіпотезу спростовано"]],[[25],["Гіпотезу підтверджено"]],[[30],["Гіпотезу підтверджено"]]],structure:"ifelse"
 },
 {
-id:16,title:"Фінал: ворота бази",skill:"Два введення · фінал",goal:"🏆",advanced:true,
+id:16,title:"Ворота бази",skill:"Два введення · фінал",goal:"🏆",advanced:true,
 story:"Щоб активувати головні ворота, команда купує ключ за ціною price. Програма має визначити, чи вистачить coins, і правильно порахувати решту.",
 task:"Прочитай coins та price через int(input()). Якщо coins >= price, виведи різницю coins - price. Інакше виведи «Немає ресурсів».",
 hint:"coins = int(input())\nprice = int(input())\nif coins >= price:\n    print(coins - price)\nelse:\n    print('Немає ресурсів')",
 blocks:["coins = int(input())","price = int(input())","if coins >= price:","    print(coins - price)","else:","    print('Немає ресурсів')","if coins > price:","    print(coins + price)"],
 tests:[[[35,25],["10"]],[[25,25],["0"]],[[20,25],["Немає ресурсів"]],[[50,12],["38"]]],structure:"ifelse"
-}
+},
+{"id":17,"title":"Вантажний дрон","skill":"Умови та граничні значення","goal":"🚁","advanced":true,"story":"Команда відправляє дрон із запасами над лавою. Дрон здатен підняти не більше 10 кілограмів. Якщо вантаж важчий — запуск небезпечний!","task":"Прочитай weight через int(input()). Якщо weight <= 10, виведи «Дрон вирушив», інакше — «Вантаж завеликий». Перевір значення 9, 10 і 11.","hint":"weight = int(input())\nif weight <= 10:\n    print('Дрон вирушив')\nelse:\n    print('Вантаж завеликий')","blocks":["weight = int(input())","if weight <= 10:","    print('Дрон вирушив')","else:","    print('Вантаж завеликий')","if weight < 10:","    print('Вантаж завеликий')"],"tests":[[[10],["Дрон вирушив"]],[[11],["Вантаж завеликий"]],[[9],["Дрон вирушив"]],[[0],["Дрон вирушив"]]],"structure":"ifelse"},
+{"id":18,"title":"Плазмовий реактор","skill":"if / elif / else · температура","goal":"⚛️","advanced":true,"story":"Реактор потребує правильної температури. Нижче 30 — він замерзне, понад 70 — перегріється. Безпечний діапазон: від 30 до 70 включно.","task":"Прочитай temp. Якщо temp < 30, виведи «Реактор замерз». Якщо temp > 70 — «Перегрів». Інакше — «Реактор стабільний». Перевір 25, 50, 85 та межі 30 і 70.","hint":"temp = int(input())\nif temp < 30:\n    print('Реактор замерз')\nelif temp > 70:\n    print('Перегрів')\nelse:\n    print('Реактор стабільний')","blocks":["temp = int(input())","if temp < 30:","    print('Реактор замерз')","elif temp > 70:","    print('Перегрів')","else:","    print('Реактор стабільний')","if temp > 30:","    print('Реактор стабільний')"],"tests":[[[25],["Реактор замерз"]],[[50],["Реактор стабільний"]],[[85],["Перегрів"]],[[30],["Реактор стабільний"]],[[70],["Реактор стабільний"]],[[71],["Перегрів"]]],"structure":"elif"},
+{"id":19,"title":"Фінал: енергокупол","skill":"Два введення · підсумковий виклик","goal":"🏆","advanced":true,"story":"Фінальна місія! Щоб захистити базу, активуй енергокупол. Для цього потужність power має бути не меншою за потребу need. Після правильного рішення купол розгорнеться над базою.","task":"Прочитай power і need через два int(input()). Якщо power >= need, виведи «Купол активовано», інакше — «Мало потужності». Перевір рівність чисел!","hint":"power = int(input())\nneed = int(input())\nif power >= need:\n    print('Купол активовано')\nelse:\n    print('Мало потужності')","blocks":["power = int(input())","need = int(input())","if power >= need:","    print('Купол активовано')","else:","    print('Мало потужності')","if power > need:","    print('Купол активовано')"],"tests":[[[60,40],["Купол активовано"]],[[20,40],["Мало потужності"]],[[40,40],["Купол активовано"]],[[100,80],["Купол активовано"]]],"structure":"ifelse"}
 ];
 let student=null,level=0,done=0,success=false,attempts=0,hints=0;
 const editor=$("editor");
@@ -321,10 +340,16 @@ const sceneCatalog={
   world:'<div class="world-label">📡 МОНІТОРИНГ БАЗИ</div><div class="radar-ring"></div><div class="radar-needle"></div><div class="scene-focus">📡</div><div class="scene-result-icon"></div><div class="scene-floor"></div>'},
  15:{kind:"lab",name:"НАУКОВА ЛАБОРАТОРІЯ · ГІПОТЕЗА",meter:"БЮДЖЕТ",
   world:'<div class="world-label">🧪 КОМП’ЮТЕРНИЙ ЕКСПЕРИМЕНТ</div><div class="scene-glow"></div><div class="lab-shelf"></div><div class="lab-flask"></div><div class="scene-result-icon"></div><div class="scene-floor"></div>'},
- 16:{kind:"gate",name:"ФІНАЛ · ВОРОТА БАЗИ",meter:"РЕСУРСИ",
-  world:'<div class="world-label">🚀 ФІНАЛЬНИЙ ШЛЮЗ</div><div class="scene-glow"></div><div class="portal-frame"><div class="portal-left"></div><div class="portal-right"></div></div><div class="scene-result-icon"></div><div class="scene-floor"></div>'}
+ 16:{kind:"gate",name:"ШЛЮЗ · ВОРОТА БАЗИ",meter:"РЕСУРСИ",
+  world:'<div class="world-label">🚀 ВОРОТА БАЗИ</div><div class="scene-glow"></div><div class="portal-frame"><div class="portal-left"></div><div class="portal-right"></div></div><div class="scene-result-icon"></div><div class="scene-floor"></div>'},
+ 17:{kind:"drone",name:"АНГАР · ВАНТАЖНИЙ ДРОН",meter:"ВАНТАЖ",
+  world:'<div class="world-label">🚁 ЛІТАЛЬНИЙ МОДУЛЬ</div><div class="scene-glow"></div><div class="drone-landing"></div><div class="scene-focus drone">🚁</div><div class="scene-result-icon"></div><div class="scene-floor"></div>'},
+ 18:{kind:"reactor",name:"РЕАКТОР · ТЕМПЕРАТУРА",meter:"ТЕМПЕРАТУРА",
+  world:'<div class="world-label">⚛️ ПЛАЗМОВА КАМЕРА</div><div class="reactor-chamber"></div><div class="reactor-core"></div><div class="scene-result-icon"></div><div class="scene-floor"></div>'},
+ 19:{kind:"dome",name:"ФІНАЛ · ЕНЕРГОКУПОЛ",meter:"ПОТУЖНІСТЬ",
+  world:'<div class="world-label">🏆 ЗАХИСТ БАЗИ</div><div class="scene-glow"></div><div class="dome-base">🏛️</div><div class="dome-shield"></div><div class="scene-result-icon"></div><div class="scene-floor"></div>'}
 };
-const previewSets={10:[0,1,2],11:[0,1],12:[0,1],13:[0,1,2],14:[0,2,4],15:[0,1,2],16:[0,1,2]};
+const previewSets={10:[0,1,2],11:[0,1],12:[0,1],13:[0,1,2],14:[0,2,4],15:[0,1,2],16:[0,1,2],17:[0,1,2],18:[0,1,2],19:[0,1,2]};
 let selectedTest=0,sceneTimer=null;
 function currentCase(){return missions[level].tests[selectedTest]}
 function initializeScene(m){
@@ -364,6 +389,9 @@ function sceneOutcome(id,inputs){
  if(id===14)return n>=80?"overload":n>=40?"low":"success";
  if(id===15)return n>=25?"success":"low";
  if(id===16)return n>=Number(inputs[1])?"success":"low";
+ if(id===17)return n<=10?"success":"low";
+ if(id===18)return n<30?"low":n>70?"overload":"success";
+ if(id===19)return n>=Number(inputs[1])?"success":"low";
  return "success";
 }
 function sceneStory(m,phase,inputs){
@@ -379,7 +407,10 @@ function sceneStory(m,phase,inputs){
  13:{low:["🪙 Замало кредитів","На рахунку "+n+" кредитів — апгрейд ціною 30 недоступний."],success:["🛡️ АПГРЕЙД ОТРИМАНО!","У магазині успішна покупка. Розрахунок показав решту."]},
  14:{low:["🟡 ЖОВТА ТРИВОГА","Рівень "+n+": сканер виявив небезпеку й показав попередження."],success:["🟢 БАЗА В БЕЗПЕЦІ","Рівень загрози "+n+". Сканер працює, загрози немає."],overload:["🔴 ЧЕРВОНА ТРИВОГА!","Рівень "+n+": сирена ввімкнулася. Потрібно укріпити базу."]},
  15:{low:["🧪 ГІПОТЕЗУ СПРОСТОВАНО","24 кредити не покривають вартість 25. Експеримент допоміг перевірити припущення."],success:["✅ ГІПОТЕЗУ ПІДТВЕРДЖЕНО","За "+n+" кредитів модуль ціною 25 можна придбати."]},
- 16:{low:["🚧 ВОРОТА ЗАЧИНЕНІ","На рахунку "+n+" кредитів, а ключ коштує "+inputs[1]+"."],success:["🏆 ВОРОТА ВІДЧИНЕНО!","Ключ за "+inputs[1]+" кредитів оплачено. Фінальна брама відкрилася!"]}
+ 16:{low:["🚧 ВОРОТА ЗАЧИНЕНІ","На рахунку "+n+" кредитів, а ключ коштує "+inputs[1]+"."],success:["🔓 ВОРОТА ВІДЧИНЕНО!","Ключ за "+inputs[1]+" кредитів оплачено. Шлюз відкрився!"]},
+ 17:{low:["🚧 ДРОН НЕ ЗЛЕТІВ","Вантаж "+n+" кг перевищив допустимі 10 кг. Система заблокувала запуск."],success:["🚁 ДРОН ЗЛЕТІВ!","Вантаж "+n+" кг у межах норми. Дрон доставляє ресурси на інший берег."]},
+ 18:{low:["❄️ РЕАКТОР ЗАМЕРЗ","За температури "+n+"° система зупинила запуск."],success:["⚛️ РЕАКТОР ПРАЦЮЄ","Температура "+n+"° у межах безпечної норми."],overload:["💥 РЕАКТОР ПЕРЕГРІВСЯ!","Температура "+n+"° перевищила безпечні 70°. Аварійне вимкнення."]},
+ 19:{low:["🪫 КУПОЛ НЕ АКТИВОВАНО","Потужності "+n+" недостатньо: потрібно не менше "+inputs[1]+"."],success:["🏆 БАЗУ ЗАХИЩЕНО!","Енергокупол успішно розгорнувся. Потужність "+n+" покриває потребу "+inputs[1]+"."]}
  };
  return stories[m.id][phase]||["✅ Програму виконано","Система правильно обробила введені дані."];
 }
@@ -408,7 +439,9 @@ function launchScene(codeOK){
    progress=m.id===10?Math.min(100,Math.round(Number(inputs[0])/30*100)):
             m.id===14?Math.min(100,Number(inputs[0])):
             m.id===15?Math.min(100,Math.round(Number(inputs[0])/30*100)):
-            m.id===16?Math.min(100,Math.round(Number(inputs[0])/Math.max(1,Number(inputs[1]))*100)):
+            m.id===16||m.id===19?Math.min(100,Math.round(Number(inputs[0])/Math.max(1,Number(inputs[1]))*100)):
+            m.id===17?Math.min(100,Math.round(Number(inputs[0])/15*100)):
+            m.id===18?Math.min(100,Math.round(Number(inputs[0])/100*100)):
             phase==="success"?100:25;
   }
   $("sceneMeterFill").style.width=progress+"%";
@@ -473,7 +506,7 @@ document.querySelectorAll("[data-tool]").forEach(b=>{
 function show(id){["intro","play","finish"].forEach(x=>$(x).hidden=x!==id)}
 function draw(){
  const m=missions[level];success=false;
- $("missionNumber").textContent=(m.advanced?"🔥 Челендж":"🎯 Тренування")+" · Місія "+m.id+" із 16";
+ $("missionNumber").textContent=(m.advanced?"🔥 Челендж":"🎯 Тренування")+" · Місія "+m.id+" із 19";
  $("skill").textContent=m.skill;$("title").textContent=m.title;$("story").textContent=m.story;$("task").textContent=m.task;
  editor.value="";caret=selEnd=0;renderPad();
  $("hint").textContent=m.hint;$("help").open=false;$("help").hidden=!!m.advanced;
