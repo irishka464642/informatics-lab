@@ -182,6 +182,7 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
 @media(prefers-reduced-motion:reduce){
  .scene-world *,#sceneMeterFill{animation:none!important;transition:none!important}
  .scene-result-icon{animation:none!important}
+ .game-scene[data-phase="overload"] .scene-result-icon{transform:translate(-50%,-50%) scale(1)!important}
 }
 
 </style></head><body><main>
@@ -393,6 +394,8 @@ function launchScene(codeOK){
  $("sceneMeterFill").style.width="0%";
  $("sceneMeterValue").textContent="0%";
  const reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+ editor.blur(); // закрити екранну клавіатуру на смартфоні
+ scene.focus({preventScroll:true});
  scene.scrollIntoView({behavior:reduced?"auto":"smooth",block:"start"});
  const delay=reduced?0:850;
  sceneTimer=setTimeout(()=>{
