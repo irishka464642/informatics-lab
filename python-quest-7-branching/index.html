@@ -217,6 +217,30 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
 .codepad.token-mode .token:active{transform:translateY(2px);box-shadow:none}
 @media(max-width:480px){.codepad.token-mode .token:not(.utility){padding:8px 11px}.codepad.token-mode .token.literal{font-size:13px}}
 
+
+/* Режим учителя: перегляд без проходження гри */
+.teacher-entry{margin-top:22px;padding:13px 15px;background:#0b2038;border:1px solid #47698d;border-radius:12px}
+.teacher-entry summary{cursor:pointer;font-weight:800;color:#d8ebff;padding:3px 0}
+.teacher-entry-form{padding:12px 0 4px}
+.teacher-entry-form label{display:block;font-size:13px;font-weight:800;color:#bfd8f3;margin-bottom:7px}
+.teacher-login-row{display:flex;gap:8px;flex-wrap:wrap}
+.teacher-login-row input{flex:1;min-width:175px;background:#091a32;border:1px solid #6483a8;color:#fff;border-radius:10px;padding:10px 12px;font:inherit;min-height:46px}
+.teacher-error{color:#ffb4b4;font-size:14px;min-height:12px;margin-top:8px}
+.teacher-head h2{margin:14px 0 9px}
+.teacher-missions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+.teacher-mission{background:#0c2039;border:1px solid #43658b;border-radius:14px;padding:13px;display:flex;flex-direction:column;gap:6px}
+.teacher-mission strong{font-size:16px;color:#eefaff}
+.teacher-mission .teacher-meta{color:#9fd8e8;font-size:12px;font-weight:800}
+.teacher-mission .teacher-task{color:#c3d5ed;font-size:13px;flex:1;overflow-wrap:anywhere}
+.teacher-mission button{margin-top:7px;width:100%}
+.teacher-tools{margin:10px 0 14px;padding:14px 16px;border-color:#7b79aa;background:linear-gradient(125deg,#222e55,#162e45)}
+.teacher-tools-heading{display:flex;align-items:center;justify-content:space-between;gap:7px;flex-wrap:wrap}
+.teacher-tools-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.teacher-tools-row button{flex:1;min-width:110px;font-size:13px;padding:9px}
+.teacher-solution{margin-top:13px;padding:12px;border:1px solid #649485;background:#0b2833;border-radius:12px}
+.teacher-solution pre{margin:8px 0 0;color:#d5ffe3}
+@media(max-width:540px){.teacher-missions{grid-template-columns:1fr}.teacher-tools-row button{min-width:85px}.teacher-tools{padding:10px}}
+
 </style></head><body><main>
 <header><div><span class="tag">Інформатика · 7 клас · Python</span><h1>⚡ CODE QUEST 7</h1><small>Місії 10–19 · Епізод 2 · Python</small></div><div id="score" class="score" hidden>⭐ 0/10</div></header>
 <section id="intro" class="panel">
@@ -232,8 +256,42 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
 <label>Ім’я<input id="firstName" required maxlength="50" autocomplete="given-name" placeholder="Наприклад, Марія"></label>
 </div><small>Уводь лише навчальні дані. Номер телефону, паролі та адресу не потрібно. Ім'я не надсилається на сервер.</small>
 <div class="actions"><button type="submit" class="primary">Увійти в гру →</button></div>
-</form></section>
+</form>
+<details class="teacher-entry" id="teacherEntry">
+ <summary>🔐 Вхід учителя</summary>
+ <form id="teacherLoginForm" class="teacher-entry-form">
+  <label for="teacherCodeInput">Код учителя</label>
+  <div class="teacher-login-row">
+   <input id="teacherCodeInput" type="password" placeholder="Введіть код" maxlength="40" autocomplete="off" required>
+   <button type="submit" class="secondary">Увійти</button>
+  </div>
+  <div class="teacher-error" id="teacherLoginStatus" role="status" aria-live="polite"></div>
+ </form>
+</details>
+</section>
+<section id="teacherDashboard" class="panel" hidden>
+ <div class="teacher-head"><span class="tag stage">👩‍🏫 РЕЖИМ УЧИТЕЛЯ</span><h2>Огляд усіх 10 місій</h2>
+ <p class="muted">Вибери будь-яке завдання: можна відкрити правильний код, випробувати інші значення й показати анімацію без проходження попередніх рівнів.</p></div>
+ <div class="teacher-missions" id="teacherMissionList"></div>
+ <div class="actions"><button type="button" class="secondary" id="teacherExit">↩ Вийти з режиму вчителя</button></div>
+</section>
 <section id="play" hidden>
+<div class="teacher-tools panel" id="teacherTools" hidden>
+ <div class="teacher-tools-heading"><span class="tag stage">👩‍🏫 ВЧИТЕЛЬ · ПЕРЕГЛЯД</span><small>Без нарахування балів</small></div>
+ <div class="teacher-tools-row">
+  <button type="button" class="secondary" id="teacherBack">☰ Усі місії</button>
+  <button type="button" class="secondary" id="teacherPrev">← Назад</button>
+  <button type="button" class="secondary" id="teacherNext">Далі →</button>
+ </div>
+ <div class="teacher-tools-row">
+  <button type="button" class="secondary" id="teacherReveal">👁 Показати розв’язок</button>
+  <button type="button" class="secondary" id="teacherUseCode">📋 Вставити код</button>
+  <button type="button" class="primary" id="teacherDemo">▶ Демонстрація</button>
+ </div>
+ <div id="teacherSolution" class="teacher-solution" hidden>
+  <strong>✅ Приклад правильного коду</strong><pre id="teacherSolutionCode"></pre>
+ </div>
+</div>
 <div class="track"><div class="fill" id="bar"></div></div><div class="map" id="map"></div>
 
 <div class="panel">
@@ -342,7 +400,7 @@ tests:[[[35,25],["10"]],[[25,25],["0"]],[[20,25],["Немає ресурсів"]
 {"id":18,"title":"Плазмовий реактор","skill":"if / elif / else · температура","goal":"⚛️","advanced":true,"story":"Реактор потребує правильної температури. Нижче 30 — він замерзне, понад 70 — перегріється. Безпечний діапазон: від 30 до 70 включно.","task":"Прочитай temp. Якщо temp < 30, виведи «Реактор замерз». Якщо temp > 70 — «Перегрів». Інакше — «Реактор стабільний». Перевір 25, 50, 85 та межі 30 і 70.","hint":"temp = int(input())\nif temp < 30:\n    print('Реактор замерз')\nelif temp > 70:\n    print('Перегрів')\nelse:\n    print('Реактор стабільний')","blocks":["temp = int(input())","if temp < 30:","    print('Реактор замерз')","elif temp > 70:","    print('Перегрів')","else:","    print('Реактор стабільний')","if temp > 30:","    print('Реактор стабільний')"],"tests":[[[25],["Реактор замерз"]],[[50],["Реактор стабільний"]],[[85],["Перегрів"]],[[30],["Реактор стабільний"]],[[70],["Реактор стабільний"]],[[71],["Перегрів"]]],"structure":"elif"},
 {"id":19,"title":"Фінал: енергокупол","skill":"Два введення · підсумковий виклик","goal":"🏆","advanced":true,"story":"Фінальна місія! Щоб захистити базу, активуй енергокупол. Для цього потужність power має бути не меншою за потребу need. Після правильного рішення купол розгорнеться над базою.","task":"Прочитай power і need через два int(input()). Якщо power >= need, виведи «Купол активовано», інакше — «Мало потужності». Перевір рівність чисел!","hint":"power = int(input())\nneed = int(input())\nif power >= need:\n    print('Купол активовано')\nelse:\n    print('Мало потужності')","blocks":["power = int(input())","need = int(input())","if power >= need:","    print('Купол активовано')","else:","    print('Мало потужності')","if power > need:","    print('Купол активовано')"],"tests":[[[60,40],["Купол активовано"]],[[20,40],["Мало потужності"]],[[40,40],["Купол активовано"]],[[100,80],["Купол активовано"]]],"structure":"ifelse"}
 ];
-let student=null,level=0,done=0,success=false,attempts=0,hints=0;
+let student=null,level=0,done=0,success=false,attempts=0,hints=0,teacherMode=false;
 const editor=$("editor");
 
 /* Візуальні об'єкти та симуляції, що відповідають кожній місії */
@@ -640,9 +698,84 @@ function renderPad(){
  });
  if(granular)renderTokenPad();else renderLinePad();
 }
-function show(id){["intro","play","finish"].forEach(x=>$(x).hidden=x!==id)}
+function show(id){["intro","play","finish","teacherDashboard"].forEach(x=>$(x).hidden=x!==id)}
+
+const teacherAccessCode="Вова";
+function teacherCodeFor(m){
+ return m.hint.split("\n").filter(line=>!line.startsWith("Спробуй пояснити")).join("\n");
+}
+function renderTeacherDashboard(){
+ const list=$("teacherMissionList");list.replaceChildren();
+ missions.forEach((m,i)=>{
+  const card=document.createElement("article");card.className="teacher-mission";
+  const n=document.createElement("div");n.className="teacher-meta";
+  n.textContent="РІВЕНЬ "+(i+1)+"/"+missions.length+" · "+(i<5?"ГОТОВІ РЯДКИ":"ОКРЕМІ ЕЛЕМЕНТИ");
+  const heading=document.createElement("strong");heading.textContent=m.title;
+  const skill=document.createElement("div");skill.className="teacher-meta";skill.textContent=m.skill;
+  const task=document.createElement("div");task.className="teacher-task";task.textContent=m.task;
+  const button=document.createElement("button");button.type="button";button.className="secondary";button.textContent="Переглянути завдання →";
+  button.addEventListener("click",()=>openTeacherMission(i));
+  card.append(n,heading,skill,task,button);list.append(card);
+ });
+}
+function openTeacherMission(i){
+ if(!teacherMode||i<0||i>=missions.length)return;
+ level=i;show("play");draw();
+ $("play").scrollIntoView({behavior:"auto",block:"start"});
+}
+function leaveTeacherMode(){
+ teacherMode=false;success=false;student=null;done=0;level=0;
+ $("teacherCodeInput").value="";$("teacherLoginStatus").textContent="";
+ $("teacherEntry").open=false;
+ $("score").hidden=true;show("intro");
+}
+function fillTeacherCode(){
+ if(!teacherMode)return;
+ editor.value=teacherCodeFor(missions[level]);caret=selEnd=editor.value.length;
+ editor.setSelectionRange(caret,selEnd);
+ $("feedback").className="feedback";$("feedback").textContent="Приклад розв’язку вставлено. Обери вхідні дані та натисни «Запустити код».";
+ $("tests").hidden=true;
+}
+function runTeacherDemo(){
+ if(!teacherMode)return;
+ fillTeacherCode();
+ const ok=runCheck();launchScene(ok);
+}
+$("teacherLoginForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ if($("teacherCodeInput").value.trim()!==teacherAccessCode){
+  $("teacherLoginStatus").textContent="Невірний код учителя. Спробуйте ще раз.";
+  $("teacherCodeInput").select();
+  return;
+ }
+ teacherMode=true;student=null;done=0;attempts=0;level=0;
+ $("teacherCodeInput").value="";$("teacherLoginStatus").textContent="";
+ $("teacherEntry").open=false;$("score").hidden=true;
+ renderTeacherDashboard();show("teacherDashboard");
+});
+$("teacherExit").addEventListener("click",leaveTeacherMode);
+$("teacherBack").addEventListener("click",()=>{
+ if(!teacherMode)return;
+ renderTeacherDashboard();show("teacherDashboard");
+});
+$("teacherPrev").addEventListener("click",()=>openTeacherMission(level-1));
+$("teacherNext").addEventListener("click",()=>openTeacherMission(level+1));
+$("teacherReveal").addEventListener("click",()=>{
+ if(!teacherMode)return;
+ const panel=$("teacherSolution");panel.hidden=!panel.hidden;
+ $("teacherReveal").textContent=panel.hidden?"👁 Показати розв’язок":"🙈 Сховати розв’язок";
+});
+$("teacherUseCode").addEventListener("click",fillTeacherCode);
+$("teacherDemo").addEventListener("click",runTeacherDemo);
+
 function draw(){
  const m=missions[level];success=false;
+ $("teacherTools").hidden=!teacherMode;
+ $("teacherSolution").hidden=true;$("teacherSolutionCode").textContent=teacherMode?teacherCodeFor(m):"";
+ $("teacherReveal").textContent="👁 Показати розв’язок";
+ $("teacherPrev").disabled=level===0;$("teacherNext").disabled=level===missions.length-1;
+ $("map").hidden=teacherMode;$("bar").parentElement.hidden=teacherMode;
+ $("score").hidden=teacherMode;
  $("missionNumber").textContent=(level>=5?"🧩 Складання з елементів":"🎯 Готові рядки")+" · Рівень "+(level+1)+"/"+missions.length+" (місія "+m.id+")";
  $("skill").textContent=m.skill;$("title").textContent=m.title;$("story").textContent=m.story;$("task").textContent=m.task;
  editor.value="";caret=selEnd=0;renderPad();
@@ -772,12 +905,18 @@ function runCheck(){
 $("studentForm").addEventListener("submit",e=>{
  e.preventDefault();if(!e.currentTarget.reportValidity())return;
  const tidy=s=>s.trim().replace(/\s+/g," ");
+ teacherMode=false;
  student={klass:$("studentClass").value,group:$("studentGroup").value,surname:tidy($("surname").value),first:tidy($("firstName").value)};
  if(!student.surname||!student.first)return;
  level=done=attempts=hints=0;show("play");$("score").hidden=false;draw();
 });
 $("help").addEventListener("toggle",()=>{if($("help").open&&!success)hints++});
 $("check").addEventListener("click",()=>{
+ if(teacherMode){
+  const ok=runCheck();launchScene(ok);
+  if(!ok)$("help").hidden=false;
+  return; // перегляд не змінює учнівські бали й прогрес
+ }
  attempts++;
  const ok=runCheck();
  launchScene(ok);
