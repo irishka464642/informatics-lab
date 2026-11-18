@@ -51,12 +51,14 @@
 <article class="card"><h3>2. Робота з перекладачем</h3><p>Переклади з англійської на українську слово <b>library</b>.</p><a class="external" href="https://translate.google.com/?sl=en&tl=uk&op=translate" target="_blank" rel="noopener noreferrer">Відкрити перекладач ↗</a><div class="answer-row"><label for="p1" class="sr-only">Переклад слова library</label><input id="p1" placeholder="Переклад українською" autocomplete="off"><button class="btn" data-check="1">Перевірити</button></div><div id="pf1" role="status"></div></article>
 <article class="card"><h3>3. Знайомство з віртуальним дослідом</h3><p>Переглянь симуляції PhET і <b>запиши назву однієї</b>, яку хотів би спробувати. Дослід можна виконувати за бажанням.</p><a class="external" href="https://phet.colorado.edu/uk/" target="_blank" rel="noopener noreferrer">Відкрити PhET ↗</a><div class="answer-row"><label for="p2" class="sr-only">Назва симуляції</label><input id="p2" placeholder="Назва симуляції" autocomplete="off"><button class="btn" data-check="2">Записати</button></div><div id="pf2" role="status"></div></article>
 <div class="btnrow"><button class="btn secondary" data-next="1">← Назад</button><button class="btn" data-next="3">До підсумку →</button></div></section>
-<section class="panel" id="panel3" hidden><div class="section-head"><div><h2>Підсумкова перевірка</h2><p><b id="quizVariant">Варіант А.</b> 12 запитань: комп’ютерні мережі, пошук інформації, навчальні ресурси й безпечна робота.</p></div><span class="time">15 хв</span></div><div id="quizArea"></div><div class="card"><h3>На завершення</h3><p>Покажи результат учителю. Подумай, який навчальний ресурс станеш використовувати частіше.</p></div><div class="btnrow"><button class="btn secondary" data-next="2">← До практики</button></div></section>
-<details><summary>Нотатка для вчителя</summary><p>Структура уроку: пригадування 5 хв, знайомство з ресурсами 8 хв, практика 12 хв, підсумкова перевірка 15 хв, рефлексія 5 хв. У кожному варіанті підсумкової перевірки є по 4 питання для ГР1, ГР3, ГР4. Результат — орієнтир для формувального оцінювання, а не автоматична оцінка до журналу.</p><p>Учні обирають варіант А, Б або В на початковому екрані. Відповіді зберігають відповіді тільки в браузері на своєму пристрої. Автоматичного надсилання результатів учителю немає. За відсутності телефона можна працювати в парі.</p><p>Основа: КТП на 17.11.2026; модельна програма й підручник Й. Ривкінда та ін., «Інформатика. 5 клас», § 2.1–2.5.</p></details>
+<section class="panel" id="panel3" hidden><div class="section-head"><div><h2>Підсумкова перевірка</h2><p><b id="quizVariant">Варіант А.</b> 12 запитань: комп’ютерні мережі, пошук інформації, навчальні ресурси й безпечна робота.</p></div><span class="time">15 хв</span></div><div id="quizArea"></div><div class="card"><h3>На завершення</h3><p>Збережи результат у форматі CSV або надішли його до журналу після налаштування підключення.</p></div><div class="btnrow"><button class="btn secondary" data-next="2">← До практики</button></div></section>
+<details><summary>Нотатка для вчителя</summary><p>Структура уроку: пригадування 5 хв, знайомство з ресурсами 8 хв, практика 12 хв, підсумкова перевірка 15 хв, рефлексія 5 хв. У кожному варіанті підсумкової перевірки є по 4 питання для ГР1, ГР3, ГР4. Результат — орієнтир для формувального оцінювання, а не автоматична оцінка до журналу.</p><p>Учні вводять прізвище, ім’я, клас 5-А/5-Б/5-В, групу 1/2 і вибирають варіант А/Б/В. Можна зберігати CSV. Для автоматичного надсилання потрібно розгорнути Apps Script і вказати адресу RESULTS_ENDPOINT у коді сайту. За відсутності телефона можна працювати в парі.</p><p>Основа: КТП на 17.11.2026; модельна програма й підручник Й. Ривкінда та ін., «Інформатика. 5 клас», § 2.1–2.5.</p></details>
 </div></main><footer>Інформатика · 5-А / 5-Б / 5-В · Урок 11 · Android та iPhone</footer>
 <script>
 (function(){
 'use strict';
+// Додати URL нового Google Apps Script після розгортання приймача.
+var RESULTS_ENDPOINT='';
 var variants={
 a:[
 ['ГР1','Комп’ютери в одному шкільному кабінеті з’єднані між собою. Яка це мережа?',['Локальна','Глобальна','Соціальна мережа'],0,'Локальна мережа охоплює обмежену територію.'],
@@ -139,12 +141,49 @@ $('quizArea').querySelectorAll('[data-answer]').forEach(function(b){b.addEventLi
 $('backQ').addEventListener('click',function(){if(qi>0){qi--;drawQuiz()}});
 $('forwardQ').addEventListener('click',function(){if(st.quiz[qi]===undefined){$('warning').textContent='Спочатку обери одну відповідь.';return}if(qi<11){qi++;drawQuiz()}else{var missing=variants[v].findIndex(function(q,i){return st.quiz[i]===undefined});if(missing>=0){qi=missing;drawQuiz();$('warning').textContent='Дай відповіді на всі запитання.';return}st.finished=true;save();drawResult();window.scrollTo({top:0,behavior:'smooth'})}})
 }
+
+function resultPayload(){
+ var questions=variants[v],groups={'ГР1':0,'ГР3':0,'ГР4':0},total=0,miss=[];
+ questions.forEach(function(q,i){if(st.quiz[i]===q[3]){total++;groups[q[0]]++}else miss.push(i+1)});
+ return {lesson:'11',klass:profile.klass,group:profile.group,surname:profile.surname,firstname:profile.firstname,
+ variant:label,score:total,gr1:groups['ГР1'],gr3:groups['ГР3'],gr4:groups['ГР4'],
+ practice:[0,1,2].filter(function(i){return st.practiceDone[i]===true}).length,
+ warm:warm.filter(function(q,i){return st.warm[i]===q[1]}).length,
+ resources:matches.filter(function(q,i){return st.match[i]===q[2]}).length,
+ answers:questions.map(function(q,i){return ['А','Б','В'][st.quiz[i]]||'?'}).join(''),
+ mistakes:miss.join(','),ocean:st.practice[0]||'',translation:st.practice[1]||'',
+ simulation:st.practice[2]||'',attempt:1};
+}
+function resultCells(d){return [new Date().toLocaleString('uk-UA'),d.klass,d.group,d.surname,d.firstname,d.variant,
+ d.score,d.gr1,d.gr3,d.gr4,d.practice,d.warm,d.resources,d.answers,d.mistakes,d.ocean,d.translation,d.simulation,d.attempt,'Внесено вручну']}
+function csvField(v){var s=String(v==null?'':v).replace(/[\r\n\t]/g,' ').trim();if(/^[=+\-@]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'}
+function exportResult(){
+ if(!profile||!st.finished)return;
+ var header=['Дата й час','Клас','Група','Прізвище','Ім’я','Варіант','Бал / 12','ГР1 / 4','ГР3 / 4','ГР4 / 4','Практика / 3','Пригадай / 4','Ресурси / 3','Відповіді тесту','Помилки (№)','Океан','Переклад','Симуляція','Спроба','Статус приймання'];
+ var csv=[header,resultCells(resultPayload())].map(function(row){return row.map(csvField).join(';')}).join('\r\n');
+ var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='urok11_'+profile.klass.replace('-','')+'_gr'+profile.group+'_variant_'+v+'.csv';
+ document.body.append(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},1200);
+}
+function journalNote(msg,isWarning){var el=$('journalStatus');if(!el)return;el.textContent=msg;el.className='sendStatus'+(isWarning?' notice':'')}
+async function sendResult(){
+ if(!RESULTS_ENDPOINT){journalNote('Автоматичне надсилання ще не підключене. Завантаж CSV і передай учителю для внесення до журналу.',true);return}
+ if(!profile||!st.finished)return;
+ var btn=$('sendJournal');btn.disabled=true;journalNote('Надсилаємо запит до журналу…');
+ try{
+   await fetch(RESULTS_ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(resultPayload())});
+   journalNote('Запит передано. Браузер не може підтвердити запис у Google Таблиці — уточни у вчителя, чи результат з’явився.',false);
+ }catch(err){journalNote('Не вдалося надіслати результат. Завантаж CSV або повтори спробу.',true)}
+ finally{btn.disabled=false}
+}
+
 function drawResult(){
 var arr=variants[v],correct=0,group={'ГР1':0,'ГР3':0,'ГР4':0};
 arr.forEach(function(q,i){if(st.quiz[i]===q[3]){correct++;group[q[0]]++}});
 var msg=correct>=11?'Чудовий результат!':correct>=8?'Добре попрацював(ла)!':correct>=5?'Є що повторити.':'Повернися до теми та повтори.';
-$('quizArea').innerHTML='<div class="results"><div class="score">'+correct+'<small> / 12</small></div><h3>'+msg+'</h3><p>Варіант '+label+'. Це навчальна перевірка, оцінку за урок визначає вчитель.</p></div><div class="result-grid"><div><strong>'+group['ГР1']+'/4</strong><span>ГР1 · Інформація</span></div><div><strong>'+group['ГР3']+'/4</strong><span>ГР3 · Цифрові дії</span></div><div><strong>'+group['ГР4']+'/4</strong><span>ГР4 · Безпека</span></div></div><article class="card"><h3>Покажи результат учителю</h3><p>Можна показати екран або скопіювати рядок із результатом.</p><button type="button" class="btn" id="copyResult">Скопіювати результат</button><div id="copyMessage" role="status"></div></article><details><summary>Переглянути відповіді й пояснення</summary>'+arr.map(function(q,i){return '<div class="review-item"><strong>'+(i+1)+'. '+esc(q[1])+'</strong><p>Твоя відповідь: '+esc(q[2][st.quiz[i]])+' '+(st.quiz[i]===q[3]?'✓':'✗')+'</p><p class="correct">Правильно: '+esc(q[2][q[3]])+'</p><p>'+esc(q[4])+'</p></div>'}).join('')+'</details><div class="btnrow"><button type="button" class="btn secondary" id="retry">Спробувати ще раз ↺</button></div>';
-$('copyResult').addEventListener('click',function(){var msg='Інформатика, 5-Б, 17.11.2026. Варіант '+label+'. Результат '+correct+'/12; ГР1 '+group['ГР1']+'/4; ГР3 '+group['ГР3']+'/4; ГР4 '+group['ГР4']+'/4.';if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(msg).then(function(){$('copyMessage').className='feedback';$('copyMessage').textContent='✓ Результат скопійовано.'}).catch(function(){$('copyMessage').className='feedback';$('copyMessage').textContent=msg})}else{$('copyMessage').className='feedback';$('copyMessage').textContent=msg}});
+$('quizArea').innerHTML='<div class="card"><h3>Робота учня</h3><p><b>'+esc(profile.surname+' '+profile.firstname)+'</b> · '+esc(profile.klass)+' · група '+esc(profile.group)+' · варіант '+label+'</p></div><div class="results"><div class="score">'+correct+'<small> / 12</small></div><h3>'+msg+'</h3><p>Варіант '+label+'. Це навчальна перевірка, оцінку за урок визначає вчитель.</p></div><div class="result-grid"><div><strong>'+group['ГР1']+'/4</strong><span>ГР1 · Інформація</span></div><div><strong>'+group['ГР3']+'/4</strong><span>ГР3 · Цифрові дії</span></div><div><strong>'+group['ГР4']+'/4</strong><span>ГР4 · Безпека</span></div></div><article class="card"><h3>Збережи результат для журналу</h3><p>Результат можна завантажити у форматі CSV. Автоматичне надсилання стане доступним після підключення приймача Google Apps Script.</p><div class="result-actions"><button type="button" class="btn" id="exportCSV">↓ Завантажити CSV</button><button type="button" class="btn secondary" id="sendJournal">↗ Надіслати в журнал</button></div><div class="sendStatus notice" id="journalStatus" role="status">Поки що результати зберігаються на телефоні. Для запису до спільної таблиці потрібне підключення.</div><button type="button" class="btn secondary" id="copyResult">Скопіювати короткий результат</button><div id="copyMessage" role="status"></div></article><details><summary>Переглянути відповіді й пояснення</summary>'+arr.map(function(q,i){return '<div class="review-item"><strong>'+(i+1)+'. '+esc(q[1])+'</strong><p>Твоя відповідь: '+esc(q[2][st.quiz[i]])+' '+(st.quiz[i]===q[3]?'✓':'✗')+'</p><p class="correct">Правильно: '+esc(q[2][q[3]])+'</p><p>'+esc(q[4])+'</p></div>'}).join('')+'</details><div class="btnrow"><button type="button" class="btn secondary" id="retry">Спробувати ще раз ↺</button></div>';
+$('exportCSV').addEventListener('click',exportResult);$('sendJournal').addEventListener('click',sendResult);
+$('copyResult').addEventListener('click',function(){var msg='Урок 11: '+profile.surname+' '+profile.firstname+' · '+profile.klass+' · група '+profile.group+' · варіант '+label+'. Бал '+correct+'/12; ГР1 '+group['ГР1']+'/4; ГР3 '+group['ГР3']+'/4; ГР4 '+group['ГР4']+'/4.';if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(msg).then(function(){$('copyMessage').className='feedback';$('copyMessage').textContent='✓ Результат скопійовано.'}).catch(function(){$('copyMessage').className='feedback';$('copyMessage').textContent=msg})}else{$('copyMessage').className='feedback';$('copyMessage').textContent=msg}});
 $('retry').addEventListener('click',function(){if(!confirm('Почати підсумкову перевірку ще раз? Попередній результат зникне.'))return;st.quiz={};st.finished=false;qi=0;save();drawQuiz()})
 }
 $('reset').addEventListener('click',function(){if(!v||!st)return;if(!confirm('Очистити відповіді для варіанта '+label+' і почати спочатку?'))return;st=initial();qi=0;save();drawWarm();drawMatch();for(var k=0;k<3;k++){$('p'+k).value='';$('pf'+k).className='';$('pf'+k).textContent=''}drawQuiz();show(0)});
