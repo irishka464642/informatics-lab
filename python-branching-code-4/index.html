@@ -509,6 +509,7 @@ $("restart").addEventListener("click",()=>{
 });
 window.addEventListener("online",drain);
 render();
+if(state.linkedSession&&!state.locked)alertSync("👤 Дані підставлено з частини 1. Перевір ім’я, прізвище, клас і групу перед збереженням.",false);
 if(Object.keys(state.pending).length)drain();
 })();
 </script>
