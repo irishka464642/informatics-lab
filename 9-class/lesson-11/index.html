@@ -442,7 +442,12 @@ function plainText(){
 }
 function saveFile(){
  const title=$("documentTitle").value.trim()||"Новий документ";
- const clean=sanitizeHTML(editor.innerHTML);
+ const exportContainer=document.createElement("div");
+ exportContainer.innerHTML=sanitizeHTML(editor.innerHTML);
+ for(const h of exportContainer.querySelectorAll("h1,h2")){
+  if(h.dataset.bid)h.id="heading-"+h.dataset.bid;
+ }
+ const clean=exportContainer.innerHTML;
  let tocHTML="";
  if(tocEnabled){
   const heads=Array.from(editor.querySelectorAll("h1,h2")).filter(h=>h.textContent.trim());
