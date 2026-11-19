@@ -69,10 +69,17 @@ function wordFile(student,klass,score){
  }
  const pxToTwip=px=>Math.round(px*15);
  function colorHex(color){
-  const s=String(color||"");
-  if(/^#[0-9a-f]{6}$/i.test(s))return s.slice(1).toUpperCase();
-  const m=s.match(/rgba?\(([\d.]+)[ ,]+([\d.]+)[ ,]+([\d.]+)/);
-  return m?m.slice(1,4).map(x=>Math.max(0,Math.min(255,Math.round(Number(x)))).toString(16).padStart(2,"0")).join("").toUpperCase():null;
+  const s=String(color||"").trim().toLowerCase();
+  if(!s||s==="transparent"||s==="none")return null;
+  if(/^#[0-9a-f]{6}$/.test(s))return s.slice(1).toUpperCase();
+  if(/^#[0-9a-f]{8}$/.test(s))return parseInt(s.slice(7,9),16)===0?null:s.slice(1,7).toUpperCase();
+  if(/^#[0-9a-f]{3}$/.test(s))return s.slice(1).split("").map(x=>x+x).join("").toUpperCase();
+  // The transparent computed browser default is rgba(0, 0, 0, 0).
+  // Ignoring the alpha channel used to export it as BLACK Word shading.
+  const m=s.match(/^rgba?\(\s*(\d{1,3})\s*[, ]+\s*(\d{1,3})\s*[, ]+\s*(\d{1,3})(?:\s*[,/]\s*([\d.]+))?\s*\)$/);
+  if(!m)return null;
+  if(s.startsWith("rgba")&&(m[4]===undefined||Number(m[4])<=0))return null;
+  return m.slice(1,4).map(x=>Math.max(0,Math.min(255,Number(x))).toString(16).padStart(2,"0")).join("").toUpperCase();
  }
  function textRun(node){
   if(node.nodeType===Node.TEXT_NODE){
@@ -87,7 +94,7 @@ function wordFile(student,klass,score){
    if(c.textDecorationLine.includes("underline"))rpr+='<w:u w:val="single"/>';
    const fg=colorHex(c.color);if(fg)rpr+='<w:color w:val="'+fg+'"/>';
    for(let p=parent;p&&p!==editor;p=p.parentElement){
-    const bg=colorHex(getComputedStyle(p).backgroundColor);
+    const bg=colorHex(p.style?.backgroundColor); // export only intentional user-applied marker, never transparent computed styles
     if(bg&&bg!=="FFFFFF"&&bg!=="F7FAFF"){rpr+='<w:shd w:val="clear" w:color="auto" w:fill="'+bg+'"/>';break;}
    }
    return '<w:r><w:rPr>'+rpr+'</w:rPr><w:t xml:space="preserve">'+xesc(node.nodeValue)+'</w:t></w:r>';
