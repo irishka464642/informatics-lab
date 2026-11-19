@@ -2,276 +2,504 @@
 <html lang="uk">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#224b93">
-<title>Текстовий редактор · Інформатика · 9 клас</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2753a2">
+<title>Текстовий редактор — 9 клас</title>
 <style>
-:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#26334d;background:#f4f6fb;line-height:1.5;--blue:#284f9d;--blue2:#eaf0ff;--border:#d9e0ee;--muted:#65728a}
-*{box-sizing:border-box}body{margin:0}button,input,textarea,select{font:inherit}button{cursor:pointer;touch-action:manipulation}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #edaa45;outline-offset:2px}
-.wrap{max-width:920px;margin:0 auto;padding:14px 13px 60px}
-.hero{background:linear-gradient(120deg,#22417c,#415fa2);color:#fff;padding:24px;border-radius:20px}
-.hero h1{font-size:clamp(25px,5vw,34px);line-height:1.17;margin:8px 0}.hero p{max-width:700px;margin:8px 0 0}
-.card{background:#fff;border:1px solid var(--border);padding:18px;margin:14px 0;border-radius:17px;box-shadow:0 4px 14px #112f5d09}
-.card h2{font-size:19px;margin:0 0 12px}.muted,.small{color:var(--muted)}.small{font-size:13px}
-.fields{display:grid;grid-template-columns:1fr 2fr;gap:12px}
-label{display:block;font-weight:650;margin-bottom:6px}
-input,select,textarea{display:block;width:100%;padding:11px;border:1px solid #b6c3d8;border-radius:10px;background:#fff;color:#243148;min-height:44px}
-textarea{resize:vertical;min-height:82px;line-height:1.55}input::placeholder,textarea::placeholder{color:#8992a1}
-.steps{margin:0;padding-left:22px}.steps li{margin:9px 0}.steps b{color:#213c73}
-.tabs{position:sticky;top:0;z-index:20;display:flex;gap:6px;background:#f4f6fb;padding:9px 0 5px}
-.tab{flex:1;min-height:48px;border:1px solid #cad5eb;background:#fff;color:#264676;border-radius:12px;font-weight:700;padding:8px 3px;font-size:clamp(12px,3.3vw,15px)}
-.tab[aria-selected=true]{background:var(--blue);color:#fff;border-color:var(--blue)}
-.view[hidden]{display:none!important}.btn{display:inline-flex;justify-content:center;align-items:center;gap:5px;border:0;border-radius:10px;min-height:44px;padding:10px 14px;font-weight:650}
-.primary{background:var(--blue);color:white}.soft{background:var(--blue2);color:#244684}.outline{background:#fff;border:1px solid #bcc8dc;color:#324861}.warn{background:#fff1f1;color:#944447}
-.actions{display:flex;flex-wrap:wrap;gap:9px}.actions .btn{flex:1 1 148px}
-.block-card{border:1px solid var(--border);background:#fafbfe;border-radius:13px;padding:12px;margin:12px 0}
-.block-top{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:9px}
-.block-number{font-size:13px;color:#53627d;font-weight:700}.block-top select{width:auto;flex:1;min-width:135px;max-width:250px}
-.icon-btn{width:44px;min-width:44px;min-height:44px;border-radius:10px;border:1px solid #c9d3e4;background:white;color:#304f81;font-size:19px}
-.icon-btn:disabled{opacity:.35;cursor:not-allowed}
-.block-card label{font-size:13px;color:#57647c}
-.extra{margin:11px 0}.comment-box{border-top:1px dashed #cad5e5;padding-top:11px;margin-top:11px}
-.hint{background:#f0f5ff;border-left:4px solid #8aa5dd;border-radius:8px;padding:11px;margin:12px 0}
-.feedback{padding:12px;background:#f1f5fd;border-radius:10px;color:#2a436d;margin-top:12px}
-.preview-paper{border:1px solid #dbe2ed;background:#fff;padding:20px;box-shadow:0 8px 25px #0a276511;border-radius:11px;overflow-wrap:anywhere}
-.preview-paper h1{color:#193b76;margin:21px 0 7px;font-size:23px}.preview-paper h2{color:#355789;margin:17px 0 7px;font-size:19px}
-.preview-paper p{margin:7px 0 12px;line-height:1.7}.preview-paper a{overflow-wrap:anywhere}
-.preview-paper .doc-title{text-align:center;color:#1a3054;font-size:26px;border-bottom:1px solid #dee5f2;padding-bottom:14px}
-.doc-toc{border:1px solid #dbe6f8;background:#f7faff;padding:12px 15px;border-radius:10px;margin:14px 0}
-.doc-toc h3{font-size:16px;margin:0 0 9px}.doc-toc ol{padding-left:24px;margin:5px 0}
-.doc-toc .second{margin-left:17px;font-size:14px}.review{margin:4px 0 13px;padding:9px;border-left:3px solid #e0ad55;background:#fff9ed;color:#73582f;font-size:14px;border-radius:5px}
-.score{display:flex;align-items:center;gap:14px;background:#edf4ff;padding:15px;border-radius:13px}
-.score strong{font-size:32px;color:#214b91;white-space:nowrap}
-.checkrow{display:flex;gap:10px;align-items:flex-start;border-bottom:1px solid #edf0f4;padding:11px 0}
-.checkrow .mark{min-width:22px;font-size:19px}.checkrow p{margin:0}.checkrow small{display:block;color:#68768d}
-.status{font-size:13px;margin-top:10px;color:#5f7092}#toast{position:fixed;z-index:100;bottom:14px;left:50%;transform:translateX(-50%);width:min(93vw,450px);background:#263e66;color:#fff;padding:12px 18px;text-align:center;border-radius:12px;box-shadow:0 9px 28px #12243e33}
-footer{text-align:center;color:#718099;font-size:12px;margin:25px 0}
-@media(max-width:500px){.fields{grid-template-columns:1fr}.card{padding:14px}.hero{padding:19px}.block-top{gap:5px}.block-top select{max-width:100%;flex-basis:calc(100% - 105px)}.preview-paper{padding:14px}.tabs{gap:4px}.score strong{font-size:29px}}
+:root{font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;--blue:#2753a2;--blue-dark:#183b78;--border:#dce2ed;--ink:#263347;--soft:#f1f4f9;--muted:#68788d;color:var(--ink);background:#edf1f7;font-size:15px}
+*{box-sizing:border-box}
+body{margin:0}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;touch-action:manipulation}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #ecb456;outline-offset:2px}
+button:disabled{opacity:.45;cursor:not-allowed}
+header{background:#fff;border-bottom:1px solid var(--border)}
+.top{max-width:1120px;margin:auto;display:flex;align-items:center;gap:11px;padding:12px 15px;flex-wrap:wrap}
+.logo{background:var(--blue);color:#fff;width:41px;height:41px;display:grid;place-items:center;border-radius:9px;font:bold 25px Georgia,serif;flex:none}
+.doc-info{flex:1;min-width:170px}
+.doc-info input{font-size:18px;font-weight:650;padding:4px 7px;width:min(100%,380px);border:1px solid transparent;border-radius:6px;background:#fff;color:#182c4d}
+.doc-info input:focus{border-color:#9bb2dc}
+.save-info{color:#65758c;font-size:12px;padding-left:8px}
+.top-actions{display:flex;gap:7px;flex-wrap:wrap}
+.action{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:42px;border:1px solid #b9c8e1;background:white;color:#21447e;border-radius:9px;padding:7px 12px;font-weight:650}
+.action.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.ribbon{position:sticky;top:0;z-index:30;background:#fff;box-shadow:0 4px 13px #19365917;border-bottom:1px solid var(--border)}
+.ribbon-inner{max-width:1120px;margin:auto}
+.tabs{display:flex;gap:3px;padding:5px 13px 0;border-bottom:1px solid #e5e9f1}
+.tab{border:0;background:transparent;padding:10px 13px 9px;min-height:43px;color:#495c75;font-weight:650;border-bottom:3px solid transparent}
+.tab[aria-selected=true]{color:var(--blue);border-bottom-color:var(--blue)}
+.tools{display:flex;gap:7px;align-items:center;flex-wrap:wrap;padding:9px 13px;min-height:61px}
+.tools[hidden]{display:none}
+.tool-group{display:flex;align-items:center;gap:4px;border-right:1px solid #dce2ea;padding-right:8px;flex-wrap:wrap}
+.tool-group:last-child{border-right:none}
+.tool{border:1px solid transparent;background:#f4f6fa;color:#223d63;border-radius:8px;min-height:44px;min-width:44px;padding:9px;font-size:16px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.tool:active,.tool.active{background:#dce8fc;color:#17478d}
+.tool.text{font-size:14px;padding:8px 12px}
+.tool.bold{font-weight:900}.tool.italic{font-style:italic}.tool.underline{text-decoration:underline}
+.toolselect{border:1px solid #c7d1e2;background:white;color:#253d61;border-radius:8px;min-height:44px;padding:7px 8px;min-width:154px;max-width:185px}
+.workspace{max-width:1120px;margin:0 auto;padding:18px 14px 52px}
+.intro{font-size:12px;color:#697a92;margin:0 auto 11px;max-width:760px;text-align:center}
+.paper{margin:0 auto;max-width:760px;min-height:740px;padding:52px 62px 70px;background:white;box-shadow:0 5px 28px #23324c18;border:1px solid #e0e5ed;border-radius:3px;overflow-wrap:anywhere}
+.page-title{font:700 24px/1.3 Georgia,"Times New Roman",serif;text-align:center;margin:0 0 26px;color:#1b2638}
+.editor{outline:0;min-height:460px;font:17px/1.62 Georgia,"Times New Roman",serif;color:#172433;white-space:normal;word-wrap:break-word;caret-color:#1e4ca2}
+.editor:focus{outline:none}
+.editor p,.editor div{margin:0 0 12px;min-height:1.5em}
+.editor h1{font:700 23px/1.35 system-ui,sans-serif;margin:21px 0 10px;color:#192e50}
+.editor h2{font:700 19px/1.4 system-ui,sans-serif;margin:17px 0 8px;color:#2b4974}
+.editor ul,.editor ol{margin:0 0 12px;padding-left:27px}
+.editor li{padding:1px 0}
+.editor a,.toc a{color:#205aac;text-decoration:underline}
+.editor [data-bid].has-note{box-shadow:inset 3px 0 #e8ab48;padding-left:8px;background:#fff8e9}
+.editor:empty::before{content:"Торкнися сторінки й почни вводити текст…";color:#9faaba}
+.toc{border:1px solid #d4e0f2;background:#f8faff;border-radius:7px;padding:15px 18px;margin:0 0 25px;font:15px/1.5 system-ui,sans-serif}
+.toc[hidden]{display:none}
+.toc h2{margin:0 0 10px;font-size:18px;color:#193c72}
+.toc ol{margin:0;padding-left:24px}
+.toc li{padding:3px 0}
+.toc li.sub{margin-left:20px;font-size:14px;list-style-type:circle}
+.toc .empty{font-style:italic;color:#66768b;margin:0}
+.notes{max-width:760px;margin:14px auto 0;padding:18px;background:white;border:1px solid var(--border);border-radius:11px}
+.notes[hidden]{display:none}
+.notes h2{font-size:17px;margin:0 0 12px}
+.note{border:1px solid #e5eaf2;background:#fffaf0;border-radius:9px;padding:11px 12px;margin:10px 0}
+.note .context{font-size:12px;color:#6e6f6a;margin:0 0 3px;overflow-wrap:anywhere}
+.note p{margin:3px 0 9px}
+.note-bottom{display:flex;justify-content:flex-end;gap:8px}
+.mini{background:#fff;border:1px solid #bfcedf;border-radius:8px;min-height:38px;padding:7px 12px;color:#31537c}
+.status{max-width:760px;margin:12px auto 0;color:#69788f;font-size:12px;text-align:center}
+dialog{width:min(94vw,490px);border:1px solid #d6dfef;border-radius:16px;box-shadow:0 20px 55px #12223f55;padding:22px;color:#253551}
+dialog::backdrop{background:#1529438c}
+dialog h2{font-size:19px;margin:0 0 10px}
+dialog p{color:#5e6e85;margin:0 0 15px}
+dialog label{display:block;font-weight:650;font-size:14px;margin:9px 0 5px}
+dialog input,dialog textarea{width:100%;min-height:45px;border:1px solid #b7c6db;border-radius:9px;padding:11px}
+dialog textarea{min-height:105px;resize:vertical}
+dialog .dialog-actions{display:flex;flex-wrap:wrap;gap:9px;justify-content:flex-end;margin-top:17px}
+.dialog-actions .action{min-width:110px}
+dialog .error{font-size:13px;color:#aa3650;min-height:20px}
+footer{text-align:center;font-size:12px;color:#738196;margin:24px auto}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:60;background:#21395d;color:#fff;padding:12px 19px;border-radius:10px;box-shadow:0 10px 28px #22334a40;max-width:92vw;text-align:center}
+@media(max-width:700px){
+.top{padding:10px 12px;gap:7px}.doc-info input{font-size:16px}.top-actions .action{padding:7px 10px;font-size:13px}
+.tools{gap:5px;padding:7px 9px;max-height:none}.tool-group{gap:3px;padding-right:6px}.tool{min-width:42px;min-height:44px}
+.toolselect{min-width:138px;width:138px}.workspace{padding:13px 8px 36px}
+.paper{padding:25px 17px 50px;min-height:590px;border-radius:4px}
+.editor{font-size:16px;min-height:420px}.page-title{font-size:21px;margin-bottom:19px}
+.tab{padding:9px 13px}.notes{padding:13px}
+}
+@media(max-width:420px){.top-actions{width:100%}.top-actions .action{flex:1}.tool-group{border-right:0}.tools{gap:4px}.tool.text{font-size:13px;padding:8px 10px}}
+@media print{.ribbon,.top-actions,.intro,.notes,.status,footer{display:none!important}header{border:0}.top{display:none}.workspace{padding:0}.paper{box-shadow:none;border:0;max-width:none;min-height:0;padding:0}.editor{min-height:0}}
 </style>
 </head>
-<body><main class="wrap">
-<header class="hero"><div>ІНФОРМАТИКА · 9 КЛАС · УРОК 11</div>
-<h1>Текстовий редактор</h1>
-<p>Створюй і редагуй документи в браузері телефона. Доступні заголовки, зміст, посилання та коментарі.</p></header>
-<section class="card">
-<h2>Мій документ</h2>
-<div class="fields"><div><label for="klass">Клас</label><select id="klass"><option value="">Оберіть клас</option><option>9-А</option><option>9-Б</option></select></div>
-<div><label for="student">Ім’я або навчальний код (необов’язково)</label><input id="student" maxlength="40" placeholder="Наприклад, Учень 07" autocomplete="off"></div></div>
-<p class="small">Без реєстрації й установлення додатків. Документ зберігається лише в браузері цього телефона. Сайт не надсилає його вчителю автоматично.</p></section>
-<nav class="tabs" aria-label="Режими редактора">
-<button type="button" class="tab" data-tab="edit" aria-selected="true">✎ Редактор</button>
-<button type="button" class="tab" data-tab="preview" aria-selected="false">▤ Документ</button>
-<button type="button" class="tab" data-tab="check" aria-selected="false">↗ Збереження</button>
-</nav>
-<section class="view" id="view-edit">
-<div class="card"><h2>Редактор</h2>
-<label for="docTitle">Назва документа</label><input id="docTitle" maxlength="100" placeholder="Введи назву документа">
-<div class="hint">Стиль «Заголовок 1» — для основних розділів, «Заголовок 2» — для підрозділів. Текст у полі сам собою не стає заголовком — зміни тип блоку.</div>
-<div id="blocks"></div>
-<div class="actions">
-<button type="button" class="btn soft" data-add="p">+ Абзац</button>
-<button type="button" class="btn soft" data-add="h1">+ Заголовок 1</button>
-<button type="button" class="btn soft" data-add="h2">+ Заголовок 2</button>
-<button type="button" class="btn soft" data-add="link">+ Посилання</button>
+<body>
+<header>
+ <div class="top">
+  <div class="logo" aria-hidden="true">W</div>
+  <div class="doc-info">
+   <input id="documentTitle" type="text" maxlength="100" aria-label="Назва документа" value="Новий документ">
+   <div class="save-info" id="saveInfo" role="status">Локальне збереження</div>
+  </div>
+  <div class="top-actions">
+   <button type="button" class="action primary" id="download">↓ Зберегти</button>
+   <button type="button" class="action" id="share">Поділитися</button>
+   <button type="button" class="action" id="newDocument">Новий</button>
+  </div>
+ </div>
+</header>
+<div class="ribbon">
+ <div class="ribbon-inner">
+  <div class="tabs" role="tablist" aria-label="Панель інструментів">
+   <button type="button" class="tab" data-tab="home" role="tab" aria-selected="true">Головна</button>
+   <button type="button" class="tab" data-tab="insert" role="tab" aria-selected="false">Вставлення</button>
+   <button type="button" class="tab" data-tab="review" role="tab" aria-selected="false">Рецензування</button>
+  </div>
+  <div class="tools" id="tools-home" role="tabpanel">
+   <div class="tool-group">
+    <select class="toolselect" id="style" aria-label="Стиль абзацу">
+     <option value="p">Звичайний</option><option value="h1">Заголовок 1</option><option value="h2">Заголовок 2</option>
+    </select>
+   </div>
+   <div class="tool-group" aria-label="Накреслення">
+    <button class="tool bold" data-cmd="bold" aria-label="Напівжирний" title="Напівжирний">B</button>
+    <button class="tool italic" data-cmd="italic" aria-label="Курсив" title="Курсив">I</button>
+    <button class="tool underline" data-cmd="underline" aria-label="Підкреслення" title="Підкреслення">U</button>
+   </div>
+   <div class="tool-group" aria-label="Списки">
+    <button class="tool" data-cmd="insertUnorderedList" aria-label="Маркований список" title="Маркований список">•≡</button>
+    <button class="tool" data-cmd="insertOrderedList" aria-label="Нумерований список" title="Нумерований список">1≡</button>
+   </div>
+   <div class="tool-group" aria-label="Вирівнювання">
+    <button class="tool" data-cmd="justifyLeft" aria-label="Вирівняти ліворуч" title="Ліворуч">☰</button>
+    <button class="tool" data-cmd="justifyCenter" aria-label="Вирівняти по центру" title="По центру">≡</button>
+    <button class="tool" data-cmd="justifyRight" aria-label="Вирівняти праворуч" title="Праворуч">☷</button>
+   </div>
+   <div class="tool-group" aria-label="Скасувати або повторити">
+    <button class="tool" data-cmd="undo" aria-label="Скасувати" title="Скасувати">↶</button>
+    <button class="tool" data-cmd="redo" aria-label="Повторити" title="Повторити">↷</button>
+   </div>
+  </div>
+  <div class="tools" id="tools-insert" role="tabpanel" hidden>
+   <button class="tool text" id="addLink">🔗 Гіперпосилання</button>
+   <button class="tool text" id="addToc">☷ Вставити зміст</button>
+   <button class="tool text" id="removeToc" hidden>Прибрати зміст</button>
+  </div>
+  <div class="tools" id="tools-review" role="tabpanel" hidden>
+   <button class="tool text" id="addComment">＋ Коментар</button>
+   <button class="tool text" id="showComments">☰ Показати коментарі</button>
+  </div>
+ </div>
 </div>
-<div class="actions" style="margin-top:13px">
-<button type="button" id="makeToc" class="btn primary">Створити автоматичний зміст</button>
-<button type="button" id="goPreview" class="btn outline">Переглянути документ →</button>
-</div>
-<div class="status" id="saveStatus" role="status" aria-live="polite"></div></div>
-</section>
-<section class="view" id="view-preview" hidden>
-<div class="card"><h2>Перегляд документа</h2>
-<p class="small">Тут усі стилі видно так, як вони виглядають у документі. Пункти змісту — активні посилання на заголовки.</p>
-<div id="previewPaper" class="preview-paper"></div>
-<div class="actions" style="margin-top:15px"><button type="button" class="btn soft" id="backEdit">← Редагувати</button><button type="button" class="btn primary" id="goCheck">Зберегти або поділитися →</button></div>
-</div>
-</section>
-<section class="view" id="view-check" hidden>
-<div class="card"><h2>Збереження і поширення</h2>
-<p>Зміни автоматично зберігаються на цьому пристрої. Щоб передати документ іншій людині, скористайся системним меню «Поділитися» або збережи HTML-файл.</p>
-<div class="actions">
-<button type="button" class="btn primary" id="shareResult">Поділитися текстом</button>
-<button type="button" class="btn soft" id="downloadDoc">Зберегти документ HTML</button>
-<button type="button" class="btn outline" id="backToEdit">← До редактора</button>
-</div>
-<p class="small">Редактор працює без реєстрації. Він не надсилає документи вчителю автоматично. Для перевірки покажи готовий документ у вкладці «Документ».</p>
-</div>
-<div class="actions"><button type="button" class="btn warn" id="reset">Створити новий документ</button></div>
-</section>
-<footer>Текстовий редактор · 9 клас · Інформатика</footer>
+<main class="workspace">
+ <p class="intro">Текстовий редактор для браузера смартфона · без реєстрації та встановлення програм</p>
+ <article class="paper" id="paper" aria-label="Сторінка текстового документа">
+  <h1 class="page-title" id="pageTitle">Новий документ</h1>
+  <nav class="toc" id="toc" aria-label="Автоматичний зміст" hidden></nav>
+  <div id="editor" class="editor" contenteditable="true" role="textbox" aria-label="Текст документа" aria-multiline="true" spellcheck="true"><p><br></p></div>
+ </article>
+ <section class="notes" id="notes" hidden>
+  <h2>Коментарі редактора</h2>
+  <div id="noteItems"></div>
+ </section>
+ <p class="status" id="storageInfo">Зміни зберігаються лише в цьому браузері. Документи не надсилаються вчителю автоматично.</p>
+ <footer>Інформатика · 9 клас · Урок 11 · Мобільний текстовий редактор</footer>
 </main>
-<div id="toast" role="status" hidden></div>
+<dialog id="linkDialog" aria-labelledby="linkHeading">
+ <form id="linkForm" method="dialog">
+  <h2 id="linkHeading">Вставити гіперпосилання</h2>
+  <label for="linkText">Текст посилання</label><input id="linkText" type="text" maxlength="250" required placeholder="Назва сторінки">
+  <label for="linkURL">Вебадреса</label><input id="linkURL" type="url" inputmode="url" maxlength="800" required placeholder="https://example.org">
+  <div class="error" id="linkError" role="alert"></div>
+  <div class="dialog-actions">
+   <button type="button" class="action" data-close="linkDialog">Скасувати</button>
+   <button type="submit" class="action primary">Вставити</button>
+  </div>
+ </form>
+</dialog>
+<dialog id="commentDialog" aria-labelledby="commentHeading">
+ <form id="commentForm" method="dialog">
+  <h2 id="commentHeading">Новий коментар</h2>
+  <p id="commentContext"></p>
+  <label for="commentText">Текст коментаря</label>
+  <textarea id="commentText" maxlength="600" required placeholder="Напишіть зауваження або пропозицію"></textarea>
+  <div class="error" id="commentError" role="alert"></div>
+  <div class="dialog-actions">
+   <button type="button" class="action" data-close="commentDialog">Скасувати</button>
+   <button type="submit" class="action primary">Додати</button>
+  </div>
+ </form>
+</dialog>
+<div id="toast" class="toast" role="status" hidden></div>
 <script>
 "use strict";
-const KEY="informatics9-lesson11-editor-v2";
-const INITIAL={klass:"",student:"",title:"Новий документ",toc:false,
- blocks:[{id:"b1",type:"p",text:"",url:"",comment:""}]};
-const TYPES={p:"Звичайний текст",h1:"Заголовок 1",h2:"Заголовок 2",link:"Гіперпосилання"};
+const KEY="informatics-lab-9-lesson11-wordlike-v1";
 const $=id=>document.getElementById(id);
-const copyDefault=()=>JSON.parse(JSON.stringify(INITIAL));
+const editor=$("editor");
+const notes=$("notes");
+let savedRange=null, lastBlockId=null, commentTargetId=null, commentSelection="", editNotes=[], tocEnabled=false, toastTimer=0;
+const allowedTags=new Set(["P","DIV","H1","H2","UL","OL","LI","STRONG","B","EM","I","U","BR","SPAN","A"]);
+function toast(message){
+ const el=$("toast");el.textContent=message;el.hidden=false;
+ clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.hidden=true,2700);
+}
+function make(tag,text,cls){
+ const e=document.createElement(tag);
+ if(text!==undefined)e.textContent=text;
+ if(cls)e.className=cls;
+ return e;
+}
+function escapeHTML(s){
+ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function safeLink(url){
+ try{const u=new URL(String(url).trim());return ["https:","http:"].includes(u.protocol)?u.href:null;}catch{return null;}
+}
+function createId(){return "s"+Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+function sanitizeHTML(html){
+ const box=document.createElement("div");box.innerHTML=String(html||"").slice(0,120000);
+ function clean(node){
+  for(const child of Array.from(node.childNodes)){
+   if(child.nodeType===8){child.remove();continue;}
+   if(child.nodeType!==1)continue;
+   const tag=child.tagName;
+   if(["SCRIPT","STYLE","IFRAME","OBJECT","SVG","FORM","INPUT","BUTTON","IMG","META"].includes(tag)){child.remove();continue;}
+   clean(child);
+   if(!allowedTags.has(tag)){child.replaceWith(...Array.from(child.childNodes));continue;}
+   const attrs=Array.from(child.attributes).map(a=>[a.name,a.value]);
+   for(const a of Array.from(child.attributes))child.removeAttribute(a.name);
+   for(const [name,value] of attrs){
+    if(name==="href"&&tag==="A"&&safeLink(value)){child.setAttribute("href",safeLink(value));child.setAttribute("target","_blank");child.setAttribute("rel","noopener noreferrer");}
+    if(name==="data-bid"&&/^[a-z0-9-]{1,45}$/i.test(value))child.setAttribute("data-bid",value);
+    if(name==="style"){
+     const matching=value.match(/text-align\s*:\s*(left|center|right|justify)/i);
+     if(matching&&["P","DIV","H1","H2","LI"].includes(tag))child.style.textAlign=matching[1].toLowerCase();
+    }
+   }
+  }
+ }
+ clean(box);return box.innerHTML;
+}
+function allBlocks(){return Array.from(editor.querySelectorAll("p,h1,h2,li,div"));}
+function ensureBlocks(){
+ let blocks=allBlocks();
+ if(!blocks.length){editor.innerHTML="<p><br></p>";blocks=allBlocks();}
+ const seen=new Set();
+ for(const b of blocks){
+  if(!b.dataset.bid||seen.has(b.dataset.bid))b.dataset.bid=createId();
+  seen.add(b.dataset.bid);
+ }
+}
+function selectionInEditor(sel){
+ if(!sel||!sel.rangeCount)return false;
+ const n=sel.anchorNode;
+ return n===editor||editor.contains(n);
+}
+function captureSelection(){
+ const sel=window.getSelection();
+ if(!selectionInEditor(sel))return;
+ try{savedRange=sel.getRangeAt(0).cloneRange();}catch{return;}
+ const block=findBlock(sel.anchorNode);
+ if(block){if(!block.dataset.bid)block.dataset.bid=createId();lastBlockId=block.dataset.bid;}
+ const current=block?.tagName?.toLowerCase();
+ if(["p","h1","h2"].includes(current))$("style").value=current;
+}
+function findBlock(node){
+ let el=node?.nodeType===1?node:node?.parentElement;
+ while(el&&el!==editor){
+  if(["P","H1","H2","LI","DIV"].includes(el.tagName))return el;
+  el=el.parentElement;
+ }
+ return null;
+}
+function currentBlock(){
+ const sel=window.getSelection();
+ if(selectionInEditor(sel)){
+  const b=findBlock(sel.anchorNode);
+  if(b)return b;
+ }
+ if(lastBlockId){
+  const b=allBlocks().find(x=>x.dataset.bid===lastBlockId);
+  if(b)return b;
+ }
+ return allBlocks()[0]||null;
+}
+function restoreRange(){
+ editor.focus({preventScroll:true});
+ const sel=window.getSelection();
+ if(savedRange&&editor.contains(savedRange.commonAncestorContainer)){
+  try{sel.removeAllRanges();sel.addRange(savedRange);return true;}catch{}
+ }
+ return false;
+}
+function setCaret(node){
+ const r=document.createRange();r.selectNodeContents(node);r.collapse(false);
+ const s=window.getSelection();s.removeAllRanges();s.addRange(r);captureSelection();
+}
+function setStyle(tag){
+ if(!["p","h1","h2"].includes(tag))return;
+ restoreRange();
+ const block=currentBlock();
+ if(!block){editor.innerHTML="<"+tag+"><br></"+tag+">";ensureBlocks();setCaret(editor.firstElementChild);}
+ else if(block.tagName==="LI"){
+  document.execCommand("formatBlock",false,tag.toUpperCase());
+ }else if(block.tagName.toLowerCase()!==tag){
+  const replacement=document.createElement(tag);replacement.innerHTML=block.innerHTML||"<br>";
+  for(const attr of Array.from(block.attributes)){
+   if(attr.name==="data-bid"||attr.name==="style")replacement.setAttribute(attr.name,attr.value);
+  }
+  block.replaceWith(replacement);setCaret(replacement);
+ }
+ save();$("style").value=tag;
+}
+function command(cmd){
+ restoreRange();
+ const success=document.execCommand(cmd,false,null);
+ if(!success&&cmd.startsWith("justify")){
+  const b=currentBlock();if(b)b.style.textAlign=cmd==="justifyLeft"?"left":cmd==="justifyRight"?"right":"center";
+ }
+ captureSelection();save();
+}
+function renderTOC(){
+ const toc=$("toc");
+ $("removeToc").hidden=!tocEnabled;
+ $("addToc").textContent=tocEnabled?"☷ Оновити зміст":"☷ Вставити зміст";
+ toc.hidden=!tocEnabled;
+ if(!tocEnabled)return;
+ toc.replaceChildren(make("h2","Зміст"));
+ const headings=Array.from(editor.querySelectorAll("h1,h2")).filter(h=>h.textContent.trim());
+ if(!headings.length){toc.append(make("p","Додайте заголовки, щоб створити зміст.","empty"));return;}
+ const list=make("ol");
+ for(const h of headings){
+  if(!h.dataset.bid)h.dataset.bid=createId();
+  h.id="heading-"+h.dataset.bid;
+  const li=make("li",undefined,h.tagName==="H2"?"sub":"");
+  const link=make("a",h.textContent.trim());
+  link.href="#"+h.id;
+  link.addEventListener("click",e=>{e.preventDefault();h.scrollIntoView({behavior:"smooth",block:"center"});});
+  li.append(link);list.append(li);
+ }
+ toc.append(list);
+}
+function renderNotes(){
+ notes.hidden=editNotes.length===0;
+ const container=$("noteItems");container.replaceChildren();
+ for(const item of editNotes){
+  const card=make("article",undefined,"note");
+  const block=allBlocks().find(b=>b.dataset.bid===item.blockId);
+  card.append(make("div",block?.textContent?.trim().slice(0,90)||"Фрагмент документа","context"));
+  card.append(make("p",item.text));
+  const bottom=make("div",undefined,"note-bottom");
+  const jump=make("button","Знайти","mini");jump.type="button";
+  jump.addEventListener("click",()=>{if(block){block.scrollIntoView({behavior:"smooth",block:"center"});editor.focus();}});
+  const del=make("button","Видалити","mini");del.type="button";
+  del.addEventListener("click",()=>{
+   editNotes=editNotes.filter(x=>x.id!==item.id);markNotes();save();});
+  bottom.append(jump,del);card.append(bottom);container.append(card);
+ }
+}
+function markNotes(){
+ const marked=new Set(editNotes.map(x=>x.blockId));
+ for(const b of allBlocks())b.classList.toggle("has-note",marked.has(b.dataset.bid));
+ renderNotes();
+}
+function save(){
+ ensureBlocks();renderTOC();markNotes();
+ const data={title:$("documentTitle").value.slice(0,100),html:sanitizeHTML(editor.innerHTML),toc:tocEnabled,notes:editNotes};
+ try{localStorage.setItem(KEY,JSON.stringify(data));$("saveInfo").textContent="✓ Збережено на цьому пристрої";}
+ catch{$("saveInfo").textContent="Не вдалось зберегти у браузері";}
+ $("pageTitle").textContent=data.title.trim()||"Новий документ";
+}
 function load(){
  try{
-  const raw=JSON.parse(localStorage.getItem(KEY)||"null");
-  if(!raw||!Array.isArray(raw.blocks)||raw.blocks.length>60)return copyDefault();
-  const draft=copyDefault();for(const f of ["klass","student","title","toc"])if(typeof raw[f]===typeof draft[f])draft[f]=raw[f];
-  draft.blocks=raw.blocks.filter(b=>b&&typeof b.text==="string"&&TYPES[b.type]).map((b,i)=>({
-   id:String(b.id||"b"+i).slice(0,40),type:b.type,text:b.text.slice(0,1500),
-   url:String(b.url||"").slice(0,500),comment:String(b.comment||"").slice(0,700)
-  }));return draft.blocks.length?draft:copyDefault();
- }catch{return copyDefault();}
+  const obj=JSON.parse(localStorage.getItem(KEY)||"null");
+  if(obj&&typeof obj==="object"){
+   $("documentTitle").value=String(obj.title||"Новий документ").slice(0,100);
+   editor.innerHTML=sanitizeHTML(obj.html||"<p><br></p>");
+   tocEnabled=!!obj.toc;
+   editNotes=Array.isArray(obj.notes)?obj.notes.slice(0,100).filter(n=>n&&typeof n.text==="string"&&typeof n.blockId==="string").map(n=>({id:String(n.id).slice(0,60),blockId:String(n.blockId).slice(0,45),text:n.text.slice(0,600)})):[];
+  }
+ }catch{}
+ ensureBlocks();renderTOC();markNotes();$("pageTitle").textContent=$("documentTitle").value||"Новий документ";
 }
-let data=load(), expanded=new Set();
-function persist(){
- try{localStorage.setItem(KEY,JSON.stringify(data));$("saveStatus").textContent="✓ Чернетку збережено на цьому телефоні.";}
- catch{$("saveStatus").textContent="Збереження в браузері недоступне. Після оновлення сторінки зміни можуть зникнути.";}
- renderPreview();
-}
-function freshId(){return "b"+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
-function el(tag,txt,cls){const n=document.createElement(tag);if(txt!==undefined)n.textContent=txt;if(cls)n.className=cls;return n}
-function button(text,cls,fn,title){
- const b=el("button",text,cls);b.type="button";b.addEventListener("click",fn);if(title)b.title=title;return b;
-}
-function switchTab(tab){
+function toggleTab(tab){
  for(const b of document.querySelectorAll(".tab"))b.setAttribute("aria-selected",String(b.dataset.tab===tab));
- for(const t of ["edit","preview","check"])$("view-"+t).hidden=t!==tab;
- if(tab==="preview")renderPreview();if(tab==="check")
- document.querySelector(".tabs").scrollIntoView({behavior:"smooth",block:"start"});
+ for(const p of ["home","insert","review"])$("tools-"+p).hidden=p!==tab;
 }
-function renderBlocks(focusId){
- const root=$("blocks");root.replaceChildren();
- data.blocks.forEach((block,i)=>{
-  const box=el("article",undefined,"block-card");const top=el("div",undefined,"block-top");
-  top.append(el("span","Блок "+(i+1),"block-number"));
-  const select=el("select");select.setAttribute("aria-label","Тип блоку "+(i+1));
-  for(const [value,label] of Object.entries(TYPES)){const o=el("option",label);o.value=value;select.append(o);}
-  select.value=block.type;select.addEventListener("change",()=>{block.type=select.value;persist();renderBlocks(block.id);});top.append(select);
-  const up=button("↑","icon-btn",()=>moveBlock(i,-1),"Перемістити вище");up.disabled=i===0;top.append(up);
-  const down=button("↓","icon-btn",()=>moveBlock(i,1),"Перемістити нижче");down.disabled=i===data.blocks.length-1;top.append(down);
-  const del=button("×","icon-btn",()=>{if(data.blocks.length===1){toast("Має залишитися хоча б один блок.");return;}data.blocks.splice(i,1);persist();renderBlocks();},"Видалити блок");top.append(del);
-  box.append(top);
-  const label=el("label",block.type==="link"?"Текст посилання":"Текст блоку");label.htmlFor="txt-"+block.id;box.append(label);
-  const ta=el("textarea");ta.id="txt-"+block.id;ta.rows=block.type==="p"?3:2;ta.maxLength=1500;ta.value=block.text;
-  ta.addEventListener("input",()=>{block.text=ta.value;persist();});box.append(ta);
-  if(block.type==="link"){
-   const urlLabel=el("label","Адреса посилання (https://...)");urlLabel.htmlFor="url-"+block.id;urlLabel.className="extra";box.append(urlLabel);
-   const inp=el("input");inp.type="url";inp.id="url-"+block.id;inp.placeholder="https://osvita.diia.gov.ua/";inp.maxLength=500;inp.value=block.url;inp.addEventListener("input",()=>{block.url=inp.value;persist();});box.append(inp);
-  }
-  const area=el("div",undefined,"comment-box");
-  const visible=expanded.has(block.id)||block.comment.length>0;
-  if(!visible){area.append(button("+ Коментар рецензента","btn soft",()=>{expanded.add(block.id);renderBlocks(block.id);},"Додати коментар до цього блоку"));}
-  else{
-   const l=el("label","Коментар рецензента");l.htmlFor="com-"+block.id;area.append(l);
-   const note=el("textarea");note.id="com-"+block.id;note.rows=2;note.maxLength=700;note.placeholder="Наприклад: додай конкретний приклад, щоб думка була зрозумілішою.";note.value=block.comment;
-   note.addEventListener("input",()=>{block.comment=note.value;persist();});area.append(note);
-   area.append(button("Прибрати коментар","btn outline",()=>{block.comment="";expanded.delete(block.id);persist();renderBlocks();}));
-  }
-  box.append(area);root.append(box);
- });
- if(focusId){const selected=$("txt-"+focusId);if(selected)selected.focus({preventScroll:true});}
+function insertLink(){
+ captureSelection();
+ let text="";
+ try{text=savedRange?.toString()?.trim()?.slice(0,250)||"";}catch{}
+ $("linkText").value=text;$("linkURL").value="";$("linkError").textContent="";
+ $("linkDialog").showModal();$("linkText").focus();
 }
-function moveBlock(i,delta){const j=i+delta;if(j<0||j>=data.blocks.length)return;const tmp=data.blocks[i];data.blocks[i]=data.blocks[j];data.blocks[j]=tmp;persist();renderBlocks(tmp.id);}
-function addBlock(type){
- if(data.blocks.length>=60){toast("Досягнуто обмеження 60 блоків.");return;}
- const b={id:freshId(),type,text:"",url:"",comment:""};data.blocks.push(b);persist();renderBlocks(b.id);
- $("txt-"+b.id).scrollIntoView({behavior:"smooth",block:"center"});
-}
-function validURL(value){
- try{const u=new URL(value);return u.protocol==="https:"||u.protocol==="http:"?u.href:null;}catch{return null;}
-}
-function renderPreview(){
- const paper=$("previewPaper");paper.replaceChildren();
- paper.append(el("div",data.title.trim()||"Документ без назви","doc-title"));
- const heads=data.blocks.filter(b=>(b.type==="h1"||b.type==="h2")&&b.text.trim());
- if(data.toc){
-  const nav=el("nav",undefined,"doc-toc");nav.setAttribute("aria-label","Автоматичний зміст");
-  nav.append(el("h3","Зміст"));
-  if(!heads.length)nav.append(el("p","Спочатку признач заголовки першого або другого рівня."));
-  else{
-   const list=el("ol");
-   for(const h of heads){
-    const li=el("li");if(h.type==="h2")li.className="second";
-    const a=el("a",h.text.trim());a.href="#preview-"+h.id;
-    a.addEventListener("click",e=>{e.preventDefault();const target=$("preview-"+h.id);if(target)target.scrollIntoView({behavior:"smooth",block:"center"});});
-    li.append(a);list.append(li);
-   }nav.append(list);
-  }paper.append(nav);
+function applyLink(e){
+ e.preventDefault();
+ const label=$("linkText").value.trim(),url=safeLink($("linkURL").value);
+ if(!label||!url){$("linkError").textContent="Вкажіть текст і правильну адресу (https:// або http://).";return;}
+ const a=make("a",label);a.href=url;a.target="_blank";a.rel="noopener noreferrer";
+ const had=restoreRange(),sel=window.getSelection();
+ try{
+  if(had&&sel.rangeCount){
+   const r=sel.getRangeAt(0);
+   if(editor.contains(r.commonAncestorContainer)){
+    const anchor=findBlock(r.commonAncestorContainer);
+    if(anchor&&!r.collapsed&&!anchor.contains(r.endContainer))throw Error("Multiblock selection");
+    r.deleteContents();r.insertNode(a);r.setStartAfter(a);r.collapse(true);sel.removeAllRanges();sel.addRange(r);
+   }else throw Error("Selection outside editor");
+  }else throw Error("No range");
+ }catch{
+  const block=currentBlock()||editor.lastElementChild;
+  if(block){block.append(document.createTextNode(" "));block.append(a);}else{const p=make("p");p.append(a);editor.append(p);}
  }
- for(const b of data.blocks){
-  const txt=b.text.trim();if(!txt&&!b.comment.trim())continue;
-  let node;
-  if(b.type==="h1"||b.type==="h2")node=el(b.type,txt||"(порожній заголовок)");
-  else if(b.type==="link"){
-   node=el("p");
-   const url=validURL(b.url);
-   if(url){const a=el("a",txt||url);a.href=url;a.target="_blank";a.rel="noopener noreferrer";node.append(a);}
-   else node.append(el("span",(txt||"Посилання")+" (додай правильну адресу http:// або https://)"));
-  }else node=el("p",txt);
-  node.id="preview-"+b.id;paper.append(node);
-  if(b.comment.trim())paper.append(el("aside","Коментар редактора: "+b.comment.trim(),"review"));
+ $("linkDialog").close();captureSelection();save();toast("Посилання додано.");
+}
+function openComment(){
+ captureSelection();
+ const b=currentBlock();
+ if(!b){toast("Спочатку введіть текст у документ.");return;}
+ if(!b.dataset.bid)b.dataset.bid=createId();
+ commentTargetId=b.dataset.bid;
+ commentSelection=(savedRange?.toString()||"").trim().slice(0,90);
+ $("commentContext").textContent="До фрагмента: "+(commentSelection||b.textContent.trim().slice(0,90)||"абзац");
+ $("commentText").value="";$("commentError").textContent="";
+ $("commentDialog").showModal();$("commentText").focus();
+}
+function addComment(e){
+ e.preventDefault();const text=$("commentText").value.trim();
+ if(!text){$("commentError").textContent="Введіть текст коментаря.";return;}
+ const exists=allBlocks().some(b=>b.dataset.bid===commentTargetId);
+ if(!exists){$("commentError").textContent="Цей абзац змінено. Виберіть його знову.";return;}
+ editNotes.push({id:createId(),blockId:commentTargetId,text:text.slice(0,600)});
+ $("commentDialog").close();save();notes.hidden=false;
+ toast("Коментар додано до абзацу.");
+}
+function plainText(){
+ const title=$("documentTitle").value.trim()||"Новий документ";
+ let result=title+"\n\n";
+ if(tocEnabled)result+="Зміст\n"+Array.from(editor.querySelectorAll("h1,h2")).map(h=>"- "+h.textContent.trim()).join("\n")+"\n\n";
+ result+=editor.innerText;
+ if(editNotes.length)result+="\n\nКоментарі:\n"+editNotes.map(x=>"- "+x.text).join("\n");
+ return result;
+}
+function saveFile(){
+ const title=$("documentTitle").value.trim()||"Новий документ";
+ const clean=sanitizeHTML(editor.innerHTML);
+ let tocHTML="";
+ if(tocEnabled){
+  const heads=Array.from(editor.querySelectorAll("h1,h2")).filter(h=>h.textContent.trim());
+  tocHTML="<nav class='toc'><h2>Зміст</h2><ol>"+heads.map(h=>"<li><a href='#heading-"+escapeHTML(h.dataset.bid)+"'>"+escapeHTML(h.textContent.trim())+"</a></li>").join("")+"</ol></nav>";
  }
+ const notesHTML=editNotes.length?"<section><h2>Коментарі</h2><ol>"+editNotes.map(n=>"<li>"+escapeHTML(n.text)+"</li>").join("")+"</ol></section>":"";
+ const css="body{max-width:760px;margin:36px auto;padding:0 24px;font:17px/1.65 Georgia,serif;color:#233047}h1,h2{font-family:system-ui,sans-serif;color:#264576}h1.title{text-align:center;border-bottom:1px solid #ccd6e5;padding-bottom:15px}a{color:#205aac}.toc{background:#f5f8ff;padding:16px;margin-bottom:24px}section{border-top:1px solid #ccc;margin-top:35px;padding-top:15px}";
+ const contentHTML="<!doctype html><html lang='uk'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>"+escapeHTML(title)+"</title><style>"+css+"</style></head><body><h1 class='title'>"+escapeHTML(title)+"</h1>"+tocHTML+"<article>"+clean+"</article>"+notesHTML+"</body></html>";
+ const url=URL.createObjectURL(new Blob([contentHTML],{type:"text/html;charset=utf-8"}));
+ const a=make("a");a.href=url;a.download="document-9-class.html";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+ toast("Документ збережено у файл.");
 }
-function documentText(){
- let output=data.title.trim()||"Новий документ";
- if(data.toc)output+="\n\nЗміст\n"+data.blocks.filter(b=>["h1","h2"].includes(b.type)&&b.text.trim()).map(b=>"- "+b.text.trim()).join("\n");
- for(const b of data.blocks){
-  if(!b.text.trim()&&!b.comment.trim())continue;
-  output+="\n\n"+(b.text.trim()||"");
-  if(b.type==="link"&&validURL(b.url))output+="\n"+validURL(b.url);
-  if(b.comment.trim())output+="\n[Коментар: "+b.comment.trim()+"]";
- }
- return output;
+async function shareDocument(){
+ const text=plainText();
+ try{if(navigator.share){await navigator.share({title:$("documentTitle").value,text});return;}}catch(e){if(e.name==="AbortError")return;}
+ try{await navigator.clipboard.writeText(text);toast("Текст скопійовано.");return;}catch{}
+ const t=make("textarea");t.value=text;t.style.position="fixed";t.style.left="-9999px";document.body.append(t);t.select();
+ try{document.execCommand("copy");toast("Текст скопійовано.");}catch{toast("Відкрийте меню браузера, щоб поділитися.");}t.remove();
 }
-function esc(t){return String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-function documentHTML(){
- const heads=data.blocks.filter(b=>["h1","h2"].includes(b.type)&&b.text.trim());
- let body="<h1 class='title'>"+esc(data.title)+"</h1>";
- if(data.toc){
-  body+="<nav><h2>Зміст</h2><ol>"+heads.map(b=>"<li"+(b.type==="h2"?" class='second'":"")+"><a href='#"+esc(b.id)+"'>"+esc(b.text)+"</a></li>").join("")+"</ol></nav>";
- }
- for(const b of data.blocks){
-  const text=esc(b.text);if(!b.text.trim()&&!b.comment.trim())continue;
-  if(b.type==="link"){
-   const url=validURL(b.url);body+="<p id='"+esc(b.id)+"'>"+(url?"<a href='"+esc(url)+"' rel='noopener noreferrer' target='_blank'>"+text+"</a>":text+" (неправильна адреса)")+"</p>";
-  }else body+="<"+b.type+" id='"+esc(b.id)+"'>"+text+"</"+b.type+">";
-  if(b.comment.trim())body+="<aside>Коментар редактора: "+esc(b.comment)+"</aside>";
- }
- return "<!doctype html><html lang='uk'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>"+esc(data.title)+"</title><style>body{font:17px/1.65 system-ui,sans-serif;max-width:780px;padding:25px;margin:auto;color:#233047}h1,h2{color:#254b8a}.title{text-align:center;border-bottom:1px solid #cdd9e9;padding-bottom:15px}nav{background:#f3f6fc;padding:15px;border-radius:10px}.second{margin-left:20px}aside{background:#fff6df;padding:9px;border-left:3px solid #e0b065}a{overflow-wrap:anywhere}</style></head><body>"+body+"</body></html>";
+function resetDocument(){
+ if(!confirm("Створити новий документ? Поточний незбережений у файл текст буде втрачено."))return;
+ editor.innerHTML="<p><br></p>";$("documentTitle").value="Новий документ";
+ tocEnabled=false;editNotes=[];savedRange=null;lastBlockId=null;save();editor.focus();toast("Новий документ створено.");
 }
-function download(){
- const blob=new Blob([documentHTML()],{type:"text/html;charset=utf-8"});
- const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="9-klas-praktychna-robota-3.html";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200);
-}
-async function share(){
- const text=documentText();
- try{if(navigator.share){await navigator.share({title:data.title.trim()||"Текстовий документ",text});return;}}catch(e){if(e.name==="AbortError")return;}
- try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);toast("Підсумок скопійовано. Встав його в повідомлення учителю.");return;}}catch{}
- const field=document.createElement("textarea");field.value=text;field.style.position="fixed";field.style.left="-200vw";document.body.append(field);field.select();
- try{document.execCommand("copy");toast("Підсумок скопійовано.");}catch{toast("Не вдалося скопіювати. Зроби скріншот результату.");}field.remove();
-}
-let toastTimer;
-function toast(message){
- const t=$("toast");t.textContent=message;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.hidden=true,3500);
-}
-for(const b of document.querySelectorAll(".tab"))b.addEventListener("click",()=>switchTab(b.dataset.tab));
-for(const b of document.querySelectorAll("[data-add]"))b.addEventListener("click",()=>addBlock(b.dataset.add));
-$("klass").value=data.klass;$("student").value=data.student;$("docTitle").value=data.title;
-$("klass").addEventListener("change",e=>{data.klass=e.target.value;persist();});
-$("student").addEventListener("input",e=>{data.student=e.target.value;persist();});
-$("docTitle").addEventListener("input",e=>{data.title=e.target.value;persist();});
-
-$("makeToc").addEventListener("click",()=>{data.toc=true;persist();toast("Зміст створено з заголовків. Перевір його в режимі «Документ».");switchTab("preview");});
-$("goPreview").addEventListener("click",()=>switchTab("preview"));
-$("backEdit").addEventListener("click",()=>switchTab("edit"));
-$("backToEdit").addEventListener("click",()=>switchTab("edit"));
-$("goCheck").addEventListener("click",()=>switchTab("check"));
-$("downloadDoc").addEventListener("click",download);
-$("shareResult").addEventListener("click",share);
-$("reset").addEventListener("click",()=>{
- if(!confirm("Видалити поточну чернетку та створити новий документ?"))return;
- data=copyDefault();expanded.clear();try{localStorage.removeItem(KEY);}catch{}
- $("klass").value="";$("student").value="";$("docTitle").value=data.title;
- renderBlocks();persist();switchTab("edit");toast("Створено нову чернетку.");
+document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>toggleTab(b.dataset.tab)));
+document.querySelectorAll("[data-cmd]").forEach(b=>{
+ b.addEventListener("mousedown",e=>e.preventDefault());
+ b.addEventListener("click",()=>command(b.dataset.cmd));
 });
-renderBlocks();renderPreview();$("saveStatus").textContent="Чернетка зберігається автоматично під час редагування.";
-</script></body></html>
+$("style").addEventListener("change",e=>setStyle(e.target.value));
+$("addLink").addEventListener("click",insertLink);
+$("linkForm").addEventListener("submit",applyLink);
+$("addToc").addEventListener("click",()=>{tocEnabled=true;save();toast("Автоматичний зміст створено.");});
+$("removeToc").addEventListener("click",()=>{tocEnabled=false;save();toast("Зміст прибрано.");});
+$("addComment").addEventListener("click",openComment);
+$("commentForm").addEventListener("submit",addComment);
+$("showComments").addEventListener("click",()=>{if(!editNotes.length){toast("Коментарів поки немає.");return;}notes.hidden=false;notes.scrollIntoView({behavior:"smooth"});});
+document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",()=>$((b.dataset.close)).close()));
+$("download").addEventListener("click",saveFile);
+$("share").addEventListener("click",shareDocument);
+$("newDocument").addEventListener("click",resetDocument);
+$("documentTitle").addEventListener("input",save);
+editor.addEventListener("input",()=>{captureSelection();save();});
+editor.addEventListener("keyup",captureSelection);
+editor.addEventListener("mouseup",captureSelection);
+editor.addEventListener("touchend",()=>setTimeout(captureSelection,100));
+editor.addEventListener("focus",captureSelection);
+document.addEventListener("selectionchange",captureSelection);
+editor.addEventListener("paste",e=>{
+ e.preventDefault();const t=e.clipboardData?.getData("text/plain")||"";
+ if(!document.execCommand("insertText",false,t)){
+  const s=window.getSelection();
+  if(s.rangeCount){const r=s.getRangeAt(0);r.deleteContents();r.insertNode(document.createTextNode(t));r.collapse(false);}
+ }
+ save();
+});
+load();
+</script>
+</body>
+</html>
