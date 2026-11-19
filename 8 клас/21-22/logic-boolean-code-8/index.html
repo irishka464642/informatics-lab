@@ -79,6 +79,7 @@
 }
 
 .student-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px}.reset-progress{flex:none;min-height:32px;border:1px solid #cbab82;border-radius:9px;padding:5px 10px;color:#ffdfab;background:#413a37;font-size:12px;font-weight:850;white-space:nowrap}.reset-progress:focus-visible{outline:3px solid #ffe29c;outline-offset:2px}@media(max-width:650px){.student-actions{gap:6px}.student-actions small{display:none}.reset-progress{padding:5px 8px;font-size:11px;min-height:32px}}
+.builder-buttons .builder-chip{white-space:pre-wrap;text-align:left;justify-items:start}.builder-order .builder-chip{white-space:pre-wrap}.builder-help strong{color:#edfff8}.sample-row{display:flex;align-items:baseline;flex-wrap:wrap;gap:5px;margin-top:5px}.builder-line .builder-chip{font-family:ui-monospace,Consolas,monospace}
 </style>
 </head>
 <body><div class="wrap">
@@ -205,18 +206,20 @@ function renderChoice(t,b){
  '<div class="builder-subtitle">Натисни одну кнопку, щоб доповнити if:</div>'+
  '<div class="builder-buttons">'+t.options.map(v=>itemButton(v,'choose',v,selected===v?'picked':'' )).join('')+'</div>';
 }
+function displayBlock(text){return String(text||'').startsWith('    ')?'↳  '+String(text).trim():String(text||'')}
 function renderOrder(t,b){
  const selected=new Set(b.order);
  let code=b.order.map((id,i)=>{
   const block=t.blocks.find(x=>x.id===id);
   return '<div class="builder-line"><b>'+(i+1)+'</b>'+
-  itemButton(block?.text||'','remove',id,'remove')+'</div>'
+  itemButton(displayBlock(block?.text),'remove',id,'remove')+'</div>'
  }).join('');
  if(!code)code='<div class="builder-empty">Поки що порожньо. Натискай блоки нижче — вони додаватимуться в код.</div>';
  return '<div class="builder-title">🧩 Твоя програма (натисни блок для вилучення)</div>'+
  '<div class="builder-order">'+code+'</div>'+
- '<div class="builder-subtitle">Блоки для складання (є два зайві):</div>'+
- '<div class="builder-buttons">'+t.blocks.map(x=>'<button class="builder-chip '+(selected.has(x.id)?'picked':'')+'" type="button" data-action="add" data-value="'+x.id+'" '+(selected.has(x.id)?'disabled':'')+'>'+esc(x.text)+'</button>').join('')+'</div>';
+ '<div class="builder-help">↳ означає <strong>відступ у 4 пробіли</strong> перед print. У програмі відступ додається автоматично.</div>'+ 
+ '<div class="builder-subtitle">Блоки для складання (є два зайві):</div>'+ 
+ '<div class="builder-buttons">'+t.blocks.map(x=>'<button class="builder-chip '+(selected.has(x.id)?'picked':'')+'" type="button" data-action="add" data-value="'+x.id+'" '+(selected.has(x.id)?'disabled':'')+'>'+esc(displayBlock(x.text))+'</button>').join('')+'</div>';
 }
 function renderTags(t,b){
  const tags=b.tokens||[];
@@ -253,7 +256,7 @@ function render(){
  $('missionText').textContent=t.description;
  $('missionInfo').innerHTML=t.explain;
  $('algorithmSteps').innerHTML=t.steps.map(x=>'<li>'+x+'</li>').join('');
- $('inputExamples').innerHTML=t.tests.slice(0,3).map((x,i)=>'<div class="sample-row"><strong>'+(i+1)+'.</strong> <code>'+esc(variableText(x.vars))+'</code> → '+esc(x.out)+'</div>').join('');
+ $('inputExamples').innerHTML=t.tests.map((x,i)=>'<div class="sample-row"><strong>'+(i+1)+'.</strong> <code>'+esc(variableText(x.vars))+'</code> → '+esc(x.out)+'</div>').join('');
  $('builderArea').innerHTML=t.type==='choice'?renderChoice(t,b):t.type==='order'?renderOrder(t,b):renderTags(t,b);
  $('feedback').className='feedback hidden';$('feedback').innerHTML='';
  $('hint').textContent='💡 Підказка';
