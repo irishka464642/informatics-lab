@@ -69,6 +69,28 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 .paper{padding:16px 13px 38px;min-height:570px}#docTitle{font-size:21px}#editor{font-size:15px;min-height:390px}
 #editor.columns2{column-count:2;column-gap:12px;font-size:13px}.example .two{columns:2;column-gap:12px;font-size:13px}.main{padding:9px 6px 30px}}
 @media print{header,.ribbon,.modebar,#outlinePanel,.fineprint{display:none!important}.main{padding:0}.paper{box-shadow:none;border:0;width:100%;max-width:none;min-height:0;padding:0}#editor{min-height:0}#reference{display:none!important}}
+
+/* Comments, tracked suggestions and sharing */
+#reviewPanel{margin:14px auto;max-width:900px;background:#fff;border:1px solid #ccd8e7;border-radius:12px;padding:16px}
+#reviewPanel h2{margin:0 0 12px;font-size:18px}
+.review-item{border:1px solid #e0e6f0;border-left:4px solid #c69a54;border-radius:7px;padding:11px 13px;margin:9px 0;background:#fffcf5}
+.review-item.suggest{border-left-color:#4b83cb;background:#f7faff}
+.review-item .context{font-size:12px;color:#728198;margin-bottom:4px}
+.review-item .text{overflow-wrap:anywhere;white-space:pre-wrap;font-size:14px}
+.review-item .choice{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:8px}
+.review-item .choice button{border:1px solid #b6c6df;background:white;color:#25477c;padding:7px 11px;border-radius:7px;min-height:40px}
+.review-item .decision{font-size:12px;color:#436d61}
+.review-anchor{border-left:3px solid #d5a455!important;padding-left:8px!important;background:#fff9ed}
+.review-suggest-anchor{box-shadow:inset 3px 0 #6d9ad9;padding-left:8px!important}
+#shareDialog input,#shareDialog textarea,#commentDialog textarea,#suggestDialog textarea,#styleDialog select{display:block;width:100%;padding:11px;border:1px solid #b8c7dc;border-radius:8px;background:white;color:#253b61;font:inherit}
+#shareDialog textarea,#commentDialog textarea,#suggestDialog textarea{min-height:90px;resize:vertical}
+#shareDialog p,#commentDialog p,#suggestDialog p,#styleDialog p{color:#62738e;font-size:14px}
+.review-buttons{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end;margin-top:15px}
+.review-buttons .btn{min-width:104px}
+#roleIndicator{font-size:12px;padding:0 12px 8px;color:#5f6e85}
+.share-notice{font-size:12px;color:#687b94;padding:8px}
+@media(max-width:550px){#reviewPanel{padding:12px}.review-item{padding:10px}.review-buttons .btn{flex:1 1 140px}}
+
 </style>
 </head>
 <body>
@@ -86,6 +108,8 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 <button type="button" class="tab" data-tab="insert" aria-selected="false">Вставлення</button>
 <button type="button" class="tab" data-tab="layout" aria-selected="false">Макет</button>
 <button type="button" class="tab" data-tab="outline" aria-selected="false">Структура</button>
+<button type="button" class="tab" data-tab="review" aria-selected="false">Рецензування</button>
+<button type="button" class="tab" data-tab="sharing" aria-selected="false">Доступ</button>
 </div>
 <div class="toolbar" id="tools-home">
 <div class="toolgroup">
@@ -138,6 +162,20 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 <button class="tool" id="showOutline">Структура заголовків</button>
 <button class="tool" id="refreshToc">Оновити зміст</button>
 </div>
+<div class="toolbar" id="tools-review" hidden>
+<button class="tool" id="makeComment">＋ Коментар</button>
+<button class="tool" id="makeSuggestion">✎ Запропонувати зміну</button>
+<button class="tool" id="makeStyleSuggestion">▤ Запропонувати стиль</button>
+<button class="tool" id="openReviews">Переглянути рецензії</button>
+</div>
+<div class="toolbar" id="tools-sharing" hidden>
+<button class="tool" id="shareViewer">Посилання: перегляд</button>
+<button class="tool" id="shareCommenter">Посилання: коментування</button>
+<button class="tool" id="shareReviewer">Посилання: рецензування</button>
+<button class="tool" id="sendReview" hidden>Повернути рецензію автору</button>
+<span class="share-notice" id="shareNotice">Обмін копіями через посилання; зміни між пристроями не синхронізуються автоматично.</span>
+</div>
+<div id="roleIndicator">Мій документ · редагування</div>
 </div></div>
 <main class="main">
 <div class="modebar">
@@ -171,7 +209,8 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 <div style="border-top:1px solid #d4deef;font:12px Arial;color:#657895;padding-top:7px;text-align:center">Практична робота № 3</div>
 </article>
 <section id="outlinePanel" hidden><h2>Структура документа</h2><p>Переміщуйте заголовки разом із текстом розділів. Кнопки ↑ ↓ змінюють їх порядок.</p><div id="outlineList"></div></section>
-<p class="fineprint">Працює у браузері без встановлення застосунків. Документ зберігається тільки на цьому телефоні. Для здавання можна зберегти файл HTML.</p>
+<section id="reviewPanel" hidden><h2>Коментарі та запропоновані виправлення</h2><div id="reviewItems"></div></section>
+<p class="fineprint">Редактор працює без додатків. Документ зберігається на цьому телефоні. Через посилання можна передати копію на перегляд або рецензування — без одночасного редагування.</p>
 </main>
 <dialog id="linkDialog"><form id="linkForm" method="dialog">
 <h2>Вставлення гіперпосилання</h2><label>Текст посилання <input id="linkText" maxlength="220" required></label>
@@ -182,12 +221,35 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 <h2>Формула або математичний вираз</h2><label>Вираз <input id="formulaText" value="P = (a / b) × 100 %" maxlength="180" required></label>
 <div class="dialog-actions"><button type="button" class="btn" id="cancelFormula">Скасувати</button><button type="submit" class="btn primary">Вставити</button></div>
 </form></dialog>
+
+<dialog id="commentDialog"><form id="commentForm" method="dialog">
+<h2>Коментар до документа</h2><p id="commentContext"></p>
+<label>Коментар<textarea id="commentContent" maxlength="600" required placeholder="Додайте зауваження або рекомендацію"></textarea></label>
+<div class="review-buttons"><button type="button" class="btn" id="cancelComment">Скасувати</button><button type="submit" class="btn primary">Додати</button></div>
+</form></dialog>
+<dialog id="suggestDialog"><form id="suggestForm" method="dialog">
+<h2>Запропонувати виправлення</h2><p id="suggestContext"></p>
+<label>Запропонований текст абзацу<textarea id="suggestContent" maxlength="1200" required></textarea></label>
+<div class="review-buttons"><button type="button" class="btn" id="cancelSuggest">Скасувати</button><button type="submit" class="btn primary">Запропонувати</button></div>
+</form></dialog>
+<dialog id="styleDialog"><form id="styleForm" method="dialog">
+<h2>Запропонувати зміну стилю</h2><p id="styleContext"></p>
+<label>Стиль<select id="reviewStyle"><option value="p">Звичайний текст</option><option value="h1">Заголовок 1</option><option value="h2">Заголовок 2</option><option value="blue">Синя таблиця</option><option value="mint">Зелена таблиця</option><option value="gray">Сіра таблиця</option></select></label>
+<div class="review-buttons"><button type="button" class="btn" id="cancelStyle">Скасувати</button><button type="submit" class="btn primary">Запропонувати</button></div>
+</form></dialog>
+<dialog id="shareDialog">
+<h2 id="shareTitle">Доступ до документа</h2><p id="shareHint"></p>
+<label>Посилання<textarea id="shareAddress" readonly></textarea></label>
+<p>Посилання містить копію документа, тому не додавайте до нього приватних даних. Для одночасної спільної роботи потрібен окремий сервер.</p>
+<div class="review-buttons"><button type="button" class="btn" id="closeShare">Закрити</button><button type="button" class="btn primary" id="copyShare">Копіювати посилання</button></div>
+</dialog>
 <div id="toast" hidden role="status"></div>
 <script>
 "use strict";
 const KEY="informatics-lab-9-lesson11-final-v3", $=id=>document.getElementById(id), editor=$("editor");
 const DRAFT="<p>Безпека облікового запису</p><p>Створюйте надійні паролі, використовуйте різні паролі для різних сервісів. Не передавайте нікому коди входу.</p><p>Двофакторний захист</p><p>Додаткова перевірка зменшує ризик несанкціонованого входу, навіть якщо пароль став відомий іншій людині.</p><p>Перевірка інформації</p><p>Перед поширенням повідомлення звертайте увагу на автора, дату публікації та першоджерело.</p><p>Перевірте автора повідомлення.</p><p>Порівняйте дані у двох джерелах.</p><p>Знайдіть першоджерело.</p><p>Зверніть увагу на дату.</p><p>Цифровий слід</p><p>Публікації та повідомлення можуть залишатися доступними після видалення. Продумуйте, яку інформацію розміщуєте у відкритому доступі.</p><p>Ризик — Рішення — Результат</p><p>Слабкий пароль — Складний пароль — Захист доступу</p><p>Сумнівний допис — Перевірка джерела — Менше помилок</p><p>Корисний ресурс: Дія.Освіта</p><p>Формула: P = (a / b) × 100 %</p><p>Будьте уважними до особистих даних.</p><p>Регулярно перевіряйте налаштування приватності.</p>";
 let savedRange=null,tocActive=false,tab="home",toastTimer,columns=1,orientation="portrait";
+let documentId="doc"+Math.random().toString(36).slice(2,12), accessRole="owner",comments=[],suggestions=[],reviewTarget=null;
 function toast(msg){const e=$("toast");e.textContent=msg;e.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.hidden=true,2700);}
 function safeUrl(value){try{const u=new URL(String(value).trim());return /^(https?:)$/.test(u.protocol)?u.href:null;}catch{return null;}}
 function escapeHTML(t){return String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
@@ -218,6 +280,7 @@ function safeHTML(html){
    }
    if(n.dataset&&/^[a-z0-9-]{1,42}$/i.test(n.dataset.bid||""))props["data-bid"]=n.dataset.bid;
    if(n.tagName==="TABLE"&&["blue","mint","gray"].includes(n.className))props.class=n.className;
+   if(n.tagName==="IMG"&&n.classList.contains("review-anchor"))props.class="review-anchor";
    if(n.tagName==="HR"&&n.className==="section-break")props.class="section-break";
    if(n.tagName==="SPAN"&&n.className==="formula")props.class="formula";
    const decls=[];
@@ -325,7 +388,8 @@ function updateTOC(){
 }
 function persist(){
  ensureIds();updateTOC();
- const obj={name:$("docName").value,html:safeHTML(editor.innerHTML),toc:tocActive,head:$("headerText").value,foot:$("footerText").value,columns,orientation};
+ const obj={name:$("docName").value,html:safeHTML(editor.innerHTML),toc:tocActive,head:$("headerText").value,foot:$("footerText").value,columns,orientation,documentId,accessRole,comments,suggestions};
+ renderReviewMarks();
  try{localStorage.setItem(KEY,JSON.stringify(obj));$("saveStatus").textContent="✓ Збережено на цьому телефоні";}catch{$("saveStatus").textContent="Немає місця для збереження";toast("Збережіть HTML-файл, щоб не втратити текст.");}
  $("docTitle").textContent=$("docName").value.trim()||"Документ";
 }
@@ -335,6 +399,10 @@ function load(){
  editor.innerHTML=safeHTML(obj&&typeof obj.html==="string"?obj.html:DRAFT);
  tocActive=!!(obj&&obj.toc);$("headerText").value=obj?.head||"";$("footerText").value=obj?.foot||"";
  columns=obj?.columns===2?2:1;orientation=obj?.orientation==="landscape"?"landscape":"portrait";
+ documentId=String(obj?.documentId||documentId).slice(0,45);
+ accessRole=["owner","review","comment","view"].includes(obj?.accessRole)?obj.accessRole:"owner";
+ comments=Array.isArray(obj?.comments)?obj.comments.slice(0,80):[];
+ suggestions=Array.isArray(obj?.suggestions)?obj.suggestions.slice(0,80):[];
  $("columns").value=String(columns);$("orientation").value=orientation;applyLayout();ensureIds();updateTOC();
  $("docTitle").textContent=$("docName").value;$("saveStatus").textContent="Локальне збереження";
 }
@@ -346,9 +414,10 @@ function viewExample(example){
 }
 function switchTab(name){
  tab=name;for(const b of document.querySelectorAll("[data-tab]"))b.setAttribute("aria-selected",String(b.dataset.tab===name));
- for(const t of ["home","insert","layout","outline"])$("tools-"+t).hidden=t!==name;
+ for(const t of ["home","insert","layout","outline","review","sharing"])$("tools-"+t).hidden=t!==name;
  if(name==="outline"){viewExample(false);renderOutline();$("outlinePanel").hidden=false;}
  else $("outlinePanel").hidden=true;
+ if(name==="review")renderReviewPanel();
 }
 function unit(head){
  const children=Array.from(editor.children),start=children.indexOf(head),depth=head.tagName==="H1"?1:2;let end=start+1;
@@ -394,18 +463,274 @@ function applyLink(e){
  const a=make("a",label);a.href=url;a.target="_blank";a.rel="noopener noreferrer";insertNode(a);
  $("linkDialog").close();toast("Гіперпосилання вставлено.");
 }
+
+function reviewBlocks(){return [...editor.querySelectorAll("p,h1,h2,li,div,table,img")];}
+function targetBlock(){
+ if(selectionOk()){
+  let n=window.getSelection().anchorNode;
+  n=n?.nodeType===1?n:n?.parentElement;
+  while(n&&n!==editor){
+   if(["P","H1","H2","LI","DIV","TABLE","IMG"].includes(n.tagName)){
+    if(!n.dataset.bid)n.dataset.bid="b"+Math.random().toString(36).slice(2,11);
+    return n;
+   }
+   n=n.parentElement;
+  }
+ }
+ return reviewBlocks()[0]||null;
+}
+function findReviewTarget(id){return reviewBlocks().find(b=>b.dataset.bid===id)||null;}
+function reviewId(){return "rev"+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function renderReviewMarks(){
+ const noteIds=new Set(comments.map(n=>n.target));
+ const edits=new Set(suggestions.filter(n=>n.status==="pending").map(n=>n.target));
+ for(const e of reviewBlocks()){
+  e.classList.toggle("review-anchor",noteIds.has(e.dataset.bid));
+  e.classList.toggle("review-suggest-anchor",edits.has(e.dataset.bid));
+ }
+}
+function renderReviewPanel(){
+ const panel=$("reviewPanel"),out=$("reviewItems");out.replaceChildren();
+ if(!comments.length&&!suggestions.length){
+  out.append(make("p","Коментарів і запропонованих змін поки немає."));return;
+ }
+ const commentHeading=make("h3","Коментарі");commentHeading.style.fontSize="15px";out.append(commentHeading);
+ for(const note of comments){
+  if(!note||typeof note.text!=="string")continue;
+  const item=make("div");item.className="review-item";
+  const original=findReviewTarget(note.target);
+  const ctx=make("div",original?.textContent?.trim().slice(0,90)||"Фрагмент документа");ctx.className="context";
+  const body=make("div",note.text);body.className="text";item.append(ctx,body);
+  if(accessRole==="owner"){
+   const bar=make("div");bar.className="choice";
+   const del=make("button","Прибрати коментар");del.type="button";del.addEventListener("click",()=>{
+    comments=comments.filter(x=>x.id!==note.id);persist();renderReviewPanel();
+   });bar.append(del);item.append(bar);
+  }
+  out.append(item);
+ }
+ if(suggestions.length){
+  const suggestionHeading=make("h3","Запропоновані зміни");suggestionHeading.style.fontSize="15px";out.append(suggestionHeading);
+ }
+ for(const suggestion of suggestions){
+  if(!suggestion||!suggestion.status)continue;
+  const el=make("div");el.className="review-item suggest";
+  const target=findReviewTarget(suggestion.target);
+  const ctx=make("div",target?.textContent?.trim().slice(0,90)||"Фрагмент документа");ctx.className="context";
+  el.append(ctx);
+  el.append(make("div",suggestion.kind==="text"?"Було: "+suggestion.before:"Стиль: "+suggestion.before));
+  const after=make("div","Пропонується: "+suggestion.after);after.className="text";after.style.fontWeight="650";el.append(after);
+  const status=make("div",suggestion.status==="pending"?"Очікує рішення":suggestion.status==="accepted"?"Прийнято":"Відхилено");status.className="decision";el.append(status);
+  if(suggestion.status==="pending"&&accessRole==="owner"){
+   const bar=make("div");bar.className="choice";
+   for(const [label,ok] of [["Прийняти",true],["Відхилити",false]]){
+    const b=make("button",label);b.type="button";b.addEventListener("click",()=>decideReview(suggestion.id,ok));bar.append(b);
+   }el.append(bar);
+  }
+  out.append(el);
+ }
+}
+function decideReview(id,accept){
+ if(accessRole!=="owner")return;
+ const item=suggestions.find(x=>x.id===id);
+ if(!item||item.status!=="pending")return;
+ const target=findReviewTarget(item.target);
+ if(accept){
+  if(!target){toast("Фрагмент, до якого належала пропозиція, не знайдено.");return;}
+  if(item.kind==="text"){
+   if(target.textContent.trim()!==item.before&&!confirm("Текст змінився. Замінити його запропонованим?"))return;
+   target.textContent=item.after;
+  }else if(item.kind==="table"){
+   if(target.tagName!=="TABLE")return;
+   target.className=item.after;
+  }else if(item.kind==="style"){
+   if(!["p","h1","h2"].includes(item.after))return;
+   const newElement=make(item.after);newElement.innerHTML=target.innerHTML;
+   newElement.dataset.bid=target.dataset.bid;
+   target.replaceWith(newElement);
+  }
+ }
+ item.status=accept?"accepted":"rejected";persist();renderReviewPanel();toast(accept?"Зміну прийнято.":"Зміну відхилено.");
+}
+function openCommentBox(){
+ remember();const target=targetBlock();if(!target){toast("Торкніться абзацу для коментаря.");return;}
+ reviewTarget=target.dataset.bid;$("commentContext").textContent=target.textContent.trim().slice(0,120);
+ $("commentContent").value="";$("commentDialog").showModal();
+}
+function saveComment(e){
+ e.preventDefault();
+ const text=$("commentContent").value.trim();
+ if(!text||!findReviewTarget(reviewTarget))return;
+ comments.push({id:reviewId(),target:reviewTarget,text:text.slice(0,600)});
+ $("commentDialog").close();persist();$("reviewPanel").hidden=false;renderReviewPanel();toast("Коментар додано.");
+}
+function openSuggestBox(){
+ remember();const target=targetBlock();if(!target){toast("Торкніться абзацу для пропозиції.");return;}
+ reviewTarget=target.dataset.bid;$("suggestContext").textContent=target.textContent.trim().slice(0,120);
+ $("suggestContent").value=target.textContent.trim().slice(0,1200);
+ $("suggestDialog").showModal();
+}
+function saveSuggestion(e){
+ e.preventDefault();const target=findReviewTarget(reviewTarget);
+ if(!target)return;
+ const before=target.textContent.trim().slice(0,1200),after=$("suggestContent").value.trim().slice(0,1200);
+ if(!after||after===before){toast("Запропонуйте зміну, відмінну від початкового тексту.");return;}
+ suggestions.push({id:reviewId(),target:reviewTarget,kind:"text",before,after,status:"pending"});
+ $("suggestDialog").close();persist();$("reviewPanel").hidden=false;renderReviewPanel();toast("Пропозицію додано.");
+}
+function openStyleBox(){
+ remember();const target=targetBlock();if(!target){toast("Оберіть абзац або таблицю.");return;}
+ reviewTarget=target.dataset.bid;
+ $("styleContext").textContent=target.textContent.trim().slice(0,120);
+ $("reviewStyle").value=target.tagName==="TABLE"?"blue":"h1";
+ $("styleDialog").showModal();
+}
+function saveStyleSuggestion(e){
+ e.preventDefault();const target=findReviewTarget(reviewTarget);
+ if(!target)return;
+ const after=$("reviewStyle").value;
+ const isTable=target.tagName==="TABLE",isTableStyle=["blue","mint","gray"].includes(after);
+ if(isTable!==isTableStyle){toast(isTable?"Оберіть стиль таблиці.":"Оберіть стиль абзацу.");return;}
+ const before=isTable?(target.className||"plain"):target.tagName.toLowerCase();
+ suggestions.push({id:reviewId(),target:reviewTarget,kind:isTable?"table":"style",before,after,status:"pending"});
+ $("styleDialog").close();persist();$("reviewPanel").hidden=false;renderReviewPanel();toast("Пропозицію оформлення додано.");
+}
+function setAccessRole(){
+ const owner=accessRole==="owner",review=accessRole==="review",comment=accessRole==="comment";
+ editor.contentEditable=owner?"true":"false";
+ $("docName").readOnly=!owner;
+ $("headerText").readOnly=!owner;$("footerText").readOnly=!owner;
+ for(const b of document.querySelectorAll(".tab")){
+  b.hidden=!owner&&["home","insert","layout","outline"].includes(b.dataset.tab);
+ }
+ $("reset").hidden=!owner;
+ $("shareViewer").hidden=!owner;$("shareCommenter").hidden=!owner;$("shareReviewer").hidden=!owner;
+ $("sendReview").hidden=!review&&!comment;
+ $("makeComment").hidden=!owner&&!review&&!comment;
+ $("makeSuggestion").hidden=!owner&&!review;
+ $("makeStyleSuggestion").hidden=!owner&&!review;
+ $("roleIndicator").textContent=owner?"Мій документ · редагування":review?"Отриманий документ · рецензування":comment?"Отриманий документ · коментування":"Отриманий документ · лише перегляд";
+ $("shareNotice").textContent=owner?"Посилання містить копію документа. Після рецензування однокласник повертає окреме посилання.":review||comment?"Після коментарів натисніть «Повернути рецензію автору».":"Цей документ доступний лише для перегляду.";
+ if(!owner)switchTab(review||comment?"review":"sharing");
+}
+function encode64(bytes){
+ let str="";for(let i=0;i<bytes.length;i+=8192)str+=String.fromCharCode(...bytes.subarray(i,i+8192));
+ return btoa(str).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+function decode64(str){
+ const b=atob(str.replace(/-/g,"+").replace(/_/g,"/").padEnd(Math.ceil(str.length/4)*4,"="));
+ return Uint8Array.from(b,c=>c.charCodeAt(0));
+}
+async function pack(value){
+ const bytes=new TextEncoder().encode(JSON.stringify(value));
+ if(typeof CompressionStream==="function"){
+  const packed=await new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream("gzip"))).arrayBuffer();
+  return "g"+encode64(new Uint8Array(packed));
+ }
+ return "p"+encode64(bytes);
+}
+async function unpack(value){
+ if(value.length>90000||value.length<2)throw Error("Неправильний розмір");
+ let bytes=decode64(value.slice(1));
+ if(value[0]==="g"){
+  if(typeof DecompressionStream!=="function")throw Error("Браузер не підтримує розпакування посилань");
+  bytes=new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"))).arrayBuffer());
+ }else if(value[0]!=="p")throw Error("Невідомий формат");
+ if(bytes.length>220000)throw Error("Документ завеликий");
+ return JSON.parse(new TextDecoder().decode(bytes));
+}
+function documentPacket(){
+ ensureIds();
+ return {version:1,documentId,name:$("docName").value,html:safeHTML(editor.innerHTML),toc:tocActive,
+  head:$("headerText").value,foot:$("footerText").value,columns,orientation};
+}
+function showShareLink(url,heading,desc){
+ if(url.length>12000){toast("Посилання завелике. Спробуйте документ без великого зображення або збережіть HTML.");return;}
+ $("shareTitle").textContent=heading;$("shareHint").textContent=desc;$("shareAddress").value=url;$("shareDialog").showModal();
+}
+async function createShare(role){
+ try{
+  persist();
+  const packet=documentPacket(),encoded=await pack(packet);
+  const base=location.origin+location.pathname+location.search;
+  showShareLink(base+"#doc="+role+"."+encoded,role==="view"?"Перегляд документа":role==="comment"?"Коментування документа":"Рецензування документа",
+   role==="view"?"Одержувач відкриє копію лише для перегляду.":role==="comment"?"Одержувач зможе залишити коментарі та надіслати їх назад.":"Одержувач зможе залишати коментарі й пропонувати зміни, які ви потім приймете або відхилите.");
+ }catch{toast("Не вдалося створити посилання.");}
+}
+async function returnReview(){
+ if(accessRole!=="review"&&accessRole!=="comment"){toast("Це не документ для рецензування.");return;}
+ try{
+  const packet={version:1,documentId,comments:comments.slice(0,80),suggestions:suggestions.slice(0,80)};
+  const url=location.origin+location.pathname+location.search+"#review="+await pack(packet);
+  showShareLink(url,"Рецензія для автора","Надішліть це посилання автору. Він зможе переглянути коментарі та прийняти або відхилити пропозиції.");
+ }catch{toast("Не вдалося підготувати рецензію.");}
+}
+async function copyShareLink(){
+ try{await navigator.clipboard.writeText($("shareAddress").value);toast("Посилання скопійовано.");return;}catch{}
+ $("shareAddress").select();try{document.execCommand("copy");toast("Посилання скопійовано.");}catch{toast("Скопіюйте посилання вручну.");}
+}
+function importSharedDoc(obj,role){
+ if(!obj||obj.version!==1||typeof obj.html!=="string"||typeof obj.documentId!=="string")throw Error("Неправильний документ");
+ if(!confirm("Відкрити копію документа? Поточна локальна чернетка цього браузера буде замінена."))return;
+ try{const current=localStorage.getItem(KEY);if(current)localStorage.setItem(KEY+"-backup",current);}catch{}
+ documentId=obj.documentId.slice(0,45);
+ $("docName").value=String(obj.name||"Документ").slice(0,90);editor.innerHTML=safeHTML(obj.html);
+ tocActive=!!obj.toc;$("headerText").value=String(obj.head||"").slice(0,200);$("footerText").value=String(obj.foot||"").slice(0,200);
+ columns=obj.columns===2?2:1;orientation=obj.orientation==="landscape"?"landscape":"portrait";
+ $("columns").value=String(columns);$("orientation").value=orientation;applyLayout();
+ accessRole=role;comments=[];suggestions=[];setAccessRole();persist();
+ toast("Копію документа відкрито.");
+}
+function importReview(obj){
+ if(!obj||obj.version!==1||obj.documentId!==documentId){toast("Ця рецензія належить іншому документу.");return;}
+ if(accessRole!=="owner"){toast("Відкрийте посилання на телефоні автора документа.");return;}
+ if(!confirm("Імпортувати коментарі та запропоновані зміни?"))return;
+ const cids=new Set(comments.map(x=>x.id));
+ for(const note of (Array.isArray(obj.comments)?obj.comments:[]).slice(0,80)){
+  if(note&&typeof note.id==="string"&&typeof note.text==="string"&&typeof note.target==="string"&&!cids.has(note.id)){
+   comments.push({id:note.id.slice(0,55),target:note.target.slice(0,42),text:note.text.slice(0,600)});cids.add(note.id);
+  }
+ }
+ const sids=new Set(suggestions.map(x=>x.id));
+ for(const edit of (Array.isArray(obj.suggestions)?obj.suggestions:[]).slice(0,80)){
+  if(edit&&typeof edit.id==="string"&&typeof edit.target==="string"&&["text","style","table"].includes(edit.kind)&&!sids.has(edit.id)){
+   suggestions.push({id:edit.id.slice(0,55),target:edit.target.slice(0,42),kind:edit.kind,
+    before:String(edit.before||"").slice(0,1200),after:String(edit.after||"").slice(0,1200),status:"pending"});
+   sids.add(edit.id);
+  }
+ }
+ persist();$("reviewPanel").hidden=false;renderReviewPanel();$("reviewPanel").scrollIntoView({behavior:"smooth"});
+ toast("Рецензію отримано.");
+}
+async function readShareFromURL(){
+ const hash=location.hash;
+ if(!hash.startsWith("#doc=")&&!hash.startsWith("#review="))return;
+ try{
+  if(hash.startsWith("#doc=")){
+   const value=hash.slice(5),point=value.indexOf(".");
+   const role=value.slice(0,point);
+   if(!["view","comment","review"].includes(role))throw Error("Неправильний тип доступу");
+   const packet=await unpack(value.slice(point+1));importSharedDoc(packet,role);
+  }else{const packet=await unpack(hash.slice(8));importReview(packet);}
+ }catch(err){toast("Не вдалося прочитати посилання: "+String(err.message).slice(0,70));}
+ try{history.replaceState(null,"",location.pathname+location.search);}catch{}
+}
+
 function saveHTML(){
  const title=$("docName").value||"Текстовий документ";
  const clone=document.createElement("div");clone.innerHTML=safeHTML(editor.innerHTML);
  for(const h of clone.querySelectorAll("h1,h2"))if(h.dataset.bid)h.id="head-"+h.dataset.bid;
  const toc=(()=>{if(!tocActive)return "";const heads=[...clone.querySelectorAll("h1,h2")];return "<nav><h2>Зміст</h2><ol>"+heads.map(h=>"<li><a href='#"+h.id+"'>"+escapeHTML(h.textContent)+"</a></li>").join("")+"</ol></nav>";})();
- const doc="<!doctype html><html lang='uk'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>"+escapeHTML(title)+"</title><style>body{max-width:900px;margin:30px auto;padding:0 22px;font:16px/1.6 'Times New Roman',serif}header,footer{text-align:center;color:#54637b;font:12px Arial;border-block:1px solid #dde3ee;padding:10px}h1,h2{font-family:Arial;color:#254d86}table{border-collapse:collapse;width:100%;margin:12px 0}td,th{border:1px solid #bdcde3;padding:8px}table.blue th{background:#dce8fa}table.mint th{background:#d9f0e8}table.gray th{background:#e9eaf0}img{max-width:100%;height:auto}nav{padding:12px;background:#f1f6ff}a{color:#1d56a2}article{column-count:"+columns+";column-gap:28px}@media(max-width:650px){article{column-count:"+columns+"}}</style></head><body><header>"+escapeHTML($("headerText").value)+"</header><h1>"+escapeHTML(title)+"</h1>"+toc+"<article>"+clone.innerHTML+"</article><footer>"+escapeHTML($("footerText").value)+"</footer></body></html>";
+ const annotations=comments.length||suggestions.length?"<section><h2>Коментарі та зміни</h2>"+comments.map(n=>"<p>Коментар: "+escapeHTML(n.text)+"</p>").join("")+suggestions.map(n=>"<p>"+escapeHTML(n.status+": "+n.before+" → "+n.after)+"</p>").join("")+"</section>":"";
+ const doc="<!doctype html><html lang='uk'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>"+escapeHTML(title)+"</title><style>body{max-width:900px;margin:30px auto;padding:0 22px;font:16px/1.6 'Times New Roman',serif}header,footer{text-align:center;color:#54637b;font:12px Arial;border-block:1px solid #dde3ee;padding:10px}h1,h2{font-family:Arial;color:#254d86}table{border-collapse:collapse;width:100%;margin:12px 0}td,th{border:1px solid #bdcde3;padding:8px}table.blue th{background:#dce8fa}table.mint th{background:#d9f0e8}table.gray th{background:#e9eaf0}img{max-width:100%;height:auto}nav{padding:12px;background:#f1f6ff}a{color:#1d56a2}article{column-count:"+columns+";column-gap:28px}@media(max-width:650px){article{column-count:"+columns+"}}</style></head><body><header>"+escapeHTML($("headerText").value)+"</header><h1>"+escapeHTML(title)+"</h1>"+toc+"<article>"+clone.innerHTML+"</article>"+annotations+"<footer>"+escapeHTML($("footerText").value)+"</footer></body></html>";
  const url=URL.createObjectURL(new Blob([doc],{type:"text/html;charset=utf-8"}));const a=make("a");a.href=url;a.download="informatyka-9-urok-11.html";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
 }
 function reset(){
  if(!confirm("Замінити поточний документ початковим текстом? Зміни буде втрачено."))return;
  editor.innerHTML=safeHTML(DRAFT);$("docName").value="Цифрова грамотність";$("headerText").value="";$("footerText").value="";
- tocActive=false;columns=1;orientation="portrait";$("columns").value="1";$("orientation").value="portrait";applyLayout();persist();viewExample(false);toast("Початковий текст відновлено.");
+ tocActive=false;columns=1;orientation="portrait";$("columns").value="1";$("orientation").value="portrait";
+ documentId="doc"+Math.random().toString(36).slice(2,12);accessRole="owner";comments=[];suggestions=[];
+ applyLayout();setAccessRole();persist();viewExample(false);toast("Початковий текст відновлено.");
 }
 for(const b of document.querySelectorAll(".tab"))b.addEventListener("click",()=>switchTab(b.dataset.tab));
 for(const b of document.querySelectorAll("[data-cmd]")){
@@ -453,6 +778,23 @@ editor.addEventListener("mouseup",remember);editor.addEventListener("keyup",reme
 editor.addEventListener("touchend",()=>setTimeout(remember,90));
 document.addEventListener("selectionchange",remember);
 editor.addEventListener("paste",e=>{e.preventDefault();insertText(e.clipboardData?.getData("text/plain")||"");});
-load();
+
+$("makeComment").addEventListener("click",openCommentBox);
+$("commentForm").addEventListener("submit",saveComment);
+$("cancelComment").addEventListener("click",()=>$("commentDialog").close());
+$("makeSuggestion").addEventListener("click",openSuggestBox);
+$("suggestForm").addEventListener("submit",saveSuggestion);
+$("cancelSuggest").addEventListener("click",()=>$("suggestDialog").close());
+$("makeStyleSuggestion").addEventListener("click",openStyleBox);
+$("styleForm").addEventListener("submit",saveStyleSuggestion);
+$("cancelStyle").addEventListener("click",()=>$("styleDialog").close());
+$("openReviews").addEventListener("click",()=>{$("reviewPanel").hidden=false;renderReviewPanel();$("reviewPanel").scrollIntoView({behavior:"smooth"});});
+$("shareViewer").addEventListener("click",()=>createShare("view"));
+$("shareCommenter").addEventListener("click",()=>createShare("comment"));
+$("shareReviewer").addEventListener("click",()=>createShare("review"));
+$("sendReview").addEventListener("click",returnReview);
+$("closeShare").addEventListener("click",()=>$("shareDialog").close());
+$("copyShare").addEventListener("click",copyShareLink);
+load();setAccessRole();readShareFromURL();
 </script>
 </body></html>
