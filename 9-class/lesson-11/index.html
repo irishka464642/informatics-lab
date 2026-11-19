@@ -38,7 +38,7 @@ header,.ribbon{background:#fff}.ribbon{position:sticky;top:0;z-index:25;box-shad
 .headfoot::placeholder{color:#acb6c5}.headfoot.topline{border-bottom:1px solid #dae2ed;margin-bottom:24px}.headfoot.bottomline{border-top:1px solid #dae2ed;margin-top:31px}
 #docTitle{font:700 24px/1.35 Georgia,serif;text-align:center;color:#1c355c;margin:15px 0 24px}
 #editor{outline:0;font:16px/1.6 "Times New Roman",serif;min-height:470px;color:#1d2d42;word-wrap:break-word}
-#editor:focus{outline:0}#editor p,#editor div{margin:0 0 12px;min-height:1.35em}#editor h1{font:bold 22px/1.35 Arial,sans-serif;margin:20px 0 9px;color:#213e74}#editor h2{font:bold 18px/1.4 Arial,sans-serif;margin:15px 0 7px;color:#30578b}
+#editor:focus{outline:0}#editor ::selection,#editor::selection{background:#a6cffb;color:#172f51}.style-shortcut{font-size:12px;min-width:auto;padding:8px 10px;background:#e5eefc}#editor p,#editor div{margin:0 0 12px;min-height:1.35em}#editor h1{font:bold 22px/1.35 Arial,sans-serif;margin:20px 0 9px;color:#213e74}#editor h2{font:bold 18px/1.4 Arial,sans-serif;margin:15px 0 7px;color:#30578b}
 #editor ul,#editor ol{padding-left:27px;margin:7px 0 13px}#editor li{margin-bottom:4px}#editor a,#toc a{color:#1b55a7}
 #editor table,.example table{width:100%;border-collapse:collapse;margin:13px 0;font-size:14px}#editor td,#editor th,.example td,.example th{border:1px solid #adbed4;padding:8px;min-width:50px;vertical-align:top}
 #editor table.blue th{background:#dce8fa}#editor table.mint th{background:#d9f0e8}#editor table.gray th{background:#e9eaf0}
@@ -159,6 +159,8 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 <div class="toolgroup">
 <select class="toolselect" id="style" aria-label="Стиль абзацу">
 <option value="p">Звичайний</option><option value="h1">Заголовок 1</option><option value="h2">Заголовок 2</option></select>
+<button type="button" class="tool style-shortcut" data-style="h1" aria-label="Застосувати стиль Заголовок 1" title="Застосувати Заголовок 1 до поточного абзацу">Заголовок 1</button>
+<button type="button" class="tool style-shortcut" data-style="h2" aria-label="Застосувати стиль Заголовок 2" title="Застосувати Заголовок 2 до поточного абзацу">Заголовок 2</button>
 <select class="toolselect" id="fontFamily" aria-label="Шрифт">
 <option value="Times New Roman">Times New Roman</option><option value="Arial">Arial</option><option value="Calibri">Calibri</option><option value="Georgia">Georgia</option><option value="Verdana">Verdana</option></select>
 <select class="toolselect narrow" id="fontSize" aria-label="Розмір шрифту">
@@ -375,7 +377,7 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 "use strict";
 const KEY="informatics-lab-9-lesson11-final-v3", $=id=>document.getElementById(id), editor=$("editor");
 const DRAFT="<p>Безпека облікового запису</p><p>Створюйте надійні паролі, використовуйте різні паролі для різних сервісів. Не передавайте нікому коди входу.</p><p>Двофакторний захист</p><p>Додаткова перевірка зменшує ризик несанкціонованого входу, навіть якщо пароль став відомий іншій людині.</p><p>Перевірка інформації</p><p>Перед поширенням повідомлення звертайте увагу на автора, дату публікації та першоджерело.</p><p>Перевірте автора повідомлення.</p><p>Порівняйте дані у двох джерелах.</p><p>Знайдіть першоджерело.</p><p>Зверніть увагу на дату.</p><p>Цифровий слід</p><p>Публікації та повідомлення можуть залишатися доступними після видалення. Продумуйте, яку інформацію розміщуєте у відкритому доступі.</p><p>Ризик — Рішення — Результат</p><p>Слабкий пароль — Складний пароль — Захист доступу</p><p>Сумнівний допис — Перевірка джерела — Менше помилок</p><p>Корисний ресурс: Дія.Освіта</p><p>Формула: P = (a / b) × 100 %</p><p>Будьте уважними до особистих даних.</p><p>Регулярно перевіряйте налаштування приватності.</p>";
-let savedRange=null,tocActive=false,tab="home",toastTimer,columns=1,orientation="portrait";
+let savedRange=null,savedBlockId=null,tocActive=false,tab="home",toastTimer,columns=1,orientation="portrait";
 let documentId="doc"+Math.random().toString(36).slice(2,12), accessRole="owner",comments=[],suggestions=[],reviewTarget=null,lastImage=null;
 function toast(msg){const e=$("toast");e.textContent=msg;e.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.hidden=true,2700);}
 function safeUrl(value){try{const u=new URL(String(value).trim());return /^(https?:)$/.test(u.protocol)?u.href:null;}catch{return null;}}
@@ -438,36 +440,110 @@ function ensureIds(){const used=new Set();for(const b of editor.querySelectorAll
  if(!b.dataset.bid||used.has(b.dataset.bid))b.dataset.bid="b"+Math.random().toString(36).slice(2,11);
  used.add(b.dataset.bid);
 }}
-function selectionOk(){const s=window.getSelection();return !!(s&&s.rangeCount&&(editor===s.anchorNode||editor.contains(s.anchorNode)));}
+function selectionOk(){
+ const s=window.getSelection();
+ return !!(s&&s.rangeCount&&(editor===s.anchorNode||editor.contains(s.anchorNode))&&(editor===s.focusNode||editor.contains(s.focusNode)));
+}
+function findEditBlock(node){
+ let el=node?.nodeType===1?node:node?.parentElement;
+ while(el&&el!==editor){
+  if(["P","H1","H2","LI","DIV"].includes(el.tagName))return el;
+  el=el.parentElement;
+ }
+ return null;
+}
 function remember(){
  if(!selectionOk())return;
- try{savedRange=window.getSelection().getRangeAt(0).cloneRange();}catch{}
- // Keep the style picker synchronized with the actual paragraph under the cursor.
- // Otherwise selecting "Заголовок 1" again on another paragraph emits no change event.
- const block=currentBlock();
+ const sel=window.getSelection();
+ try{savedRange=sel.getRangeAt(0).cloneRange();}catch{return;}
+ const block=findEditBlock(sel.anchorNode);
  if(block){
+  if(!block.dataset.bid)block.dataset.bid="b"+Math.random().toString(36).slice(2,11);
+  savedBlockId=block.dataset.bid;
   const actual=block.tagName==="H1"?"h1":block.tagName==="H2"?"h2":"p";
   $("style").value=actual;
  }
 }
-function restore(){editor.focus({preventScroll:true});if(!savedRange||!editor.contains(savedRange.commonAncestorContainer))return false;
- try{const s=window.getSelection();s.removeAllRanges();s.addRange(savedRange);return true;}catch{return false;}}
-function exec(cmd,val){restore();let ok=false;try{ok=document.execCommand(cmd,false,val??null);}catch{}remember();persist();return ok;}
+function restore(){
+ if(!savedRange||!editor.contains(savedRange.commonAncestorContainer))return false;
+ try{
+  editor.focus({preventScroll:true});
+  const s=window.getSelection();s.removeAllRanges();s.addRange(savedRange.cloneRange());
+  return selectionOk();
+ }catch{return false;}
+}
+function selectionTooLarge(){
+ const s=window.getSelection();
+ if(!selectionOk()||!s.rangeCount||s.isCollapsed)return false;
+ const r=s.getRangeAt(0);
+ let blocks=0;
+ for(const child of editor.querySelectorAll("p,h1,h2,li,div")){
+  if(r.intersectsNode(child)&&++blocks>6)return true;
+ }
+ return r.toString().length>850;
+}
+function exec(cmd,val){
+ // Never allow a stale "Select all" gesture to format the whole document.
+ if(cmd!=="undo"&&cmd!=="redo"){
+  if(!restore()){toast("Спочатку торкніться потрібного тексту в документі.");return false;}
+  if(selectionTooLarge()){toast("Виділено забагато тексту. Виберіть лише потрібні абзаци.");return false;}
+ }
+ let ok=false;try{ok=document.execCommand(cmd,false,val??null);}catch{}
+ // A list command can leave an enormous visual selection on mobile. Collapse it.
+ if(ok&&["insertOrderedList","insertUnorderedList","indent","outdent"].includes(cmd)){
+  try{const selection=window.getSelection();if(selectionOk()&&!selection.isCollapsed)selection.collapseToEnd();}catch{}
+ }
+ remember();persist();return ok;
+}
 function currentBlock(){
- if(selectionOk()){let n=window.getSelection().anchorNode;n=n.nodeType===1?n:n.parentElement;
-  while(n&&n!==editor){if(["P","H1","H2","LI","DIV"].includes(n.tagName))return n;n=n.parentElement;}}
- const b=editor.querySelector("p,h1,h2,li,div");return b||null;
+ if(selectionOk())return findEditBlock(window.getSelection().anchorNode);
+ if(savedBlockId)return Array.from(editor.querySelectorAll("p,h1,h2,li,div")).find(b=>b.dataset.bid===savedBlockId)||null;
+ return null;
 }
 function setParagraph(tag){
- restore();const b=currentBlock();
- if(!b)return;
- if(b.tagName.toLowerCase()===tag)return;
- try{document.execCommand("formatBlock",false,tag.toUpperCase());}catch{}
- if(b.isConnected&&b.tagName.toLowerCase()!==tag&&b.parentNode===editor){
-  const el=document.createElement(tag);el.innerHTML=b.innerHTML;el.dataset.bid=b.dataset.bid;
-  b.replaceWith(el);
+ if(!["p","h1","h2"].includes(tag))return;
+ // Read the saved selection but never call formatBlock over a multi-paragraph range.
+ let r=null;
+ try{
+  if(savedRange&&editor.contains(savedRange.commonAncestorContainer))r=savedRange.cloneRange();
+  else if(selectionOk())r=window.getSelection().getRangeAt(0).cloneRange();
+ }catch{}
+ let block=r?findEditBlock(r.startContainer):null;
+ if(!block&&savedBlockId)block=Array.from(editor.querySelectorAll("p,h1,h2,li,div")).find(b=>b.dataset.bid===savedBlockId)||null;
+ if(!block){
+  toast("Спочатку торкніться назви розділу в документі.");
+  return;
  }
- remember();persist();
+ if(r&&!r.collapsed){
+  const last=findEditBlock(r.endContainer);
+  if(last!==block){
+   toast("Стиль застосовується до одного заголовка. Не виділяйте кілька абзаців.");
+   return;
+  }
+ }
+ if(block.parentElement!==editor||!["P","H1","H2","DIV"].includes(block.tagName)){
+  toast("Щоб зробити заголовок, виберіть окремий абзац поза списком.");
+  return;
+ }
+ let target=block;
+ if(block.tagName.toLowerCase()!==tag){
+  const next=document.createElement(tag);
+  next.innerHTML=block.innerHTML||"<br>";
+  for(const attr of Array.from(block.attributes)){
+   if(["style","data-bid","id"].includes(attr.name))next.setAttribute(attr.name,attr.value);
+  }
+  block.replaceWith(next);target=next;
+ }
+ // Remove the big, dark selection highlight and put the caret into this heading.
+ const caret=document.createRange();caret.selectNodeContents(target);caret.collapse(false);
+ try{
+  editor.focus({preventScroll:true});
+  const sel=window.getSelection();sel.removeAllRanges();sel.addRange(caret);
+ }catch{}
+ if(!target.dataset.bid)target.dataset.bid="b"+Math.random().toString(36).slice(2,11);
+ savedBlockId=target.dataset.bid;savedRange=caret.cloneRange();
+ $("style").value=tag;
+ persist();
 }
 function applyFontSize(pt){
  restore();
@@ -478,7 +554,8 @@ function applyFontSize(pt){
  remember();persist();
 }
 function paragraphProperty(name,value){
- restore();
+ if(!restore()){toast("Спочатку виберіть абзац.");return;}
+ if(selectionTooLarge()){toast("Виділено забагато тексту. Виберіть потрібний абзац.");return;}
  const s=window.getSelection();
  let blocks=[];
  if(s&&s.rangeCount&&selectionOk()){
@@ -1022,7 +1099,7 @@ function scheduleTasks(){
 
 function reset(){
  if(!confirm("Замінити поточний документ початковим текстом? Зміни буде втрачено."))return;
- editor.innerHTML=safeHTML(DRAFT);$("docName").value="Цифрова грамотність";$("headerText").value="";$("footerText").value="";
+ editor.innerHTML=safeHTML(DRAFT);savedRange=null;savedBlockId=null;$("style").value="p";$("docName").value="Цифрова грамотність";$("headerText").value="";$("footerText").value="";
  tocActive=false;columns=1;orientation="portrait";$("columns").value="1";$("orientation").value="portrait";
  documentId="doc"+Math.random().toString(36).slice(2,12);accessRole="owner";comments=[];suggestions=[];
  applyLayout();setAccessRole();persist();viewTasks();toast("Початковий текст відновлено.");
@@ -1032,6 +1109,10 @@ for(const b of document.querySelectorAll("[data-cmd]")){
  b.addEventListener("mousedown",e=>e.preventDefault());b.addEventListener("click",()=>exec(b.dataset.cmd));
 }
 $("style").addEventListener("change",e=>setParagraph(e.target.value));
+for(const shortcut of document.querySelectorAll("[data-style]")){
+ shortcut.addEventListener("mousedown",e=>e.preventDefault());
+ shortcut.addEventListener("click",()=>setParagraph(shortcut.dataset.style));
+}
 $("fontFamily").addEventListener("change",e=>exec("fontName",e.target.value));
 $("fontSize").addEventListener("change",e=>applyFontSize(e.target.value));
 $("fontColor").addEventListener("input",e=>exec("foreColor",e.target.value));$("fontColor").addEventListener("change",e=>exec("foreColor",e.target.value));
