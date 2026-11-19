@@ -78,12 +78,13 @@
  .builder-action-grid .builder-chip{min-width:0}
 }
 
+.student-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px}.reset-progress{flex:none;min-height:32px;border:1px solid #cbab82;border-radius:9px;padding:5px 10px;color:#ffdfab;background:#413a37;font-size:12px;font-weight:850;white-space:nowrap}.reset-progress:focus-visible{outline:3px solid #ffe29c;outline-offset:2px}@media(max-width:650px){.student-actions{gap:6px}.student-actions small{display:none}.reset-progress{padding:5px 8px;font-size:11px;min-height:32px}}
 </style>
 </head>
 <body><div class="wrap">
 <header class="top"><div class="brand"><div class="logo">⌨️</div><div><div class="eyebrow">8 клас · Частина 2</div><strong>Агенція логіки</strong></div></div><a class="btn small" href="../logic-true-false-8/">← Теорія та гра</a></header>
 <section class="student-bar" aria-label="Дані учня і прогрес">
- <div class="student-heading"><span>Конструктор Python</span><small>5 завдань · 12 балів</small></div>
+ <div class="student-heading"><span>Конструктор Python</span><div class="student-actions"><small>5 завдань · 12 балів</small><button id="resetAll" type="button" class="reset-progress" title="Почати нову спробу й скинути прогрес">↻ Скинути</button></div></div>
  <div class="student-fields">
   <div class="field"><label for="surname">Прізвище</label><input id="surname" autocomplete="family-name" maxlength="60" placeholder="Прізвище"></div>
   <div class="field"><label for="firstname">Ім’я</label><input id="firstname" autocomplete="given-name" maxlength="60" placeholder="Ім’я"></div>
@@ -107,7 +108,7 @@
   <button class="action" id="check">▶ Перевірити код</button>
   <button class="btn" id="hint">💡 Підказка</button>
   <button class="btn" id="template">↺ Очистити завдання</button>
-  <button class="btn" id="resetAll">Скинути всі результати</button>
+  
  </div>
  <div id="feedback" class="feedback hidden" role="status" aria-live="polite"></div>
  <div class="toolbar"><button class="action" id="next" disabled>Наступне завдання →</button></div>
