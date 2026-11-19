@@ -202,18 +202,18 @@ const MISSIONS=[
   outcome:n=>n>=10?"Двері відкрито":"Мало енергії",
   branches:["if","else"],minimum:[1,1],
   texts:["Двері відкрито","Мало енергії"]},
- {title:"Додай третій шлях — elif",subtitle:"Вчимо програму обирати одну з трьох дій.",tag:"МІСІЯ 3 · IF / ELIF / ELSE",emoji:"🌡️",scene:"ТЕМПЕРАТУРНА СТАНЦІЯ",v:"temp",
-  task:'Якщо температура нижче 30 — виведи "Холодно". Інакше, якщо температура 70 або нижче — "Норма". У всіх інших випадках — "Спека".',
-  explanation:'<code>elif</code> означає «інакше, якщо». Програма перевіряє умови зверху вниз і виконує тільки <strong>першу відповідну гілку</strong>.',
-  hint:'Почни з <code>if temp &lt; 30:</code>. Далі <code>elif temp &lt;= 70:</code>. Наприкінці — <code>else:</code>. Після кожної двокрапки напиши <code>print(...)</code> з відступом.',
-  skeleton:'if temp < 30:\n    \nelif temp <= 70:\n    \nelse:\n    ',
-  solution:'if temp < 30:\n    print("Холодно")\nelif temp <= 70:\n    print("Норма")\nelse:\n    print("Спека")',
-  values:[25,30,70,71],
-  expect:n=>n<30?["Холодно"]:n<=70?["Норма"]:["Спека"],
-  picture:n=>n<30?"❄️":n<=70?"🌤️":"🔥",
-  outcome:n=>n<30?"Холодно":n<=70?"Норма":"Спека",
+ {title:"Погода за вікном — три можливі відповіді",subtitle:"Порівнюємо температуру повітря: холодно, комфортно чи спекотно.",tag:"МІСІЯ 3 · IF / ELIF / ELSE",emoji:"🌤️",scene:"ПОГОДНА СТАНЦІЯ",v:"temp",
+  task:'Вимірюємо температуру повітря (°C). Якщо нижче 15 °C — виведи "Холодно". Інакше, якщо 25 °C або нижче — "Комфортно". Якщо вище 25 °C — "Спекотно".',
+  explanation:'<code>elif</code> означає «інакше, якщо». Програма перевіряє умови зверху вниз і виконує тільки <strong>першу відповідну гілку</strong>. Після першої перевірки <code>temp &lt; 15</code> друга перевірка <code>temp &lt;= 25</code> охоплює саме числа від 15 до 25 включно.',
+  hint:'Спочатку <code>if temp &lt; 15:</code>. Далі <code>elif temp &lt;= 25:</code>. В інших випадках — <code>else:</code>. Під кожною умовою потрібен рядок <code>print(...)</code> із відступом.',
+  skeleton:'if temp < 15:\n    \nelif temp <= 25:\n    \nelse:\n    ',
+  solution:'if temp < 15:\n    print("Холодно")\nelif temp <= 25:\n    print("Комфортно")\nelse:\n    print("Спекотно")',
+  values:[10,15,25,26],
+  expect:n=>n<15?["Холодно"]:n<=25?["Комфортно"]:["Спекотно"],
+  picture:n=>n<15?"🧥":n<=25?"🌤️":"☀️",
+  outcome:n=>n<15?"Холодно":n<=25?"Комфортно":"Спекотно",
   branches:["if","elif","else"],minimum:[1,1,1],
-  texts:["Холодно","Норма","Спека"]},
+  texts:["Холодно","Комфортно","Спекотно"]},
  {title:"⭐ Бонус: кілька дій у кожній гілці",subtitle:"Для тих, хто готовий до завдання підвищеної складності.",tag:"БОНУСНА МІСІЯ · СКЛАДНІШИЙ КОД",emoji:"⚔️",scene:"МАГАЗИН ЛЕГЕНД",v:"coins",
   task:'Меч коштує 30 монет. Якщо монет достатньо — виведи два рядки: "Меч куплено" і "Шлях відкрито". Інакше — теж два рядки: "Недостатньо монет" і "Зароби ще монет".',
   explanation:'Після <code>if</code> та <code>else</code> може стояти не одна, а <strong>кілька команд</strong>. Усі команди однієї гілки мають однаковий відступ на 4 пробіли.',
@@ -405,7 +405,7 @@ function testValue(v){
   state.latestOutput=output.join(" • ")||"Нічого не виводиться";
   state.notice=state.complete[i]?"✅ Усі тестові набори перевірено! Місію виконано.":"✅ Код спрацював! Перевір ще "+(m.values.length-state.tests[i].length)+" варіант(и).";
   state.noticeKind="good";
-  var mood=i===2?(v<30?"negative":v>70?"negative":"normal"):i===0?(v>20?"positive":"negative"):i===1?(v>=10?"positive":"negative"):(v>=30?"positive":"negative");
+  var mood=i===2?(v<15?"negative":v>25?"negative":"normal"):i===0?(v>20?"positive":"negative"):i===1?(v>=10?"positive":"negative"):(v>=30?"positive":"negative");
   state.scene={level:i,input:v,phase:mood,outputs:output.slice(),correct:true,description:m.outcome(v)};
  }catch(err){
   state.failed[i]=(state.failed[i]||0)+1;
