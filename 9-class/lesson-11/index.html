@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#224b93">
-<title>Мобільний редактор · Практична робота №3 · 9 клас</title>
+<title>Текстовий редактор · Інформатика · 9 клас</title>
 <style>
 :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#26334d;background:#f4f6fb;line-height:1.5;--blue:#284f9d;--blue2:#eaf0ff;--border:#d9e0ee;--muted:#65728a}
 *{box-sizing:border-box}body{margin:0}button,input,textarea,select{font:inherit}button{cursor:pointer;touch-action:manipulation}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #edaa45;outline-offset:2px}
@@ -50,31 +50,21 @@ footer{text-align:center;color:#718099;font-size:12px;margin:25px 0}
 </style>
 </head>
 <body><main class="wrap">
-<header class="hero"><div>ІНФОРМАТИКА · 9 КЛАС · ПРАКТИЧНА РОБОТА № 3</div>
-<h1>Місія «Редактор»: наведи лад у документі</h1>
-<p>Стилі · Структура · Автоматичний зміст · Гіперпосилання · Рецензування</p></header>
+<header class="hero"><div>ІНФОРМАТИКА · 9 КЛАС · УРОК 11</div>
+<h1>Текстовий редактор</h1>
+<p>Створюй і редагуй документи в браузері телефона. Доступні заголовки, зміст, посилання та коментарі.</p></header>
 <section class="card">
-<h2>Перед початком</h2>
+<h2>Мій документ</h2>
 <div class="fields"><div><label for="klass">Клас</label><select id="klass"><option value="">Оберіть клас</option><option>9-А</option><option>9-Б</option></select></div>
 <div><label for="student">Ім’я або навчальний код (необов’язково)</label><input id="student" maxlength="40" placeholder="Наприклад, Учень 07" autocomplete="off"></div></div>
-<p class="small">Без реєстрації й установлення додатків. Чернетка зберігається лише в браузері цього телефона. Сайт не надсилає роботу вчителю автоматично.</p></section>
-<section class="card"><h2>Твої 5 місій</h2>
-<ol class="steps">
-<li><b>Перейменуй</b> документ, придумай зрозумілу назву.</li>
-<li><b>Налаштуй стилі:</b> три головні розділи — «Заголовок 1», одну підрубрику — «Заголовок 2». Залиш не менше трьох змістовних абзаців.</li>
-<li><b>Створи автоматичний зміст</b> із заголовків та перевір навігацію.</li>
-<li><b>Додай гіперпосилання</b> на корисний освітній ресурс.</li>
-<li><b>Прорецензуй</b> будь-який блок: залиш конкретний коментар із пропозицією поліпшення.</li>
-</ol>
-<p class="small">Це навчальний мобільний редактор, а не Google Документи. Коментарі прикріплюються до блоків у твоїй чернетці; одночасна робота на різних телефонах не підтримується.</p>
-</section>
+<p class="small">Без реєстрації й установлення додатків. Документ зберігається лише в браузері цього телефона. Сайт не надсилає його вчителю автоматично.</p></section>
 <nav class="tabs" aria-label="Режими редактора">
 <button type="button" class="tab" data-tab="edit" aria-selected="true">✎ Редактор</button>
 <button type="button" class="tab" data-tab="preview" aria-selected="false">▤ Документ</button>
-<button type="button" class="tab" data-tab="check" aria-selected="false">✓ Результат</button>
+<button type="button" class="tab" data-tab="check" aria-selected="false">↗ Збереження</button>
 </nav>
 <section class="view" id="view-edit">
-<div class="card"><h2>Редагування документа</h2>
+<div class="card"><h2>Редактор</h2>
 <label for="docTitle">Назва документа</label><input id="docTitle" maxlength="100" placeholder="Введи назву документа">
 <div class="hint">Стиль «Заголовок 1» — для основних розділів, «Заголовок 2» — для підрозділів. Текст у полі сам собою не стає заголовком — зміни тип блоку.</div>
 <div id="blocks"></div>
@@ -91,44 +81,32 @@ footer{text-align:center;color:#718099;font-size:12px;margin:25px 0}
 <div class="status" id="saveStatus" role="status" aria-live="polite"></div></div>
 </section>
 <section class="view" id="view-preview" hidden>
-<div class="card"><h2>Перегляд готового документа</h2>
+<div class="card"><h2>Перегляд документа</h2>
 <p class="small">Тут усі стилі видно так, як вони виглядають у документі. Пункти змісту — активні посилання на заголовки.</p>
 <div id="previewPaper" class="preview-paper"></div>
-<div class="actions" style="margin-top:15px"><button type="button" class="btn soft" id="backEdit">← Редагувати</button><button type="button" class="btn primary" id="goCheck">Перевірити роботу →</button></div>
+<div class="actions" style="margin-top:15px"><button type="button" class="btn soft" id="backEdit">← Редагувати</button><button type="button" class="btn primary" id="goCheck">Зберегти або поділитися →</button></div>
 </div>
 </section>
 <section class="view" id="view-check" hidden>
-<div class="card"><h2>Самоперевірка · 12 балів</h2>
-<div class="score"><strong id="scoreNum">0 / 12</strong><span id="scoreText">Оцінювання за виконаними діями. Можна повернутися і поліпшити роботу.</span></div>
-<div id="rubric"></div>
-<div class="hint">Автоматична оцінка перевіряє наявність елементів, а не якість усіх формулювань. Учитель може уточнити результат після перегляду документа.</div>
+<div class="card"><h2>Збереження і поширення</h2>
+<p>Зміни автоматично зберігаються на цьому пристрої. Щоб передати документ іншій людині, скористайся системним меню «Поділитися» або збережи HTML-файл.</p>
 <div class="actions">
-<button type="button" class="btn primary" id="shareResult">Поділитися результатом</button>
+<button type="button" class="btn primary" id="shareResult">Поділитися текстом</button>
 <button type="button" class="btn soft" id="downloadDoc">Зберегти документ HTML</button>
 <button type="button" class="btn outline" id="backToEdit">← До редактора</button>
 </div>
-<p class="small">«Поділитися» відкриває системне меню телефона або копіює підсумок. Для здавання покажи учителю екран «Документ» і «Результат» або надішли файл за його вказівкою.</p>
+<p class="small">Редактор працює без реєстрації. Він не надсилає документи вчителю автоматично. Для перевірки покажи готовий документ у вкладці «Документ».</p>
 </div>
-<div class="card"><h2>Питання для виходу</h2><p>Чому не можна просто зробити всі заголовки жирними замість використання стилів?</p><textarea id="reflection" maxlength="500" placeholder="Запиши свою відповідь у 1–2 реченнях"></textarea><p class="small">Відповідь зберігається на цьому пристрої та додається до підсумку для надсилання.</p></div>
-<div class="actions"><button type="button" class="btn warn" id="reset">Почати роботу заново</button></div>
+<div class="actions"><button type="button" class="btn warn" id="reset">Створити новий документ</button></div>
 </section>
-<footer>Практична робота № 3 · «Опрацювання текстових даних» · 9-А / 9-Б</footer>
+<footer>Текстовий редактор · 9 клас · Інформатика</footer>
 </main>
 <div id="toast" role="status" hidden></div>
 <script>
 "use strict";
-const KEY="informatics9-pr3-editor-v1";
-const INITIAL={
- klass:"",student:"",title:"Чернетка без структури",toc:false,reflection:"",
- blocks:[
-  {id:"b1",type:"p",text:"Організація навчання",url:"",comment:""},
-  {id:"b2",type:"p",text:"Створюй окремі папки для різних предметів, а файлам давай короткі та зрозумілі назви. Це допоможе швидко знаходити домашні завдання.",url:"",comment:""},
-  {id:"b3",type:"p",text:"Цифрова безпека",url:"",comment:""},
-  {id:"b4",type:"p",text:"Захищай свої облікові записи складними паролями. Не передавай іншим коди доступу, а перед відкриттям посилань перевіряй їхню адресу.",url:"",comment:""},
-  {id:"b5",type:"p",text:"Співпраця в мережі",url:"",comment:""},
-  {id:"b6",type:"p",text:"Погоджуй ролі під час командної роботи, не видаляй чужі напрацювання без дозволу та пропонуй поліпшення ввічливо і конкретно.",url:"",comment:""},
-  {id:"b7",type:"p",text:"Корисні поради",url:"",comment:""}
- ]};
+const KEY="informatics9-lesson11-editor-v2";
+const INITIAL={klass:"",student:"",title:"Новий документ",toc:false,
+ blocks:[{id:"b1",type:"p",text:"",url:"",comment:""}]};
 const TYPES={p:"Звичайний текст",h1:"Заголовок 1",h2:"Заголовок 2",link:"Гіперпосилання"};
 const $=id=>document.getElementById(id);
 const copyDefault=()=>JSON.parse(JSON.stringify(INITIAL));
@@ -136,7 +114,7 @@ function load(){
  try{
   const raw=JSON.parse(localStorage.getItem(KEY)||"null");
   if(!raw||!Array.isArray(raw.blocks)||raw.blocks.length>60)return copyDefault();
-  const draft=copyDefault();for(const f of ["klass","student","title","toc","reflection"])if(typeof raw[f]===typeof draft[f])draft[f]=raw[f];
+  const draft=copyDefault();for(const f of ["klass","student","title","toc"])if(typeof raw[f]===typeof draft[f])draft[f]=raw[f];
   draft.blocks=raw.blocks.filter(b=>b&&typeof b.text==="string"&&TYPES[b.type]).map((b,i)=>({
    id:String(b.id||"b"+i).slice(0,40),type:b.type,text:b.text.slice(0,1500),
    url:String(b.url||"").slice(0,500),comment:String(b.comment||"").slice(0,700)
@@ -147,7 +125,7 @@ let data=load(), expanded=new Set();
 function persist(){
  try{localStorage.setItem(KEY,JSON.stringify(data));$("saveStatus").textContent="✓ Чернетку збережено на цьому телефоні.";}
  catch{$("saveStatus").textContent="Збереження в браузері недоступне. Після оновлення сторінки зміни можуть зникнути.";}
- renderPreview();renderRubric();
+ renderPreview();
 }
 function freshId(){return "b"+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
 function el(tag,txt,cls){const n=document.createElement(tag);if(txt!==undefined)n.textContent=txt;if(cls)n.className=cls;return n}
@@ -157,7 +135,7 @@ function button(text,cls,fn,title){
 function switchTab(tab){
  for(const b of document.querySelectorAll(".tab"))b.setAttribute("aria-selected",String(b.dataset.tab===tab));
  for(const t of ["edit","preview","check"])$("view-"+t).hidden=t!==tab;
- if(tab==="preview")renderPreview();if(tab==="check")renderRubric();
+ if(tab==="preview")renderPreview();if(tab==="check")
  document.querySelector(".tabs").scrollIntoView({behavior:"smooth",block:"start"});
 }
 function renderBlocks(focusId){
@@ -207,7 +185,7 @@ function renderPreview(){
  const heads=data.blocks.filter(b=>(b.type==="h1"||b.type==="h2")&&b.text.trim());
  if(data.toc){
   const nav=el("nav",undefined,"doc-toc");nav.setAttribute("aria-label","Автоматичний зміст");
-  nav.append(el("h3","Зміст (створено автоматично)"));
+  nav.append(el("h3","Зміст"));
   if(!heads.length)nav.append(el("p","Спочатку признач заголовки першого або другого рівня."));
   else{
    const list=el("ol");
@@ -233,41 +211,16 @@ function renderPreview(){
   if(b.comment.trim())paper.append(el("aside","Коментар редактора: "+b.comment.trim(),"review"));
  }
 }
-function score(){
- const h1=data.blocks.filter(b=>b.type==="h1"&&b.text.trim()).length;
- const h2=data.blocks.filter(b=>b.type==="h2"&&b.text.trim()).length;
- const p=data.blocks.filter(b=>b.type==="p"&&b.text.trim().length>=25).length;
- const links=data.blocks.filter(b=>b.type==="link"&&b.text.trim()&&validURL(b.url)).length;
- const comments=data.blocks.filter(b=>b.comment.trim().length>=12).length;
- const rows=[
-  {name:"Зрозуміла нова назва документа",points:data.title.trim().length>=10&&data.title.trim()!==INITIAL.title?2:0,max:2,hint:"Зміни початкову назву."},
-  {name:"Стилі «Заголовок 1»",points:Math.min(3,h1),max:3,hint:"Зроби головними заголовками три розділи."},
-  {name:"Стиль «Заголовок 2»",points:Math.min(1,h2),max:1,hint:"Створи підзаголовок."},
-  {name:"Щонайменше три змістовні абзаци",points:p>=3?2:p>=1?1:0,max:2,hint:"Потрібні три текстові блоки від 25 символів."},
-  {name:"Робоче гіперпосилання",points:links?2:0,max:2,hint:"Додай текст посилання і правильну вебадресу."},
-  {name:"Змістовний коментар рецензента",points:comments?1:0,max:1,hint:"Залиш конкретну пропозицію (від 12 символів)."},
-  {name:"Створений автоматичний зміст",points:data.toc&&h1>=1?1:0,max:1,hint:"Натисни «Створити автоматичний зміст»."}
- ];return {rows,total:rows.reduce((a,r)=>a+r.points,0)};
-}
-function renderRubric(){
- const result=score();$("scoreNum").textContent=result.total+" / 12";
- $("scoreText").textContent=result.total===12?"Усі технічні критерії виконано. Перечитай текст перед здаванням.":"Продовжуй редагування. Пункти нижче підкажуть, що ще можна виконати.";
- const root=$("rubric");root.replaceChildren();
- for(const item of result.rows){
-  const row=el("div",undefined,"checkrow");row.append(el("span",item.points===item.max?"✓":"○","mark"));
-  const info=el("div");info.append(el("p",item.name+" — "+item.points+" / "+item.max));
-  if(item.points<item.max)info.append(el("small",item.hint));row.append(info);root.append(row);
+function documentText(){
+ let output=data.title.trim()||"Новий документ";
+ if(data.toc)output+="\n\nЗміст\n"+data.blocks.filter(b=>["h1","h2"].includes(b.type)&&b.text.trim()).map(b=>"- "+b.text.trim()).join("\n");
+ for(const b of data.blocks){
+  if(!b.text.trim()&&!b.comment.trim())continue;
+  output+="\n\n"+(b.text.trim()||"");
+  if(b.type==="link"&&validURL(b.url))output+="\n"+validURL(b.url);
+  if(b.comment.trim())output+="\n[Коментар: "+b.comment.trim()+"]";
  }
-}
-function report(){
- const {total,rows}=score();
- return "Інформатика, 9 клас · Практична робота № 3\n"+
-  "Клас: "+(data.klass||"не вказано")+"\n"+
-  "Учень/код: "+(data.student||"не вказано")+"\n"+
-  "Документ: "+data.title+"\nРезультат самоперевірки: "+total+" / 12\n"+
-  rows.map(r=>r.name+": "+r.points+"/"+r.max).join("\n")+"\n"+
-  "Пояснення про стилі: "+(data.reflection||"не вказано")+"\n"+
-  "Примітка: результат перевіряє елементи документа, а не якість усіх відповідей.";
+ return output;
 }
 function esc(t){return String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function documentHTML(){
@@ -290,8 +243,8 @@ function download(){
  const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="9-klas-praktychna-robota-3.html";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200);
 }
 async function share(){
- const text=report();
- try{if(navigator.share){await navigator.share({title:"Практична робота № 3",text});return;}}catch(e){if(e.name==="AbortError")return;}
+ const text=documentText();
+ try{if(navigator.share){await navigator.share({title:data.title.trim()||"Текстовий документ",text});return;}}catch(e){if(e.name==="AbortError")return;}
  try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);toast("Підсумок скопійовано. Встав його в повідомлення учителю.");return;}}catch{}
  const field=document.createElement("textarea");field.value=text;field.style.position="fixed";field.style.left="-200vw";document.body.append(field);field.select();
  try{document.execCommand("copy");toast("Підсумок скопійовано.");}catch{toast("Не вдалося скопіювати. Зроби скріншот результату.");}field.remove();
@@ -302,11 +255,11 @@ function toast(message){
 }
 for(const b of document.querySelectorAll(".tab"))b.addEventListener("click",()=>switchTab(b.dataset.tab));
 for(const b of document.querySelectorAll("[data-add]"))b.addEventListener("click",()=>addBlock(b.dataset.add));
-$("klass").value=data.klass;$("student").value=data.student;$("docTitle").value=data.title;$("reflection").value=data.reflection;
+$("klass").value=data.klass;$("student").value=data.student;$("docTitle").value=data.title;
 $("klass").addEventListener("change",e=>{data.klass=e.target.value;persist();});
 $("student").addEventListener("input",e=>{data.student=e.target.value;persist();});
 $("docTitle").addEventListener("input",e=>{data.title=e.target.value;persist();});
-$("reflection").addEventListener("input",e=>{data.reflection=e.target.value;persist();});
+
 $("makeToc").addEventListener("click",()=>{data.toc=true;persist();toast("Зміст створено з заголовків. Перевір його в режимі «Документ».");switchTab("preview");});
 $("goPreview").addEventListener("click",()=>switchTab("preview"));
 $("backEdit").addEventListener("click",()=>switchTab("edit"));
@@ -315,10 +268,10 @@ $("goCheck").addEventListener("click",()=>switchTab("check"));
 $("downloadDoc").addEventListener("click",download);
 $("shareResult").addEventListener("click",share);
 $("reset").addEventListener("click",()=>{
- if(!confirm("Видалити чернетку та почати практичну роботу заново?"))return;
+ if(!confirm("Видалити поточну чернетку та створити новий документ?"))return;
  data=copyDefault();expanded.clear();try{localStorage.removeItem(KEY);}catch{}
- $("klass").value="";$("student").value="";$("docTitle").value=data.title;$("reflection").value="";
+ $("klass").value="";$("student").value="";$("docTitle").value=data.title;
  renderBlocks();persist();switchTab("edit");toast("Створено нову чернетку.");
 });
-renderBlocks();renderPreview();renderRubric();$("saveStatus").textContent="Чернетка зберігається автоматично під час редагування.";
+renderBlocks();renderPreview();$("saveStatus").textContent="Чернетка зберігається автоматично під час редагування.";
 </script></body></html>
