@@ -488,7 +488,7 @@ function sceneHTML(m){
  '<div class="world-number">'+(p?(p.correct?m.outcome(value):"Помилка в коді"):"Натисни «Перевірити код»")+'</div></div>'+
  '<div class="scene-details"><div class="micro">Перевірено тестових даних: <strong>'+n+' із '+m.values.length+'</strong></div>'+
  '<div class="scene-meter"><span style="width:'+score+'%"></span></div>'+
- (p?'<div class="scene-output"><strong>'+(p.correct?"Результат програми":"Що потрібно виправити")+'</strong>'+outputHTML.join("")+'</div>':'<p>Тут оживуть скарбниця, двері, температурна станція або магазин залежно від результату твого коду.</p>')+
+ (p?'<div class="scene-output"><strong>'+(p.correct?"Результат програми":"Що потрібно виправити")+'</strong>'+outputHTML+'</div>':'<p>Тут оживуть скарбниця, двері, температурна станція або магазин залежно від результату твого коду.</p>')+
  (state.notice?'<div class="feedback '+(state.noticeKind==="bad"?"bad":"good")+'" role="status">'+safe(state.notice)+'</div>':'')+
  (previous?'<div class="tip"><strong>Вже перевірено</strong>'+previous+'</div>':"")+
  '</div></div></div></section>';
