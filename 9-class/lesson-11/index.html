@@ -75,7 +75,14 @@ header,.ribbon{background:#fff}.ribbon{position:sticky;top:0;z-index:25;box-shad
 .sendWordSection.submitted{background:#f0fbf3;border-color:#b8dac7}
 @media(max-width:530px){.sendFields{grid-template-columns:1fr}.sendWordSection{padding:13px}}
 #exampleActions{max-width:830px;margin:12px auto 0;gap:9px;justify-content:space-between;flex-wrap:wrap}
-#editorHelpNext{max-width:830px;margin:12px auto 0}
+#editorHelpNext{max-width:830px;margin:15px auto 0}
+.editorBottomActions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.editorBottomActions .btn{flex:1 1 210px}
+#editorSendDialog p{font-size:13px;color:#5d708a;line-height:1.5}
+#editorSendDialog label{display:block;margin:10px 0 6px;font-size:14px;font-weight:650}
+#editorSendDialog input,#editorSendDialog select{display:block;width:100%;padding:9px 11px;margin-top:5px;border:1px solid #bbc8dd;border-radius:8px;min-height:44px;background:white}
+#editorSendDialog .err{margin-top:10px}
+#editorSendDialog .dialog-actions{flex-wrap:wrap}
 #helpPage{max-width:830px;background:white;border:1px solid #dbe3ef;border-radius:13px;padding:clamp(15px,4vw,28px);margin:0 auto}
 #helpPage h2{font-size:22px;color:#21477e;margin:0 0 9px}
 .helpIntro{line-height:1.55;color:#64738a;font-size:14px;margin:0 0 16px}
@@ -240,7 +247,10 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 <div id="editor" contenteditable="true" spellcheck="true" role="textbox" aria-label="Редагований текст документа" aria-multiline="true"></div>
 <input class="headfoot bottomline" id="footerText" aria-label="Колонтитул знизу" placeholder="Нижній колонтитул">
 </article>
-<div id="editorHelpNext" class="tasksActions" hidden><button type="button" class="btn primary" id="editorToHelp">Далі: Як виконувати →</button></div>
+<div id="editorHelpNext" class="editorBottomActions" hidden>
+<button type="button" class="btn primary" id="editorSendWord">✉ Надіслати роботу (.docx)</button>
+<button type="button" class="btn" id="editorToHelp">Далі: Як виконувати →</button>
+</div>
 <article id="reference" class="paper example" hidden aria-label="Приклад оформленого документа">
 <div style="font:12px Arial;color:#657895;border-bottom:1px solid #d4deef;padding-bottom:8px;text-align:center">ІНФОРМАТИКА · 9 КЛАС</div>
 <h1>ЦИФРОВА ГРАМОТНІСТЬ</h1>
@@ -341,6 +351,23 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 <section id="reviewPanel" hidden><h2>Коментарі та запропоновані виправлення</h2><div id="reviewItems"></div></section>
 <p class="fineprint">Редактор працює без додатків. Документ зберігається на цьому телефоні. Через посилання можна передати копію на перегляд або рецензування — без одночасного редагування.</p>
 </main>
+<dialog id="editorSendDialog" aria-labelledby="editorSendHeading">
+<form id="editorSendForm">
+<h2 id="editorSendHeading">Надіслати практичну роботу</h2>
+<p>Оформлений документ Word (.docx) із прогресом буде надіслано на <strong>work.inform@chern12.ukr.education</strong> через FormSubmit.</p>
+<label for="editorPupilClass">Клас
+<select id="editorPupilClass" required><option value="">Оберіть клас</option><option value="9-А">9-А</option><option value="9-Б">9-Б</option></select>
+</label>
+<label for="editorPupilName">Прізвище та ім’я
+<input id="editorPupilName" type="text" maxlength="70" autocomplete="name" placeholder="Прізвище Ім’я" required>
+</label>
+<div class="err" id="editorSendError" role="alert"></div>
+<div class="dialog-actions">
+<button type="button" class="btn" id="editorSendCancel">Скасувати</button>
+<button type="submit" class="btn primary" id="editorSendConfirm">✉ Надіслати .docx</button>
+</div>
+</form>
+</dialog>
 <dialog id="linkDialog"><form id="linkForm" method="dialog">
 <h2>Вставлення гіперпосилання</h2><label>Текст посилання <input id="linkText" maxlength="220" required></label>
 <label>Адреса сайту <input id="linkURL" type="url" placeholder="https://..." required></label><div class="err" id="linkError"></div>
