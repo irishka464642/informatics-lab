@@ -75,6 +75,12 @@ header,.ribbon{background:#fff}.ribbon{position:sticky;top:0;z-index:25;box-shad
 .sendWordSection.submitted{background:#f0fbf3;border-color:#b8dac7}
 @media(max-width:530px){.sendFields{grid-template-columns:1fr}.sendWordSection{padding:13px}}
 #exampleActions{max-width:830px;margin:12px auto 0;gap:9px;justify-content:space-between;flex-wrap:wrap}
+#linkReference{max-width:830px;margin:0 auto 12px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 15px;background:#f4f8ff;border:1px solid #c9d9f3;border-radius:10px}
+.linkReferenceText{display:flex;flex-direction:column;gap:4px;min-width:0;overflow-wrap:anywhere;color:#24436e;font-size:14px}
+.linkReferenceText a{color:#16509d;font-weight:700;text-decoration:underline}
+.linkReferenceText small{color:#667c99;font-size:12px}
+#copyReadyLink{flex:none;min-width:180px}
+@media(max-width:530px){#copyReadyLink{width:100%}}
 #editorHelpNext{max-width:830px;margin:15px auto 0}
 .editorBottomActions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
 .editorBottomActions .btn{flex:1 1 210px}
@@ -240,6 +246,12 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 <div class="seg"><button type="button" class="active" id="modeTasks">1. Завдання <span id="taskBadge">0/17</span></button><button type="button" id="modeExample">2. Зразок оформлення</button><button type="button" id="modeEdit">3. Мій документ</button><button type="button" id="modeHelp">4. Як виконувати</button></div>
 <small>Порядок: завдання → зразок → редактор → пояснення. До інструкції можна повернутися будь-коли.</small>
 </div>
+<aside id="linkReference" class="linkReference" aria-label="Готове посилання для практичної роботи" hidden>
+<div class="linkReferenceText"><strong>🔗 Посилання для документа:</strong>
+<a id="readyLink" href="https://osvita.diia.gov.ua/" target="_blank" rel="noopener noreferrer">https://osvita.diia.gov.ua/</a>
+<small>Скопіюй адресу та встав як гіперпосилання до слів «Дія.Освіта».</small></div>
+<button type="button" class="btn" id="copyReadyLink">Скопіювати посилання</button>
+</aside>
 <article id="document" class="paper" aria-label="Текстовий документ" hidden>
 <input class="headfoot topline" id="headerText" aria-label="Колонтитул зверху" placeholder="Верхній колонтитул">
 <h1 id="docTitle">Цифрова грамотність</h1>
@@ -334,7 +346,7 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 <p>Після таблиці постав курсор перед словами «Корисний ресурс». Натисни <b>«Вставлення» → «Малюнок»</b>, щоб вставити готову ілюстрацію, або <b>«Фото з телефона»</b>, якщо є потрібне зображення.</p></div></details>
 
 <details class="helpStep"><summary><span>7</span> Гіперпосилання, символ і формула</summary><div>
-<p>Виділи саме слова <b>«Дія.Освіта»</b> в останній частині тексту. Натисни <b>«Вставлення» → «Посилання»</b>, введи адресу <code>https://osvita.diia.gov.ua/</code> і натисни <b>«Вставити»</b>. Перевір, чи не дублюються слова — якщо так, видали звичайний текст, залишивши активне посилання.</p>
+<p>Виділи саме слова <b>«Дія.Освіта»</b> в останній частині тексту. Над редактором натисни <b>«Скопіювати посилання»</b>. Потім натисни <b>«Вставлення» → «Посилання»</b>, встав адресу <code>https://osvita.diia.gov.ua/</code> і натисни <b>«Вставити»</b>. Перевір, чи не дублюються слова — якщо так, видали звичайний текст, залишивши активне посилання.</p>
 <p>У цьому ж меню є <b>«Ω Символ»</b> для спеціальних знаків та <b>«∑ Формула»</b>. Для формули встав вираз <b>P = (a / b) × 100 %</b> як окремий формульний об’єкт після слова «Формула:». Якщо цей вираз уже був звичайним текстом, видали його стару копію.</p></div></details>
 
 <details class="helpStep"><summary><span>8</span> Колонки, розділи й колонтитули</summary><div>
@@ -656,18 +668,36 @@ function load(){
 }
 function applyLayout(){editor.classList.toggle("columns2",columns===2);$("document").classList.toggle("landscape",orientation==="landscape");}
 function viewExample(example){
- $("tasksPage").hidden=true;$("helpPage").hidden=true;$("editorHelpNext").hidden=example;$("reference").hidden=!example;$("document").hidden=example;$("exampleActions").hidden=!example;
+ $("tasksPage").hidden=true;$("helpPage").hidden=true;$("editorHelpNext").hidden=example;$("linkReference").hidden=example;$("reference").hidden=!example;$("document").hidden=example;$("exampleActions").hidden=!example;
  $("modeEdit").classList.toggle("active",!example);$("modeExample").classList.toggle("active",example);$("modeTasks").classList.remove("active");$("modeHelp").classList.remove("active");
  $("outlinePanel").hidden=true;
 }
 function viewTasks(){
- $("document").hidden=true;$("reference").hidden=true;$("tasksPage").hidden=false;$("helpPage").hidden=true;$("editorHelpNext").hidden=true;$("exampleActions").hidden=true;$("outlinePanel").hidden=true;$("reviewPanel").hidden=true;
+ $("document").hidden=true;$("reference").hidden=true;$("tasksPage").hidden=false;$("helpPage").hidden=true;$("editorHelpNext").hidden=true;$("linkReference").hidden=true;$("exampleActions").hidden=true;$("outlinePanel").hidden=true;$("reviewPanel").hidden=true;
  $("modeEdit").classList.remove("active");$("modeExample").classList.remove("active");$("modeHelp").classList.remove("active");$("modeTasks").classList.add("active");renderTasks();
 }
 function viewHelp(){
  $("document").hidden=true;$("reference").hidden=true;$("tasksPage").hidden=true;$("helpPage").hidden=false;
- $("editorHelpNext").hidden=true;$("exampleActions").hidden=true;$("outlinePanel").hidden=true;$("reviewPanel").hidden=true;
+ $("editorHelpNext").hidden=true;$("linkReference").hidden=true;$("exampleActions").hidden=true;$("outlinePanel").hidden=true;$("reviewPanel").hidden=true;
  $("modeTasks").classList.remove("active");$("modeExample").classList.remove("active");$("modeEdit").classList.remove("active");$("modeHelp").classList.add("active");
+}
+async function copyReferenceLink(){
+ const link=$("readyLink").href;
+ try{
+  if(navigator.clipboard?.writeText){
+   await navigator.clipboard.writeText(link);
+   toast("Посилання скопійовано. Встав його до слів «Дія.Освіта».");
+   return;
+  }
+ }catch{}
+ const input=document.createElement("textarea");
+ input.value=link;input.setAttribute("readonly","");input.style.position="fixed";input.style.left="-9999px";
+ document.body.append(input);input.select();
+ try{
+  if(!document.execCommand("copy"))throw new Error("Copy unavailable");
+  toast("Посилання скопійовано.");
+ }catch{toast("Скопіюй посилання вручну з рядка над документом.");}
+ input.remove();
 }
 function switchTab(name){
  tab=name;for(const b of document.querySelectorAll("[data-tab]"))b.setAttribute("aria-selected",String(b.dataset.tab===name));
@@ -1176,6 +1206,7 @@ $("insertFormula").addEventListener("click",()=>{$("formulaDialog").showModal();
 $("formulaForm").addEventListener("submit",e=>{e.preventDefault();const span=make("span",$("formulaText").value);span.className="formula";insertNode(span);$("formulaDialog").close();});
 $("cancelFormula").addEventListener("click",()=>$("formulaDialog").close());
 $("showOutline").addEventListener("click",()=>{renderOutline();$("outlinePanel").hidden=false;$("outlinePanel").scrollIntoView({behavior:"smooth"});});
+$("copyReadyLink").addEventListener("click",copyReferenceLink);
 $("modeEdit").addEventListener("click",()=>viewExample(false));$("modeExample").addEventListener("click",()=>viewExample(true));$("modeTasks").addEventListener("click",viewTasks);$("modeHelp").addEventListener("click",viewHelp);$("editorToHelp").addEventListener("click",viewHelp);$("helpBack").addEventListener("click",()=>viewExample(false));$("helpTasks").addEventListener("click",viewTasks);$("tasksBack").addEventListener("click",()=>viewExample(true));$("exampleBack").addEventListener("click",viewTasks);$("exampleNext").addEventListener("click",()=>viewExample(false));
 $("saveFile").addEventListener("click",()=>window.wordSubmission.download());$("printFile").addEventListener("click",()=>{viewExample(false);window.print();});
 $("reset").addEventListener("click",reset);
