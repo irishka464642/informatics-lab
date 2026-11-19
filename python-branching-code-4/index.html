@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1428">
+<meta name="description" content="Академія рішень: частина 2. Написання коду Python від простого if до elif і бонусу з кількома діями.">
+<title>Академія рішень — Частина 2: Пишемо Python</title>
+<style>
+:root{color-scheme:dark;--ink:#f5f8ff;--muted:#bed0e7;--line:#415a80;--green:#7ce6c3;--gold:#ffd68b;--red:#ffadba}
+*{box-sizing:border-box}
+html{background:#090f20;scroll-behavior:smooth}body{margin:0;min-height:100vh;color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:radial-gradient(circle at 10% 2%,#183c64 0,transparent 36%),radial-gradient(circle at 100% 16%,#3a284d 0,transparent 34%),#090f20}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #7fe9c5;outline-offset:2px}
+button:disabled{opacity:.5;cursor:not-allowed}
+.shell{max-width:1200px;margin:0 auto;padding:17px 20px 55px}
+.navtop{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+.logo{width:49px;height:49px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(130deg,#755dd6,#24baaa);font-size:26px}
+.brand-title{font-size:22px;font-weight:950;letter-spacing:-.035em}.eyebrow{font-size:11px;letter-spacing:.15em;color:#98f8d2;text-transform:uppercase;font-weight:900}
+.navlinks{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.navbutton{display:inline-flex;align-items:center;justify-content:center;border:1px solid #536e91;border-radius:11px;color:#f2f6ff;text-decoration:none;padding:9px 12px;background:#1b2b47;font-size:13px;font-weight:750}
+.student-bar{position:sticky;top:0;z-index:100;display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:11px 13px;margin:13px 0;background:#0d1b30f4;border:1px solid #6381aa;border-radius:17px;box-shadow:0 10px 32px #0009;backdrop-filter:blur(16px)}
+.student-fields{display:flex;flex-wrap:wrap;gap:8px}
+.field{display:grid;gap:2px;min-width:100px;max-width:180px;flex:1}
+.field.small{min-width:80px;max-width:114px;flex:0 1 100px}.field label{font-size:11px;color:#bdd4f0;font-weight:850}
+.field input,.field select{width:100%;height:37px;background:#1c3150;color:white;border:1px solid #7a93b6;padding:5px 8px;border-radius:9px;min-width:0;font-size:14px}
+.field input:disabled,.field select:disabled{opacity:.85;background:#28394d;color:#e5ecf7}
+.stats{min-width:153px}.stats-head{display:flex;align-items:center;justify-content:space-between;gap:9px}
+.stats strong{color:var(--gold);font-size:20px;white-space:nowrap}
+.stats-label{font-size:11px;font-weight:900;color:#c1d3eb}
+.track{background:#32455f;border-radius:20px;overflow:hidden;height:9px}.track>div{height:100%;background:linear-gradient(90deg,#47c9ac,#ffd67f);transition:width .25s}
+.sync{grid-column:1/-1;font-size:12px;color:#bdd1e6;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sync button{padding:4px 9px;border:1px solid #648bb5;border-radius:9px;background:#274363;color:#fff;font-size:12px}
+.hero{background:linear-gradient(111deg,#172d50,#1d2343 65%,#212747);border:1px solid #537095;border-radius:24px;padding:27px 29px 22px;box-shadow:0 13px 43px #0004}
+.hero h1{margin:4px 0 9px;font-size:clamp(29px,4.2vw,43px);line-height:1.1;letter-spacing:-.045em}
+.hero p{margin:0;max-width:760px;color:#cedcf2}
+.levels{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:18px}
+.pip{padding:10px 6px;text-align:center;border:1px solid #526886;color:#c0cce1;background:#ffffff12;border-radius:11px;font-size:12px;font-weight:900}
+.pip.active{background:#725729;color:#fff1ca;border-color:#ffd68b}.pip.done{background:#17584d;color:#d8fff3;border-color:#51cdae}.pip.bonus{border-color:#a582d2}
+.workspace{display:grid;grid-template-columns:minmax(0,1.16fr) minmax(300px,.84fr);gap:18px;margin-top:19px}
+.panel{background:linear-gradient(150deg,#17243c,#111c30);border:1px solid #415778;border-radius:22px;overflow:hidden;box-shadow:0 15px 42px #0004}
+.pad{padding:24px}.kicker{font-size:12px;letter-spacing:.13em;color:var(--gold);font-weight:900;text-transform:uppercase}
+h2{margin:7px 0 9px;font-size:clamp(24px,3.5vw,33px);line-height:1.15;letter-spacing:-.035em}
+.lead{color:#e0eafb;margin:0 0 17px;font-size:15px}
+.info{border-left:4px solid #71d7bb;background:#213c51;color:#e6fbf7;padding:13px 15px;border-radius:10px;margin:15px 0}
+.info strong{color:#a9ffdb}
+.task{border:1px solid #536e91;border-radius:14px;background:#14243a;padding:15px 17px;margin-bottom:16px}
+.task h3{margin:0 0 8px;color:var(--gold);font-size:15px}.task p{margin:7px 0;color:#dfeafd}
+code,.mono{font:600 14px/1.45 ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;background:#061324;color:#9bf8d2;border-radius:6px;padding:2px 5px}
+.editor{border:1px solid #6180a6;border-radius:15px;overflow:hidden;background:#080f1c}
+.editor-top{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;padding:9px 12px;background:#1b304b;color:#bfd7ef;font-weight:800;font-size:12px}
+textarea{display:block;width:100%;resize:vertical;min-height:190px;border:0;outline:0;background:#07101e;color:#e4f3ff;padding:17px;font:16px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace;tab-size:4;white-space:pre;overflow:auto}
+textarea:focus-visible{outline:2px solid #56bca6;outline-offset:-2px}
+.micro{font-size:12px;color:#a9c2dd}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 15px}
+.toolbtn{border:1px solid #6684a9;background:#243958;color:#eaf5ff;border-radius:10px;padding:8px 10px;font-size:13px;font-weight:750}
+.testlist{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:13px 0}
+.testbtn{padding:12px 9px;background:#283f61;color:#f8fbff;border:1px solid #7094b8;border-radius:12px;font-weight:850}
+.testbtn:hover{background:#3b5780}
+.testbtn.passed{background:#19483d;border-color:#55d1ad;color:#d8fff2}
+.testbtn[disabled]{opacity:.8}
+.feedback{border:1px solid #6080a5;background:#213952;border-radius:13px;margin:14px 0;padding:14px;color:#e6f5ff}
+.feedback.good{border-color:#47c6a0;background:#133e39;color:#d7fff1}
+.feedback.bad{border-color:#e18793;background:#482632;color:#ffe6e7}
+.feedback p{margin:5px 0}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 0}
+.btn{border:0;border-radius:12px;padding:12px 16px;font-weight:900;min-height:46px;display:inline-flex;align-items:center;justify-content:center;text-align:center;text-decoration:none}
+.btn.primary{background:linear-gradient(115deg,#fac369,#ffe09a);color:#2c2730}
+.btn.secondary{border:1px solid #6a86a9;background:#263b59;color:white}
+.visual{padding:25px 20px;min-height:300px;background:radial-gradient(circle at 52% 26%,#345b88 0%,#1a304d 51%,#121d32 100%);display:flex;align-items:center;flex-direction:column;justify-content:center;text-align:center;position:relative;overflow:hidden}
+.visual:before{content:"";position:absolute;inset:14px;background:linear-gradient(transparent 95%,#7292ae1a 96%) 0 0/100% 26px,linear-gradient(90deg,transparent 95%,#7292ae1a 96%) 0 0/26px 100%;opacity:.6;pointer-events:none}
+.emoji{font-size:clamp(80px,10vw,118px);filter:drop-shadow(0 16px 20px #0008);z-index:1;animation:float 3s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-9px)}}
+.scene-title{z-index:1;color:#ffe19f;font-size:12px;font-weight:950;letter-spacing:.14em;text-transform:uppercase;margin:14px 0 0}
+.scene-metric{z-index:1;font-weight:950;font-size:26px;margin:7px 0}.scene-hint{z-index:1;font-size:13px;color:#c1d7f5;max-width:310px}
+.side{padding:21px}
+.side h3{color:var(--gold);margin:0 0 10px;font-size:16px}.side p{margin:10px 0;font-size:14px;color:#dbe9fb}
+.tip{background:#213752;border:1px solid #546d93;border-radius:11px;padding:12px 13px;margin:10px 0}
+.run-line{border:1px solid #5c82a4;border-radius:9px;padding:9px 11px;margin-top:7px;background:#1c3450;font-size:13px}
+.run-line.good{border-color:#4ebf9d;background:#143b32;color:#c9ffe5}
+.run-line.bad{border-color:#e89da4;background:#482a38;color:#ffe0e4}
+.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{padding:6px 10px;background:#283b57;border-radius:20px;border:1px solid #6882a4;font-size:12px;font-weight:800}
+.hintbox{border:1px solid #a582d2;border-radius:12px;background:#342c47;padding:13px;margin-top:12px}
+.hintbox pre{white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.8 ui-monospace,Consolas,monospace;margin:7px 0;color:#ffe5be}
+.report{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.report>div{background:#233955;border:1px solid #6e83a7;border-radius:15px;padding:19px}
+.report strong{font-size:26px;color:#ffe099}.report span{display:block;font-size:12px;color:#ccdcef}
+.bonusgold{border:1px solid #e3b94f;background:#4c3c22;border-radius:15px;padding:16px;color:#ffe9b2}
+.footer{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:#9fb6d3;font-size:12px;margin-top:18px}
+@media(max-width:850px){.workspace{grid-template-columns:1fr}.visual{min-height:215px}.student-bar{grid-template-columns:1fr}.field{min-width:0;max-width:none;flex:1 1 35%}.field.small{flex:1 1 19%;max-width:none}.stats{min-width:0}.stats-head{display:flex;justify-content:space-between;gap:10px}}
+@media(max-width:480px){.shell{padding:13px 11px 45px}.student-bar{padding:9px}.hero{padding:22px 19px}.pad{padding:19px}.levels{gap:5px}.pip{font-size:11px;padding:9px 3px}.testlist{grid-template-columns:1fr}.student-bar{border-radius:13px}.field input,.field select{height:35px;font-size:13px}textarea{font-size:14px}.brand-title{font-size:18px}.btn{flex:1 1 45%}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body><div class="shell">
+<header class="navtop">
+ <a class="brand" href="../python-branching-starter-5/"><span class="logo" aria-hidden="true">✍️</span><span><span class="eyebrow">7 клас · Python · Частина 2</span><span class="brand-title">Академія рішень</span></span></a>
+ <div class="navlinks"><a class="navbutton" href="../python-branching-starter-5/">← Частина 1</a><button class="navbutton" id="restart" type="button">↻ Нова спроба</button></div>
+</header>
+<section id="studentBar" class="student-bar" aria-label="Учень і результат">
+ <div class="student-fields">
+  <div class="field"><label for="first">Ім’я</label><input id="first" maxlength="60" placeholder="Ім’я" autocomplete="given-name"></div>
+  <div class="field"><label for="surname">Прізвище</label><input id="surname" maxlength="70" placeholder="Прізвище" autocomplete="family-name"></div>
+  <div class="field small"><label for="klass">Клас</label><select id="klass"><option value="">Оберіть</option><option value="7-А">7-А</option><option value="7-Б">7-Б</option><option value="7-В">7-В</option></select></div>
+  <div class="field small"><label for="group">Група</label><select id="group"><option value="">Оберіть</option><option value="1">1</option><option value="2">2</option></select></div>
+ </div>
+ <div class="stats"><div class="stats-head"><span class="stats-label">✅ Основні завдання</span><strong id="counter">0 / 3</strong></div><div class="track"><div id="trackfill" style="width:0"></div></div><div class="stats-label" id="bonusStatus" style="margin-top:4px">⭐ Бонус — окремо</div></div>
+ <div class="sync"><span id="syncStatus" role="status" aria-live="polite">💾 Результати надсилаються при переході на наступний рівень.</span><button id="retry" hidden type="button">↻ Повторити відправлення</button><span id="part1Badge" hidden>🧭 Частина 1 завершена</span></div>
+</section>
+<section class="hero">
+ <div class="eyebrow" id="tag">ПРАКТИКА · ПИШЕМО КОД</div>
+ <h1 id="heroTitle">Напиши свій перший if</h1><p id="heroText">Від однієї умови до власної програми з кількома діями.</p>
+ <div class="levels" id="levels"></div>
+</section>
+<main id="app"></main>
+<footer class="footer"><span>💾 Прогрес частини 2 зберігається в браузері. Її можна відкрити окремо без частини 1.</span><span>🎓 Бонус — завдання підвищеної складності.</span></footer>
+</div>
+<script>
+(function(){
+"use strict";
+const KEY="decision-academy-code-4-v1",PART1_KEY="decision-academy-5-v1";
+const WEB_APP="https://script.google.com/macros/s/AKfycbwt-DCRbrBcXjx8hE3g1bT8f0HtN-3Y8CKvfabe8s7jVKVTHeYhdTx2MYFHF1spHfaqMw/exec";
+const VERSION="decision-academy-code-4-v1";
+const MISSIONS=[
+ {title:"Напиши неповне розгалуження",subtitle:"Тільки if — одна умова, одна дія.",tag:"МІСІЯ 1 · IF",emoji:"🪙",scene:"СКАРБНИЦЯ",v:"coins",task:'Якщо у гравця більше 20 монет, виведи "Бонус". Якщо монет недостатньо — нічого не виводь.',
+  explanation:'Неповне розгалуження використовує тільки <code>if</code>. Коли умова хибна, програма просто пропускає дію. <code>else</code> тут не потрібний.',
+  hint:'Напиши <code>if coins &gt; 20:</code>, а на наступному рядку зроби відступ на 4 пробіли та напиши <code>print("Бонус")</code>.',
+  skeleton:'if coins > 20:\n    ',
+  solution:'if coins > 20:\n    print("Бонус")',
+  values:[15,20,21],
+  expect:n=>n>20?["Бонус"]:[],
+  picture:n=>n>20?"🎁":"🪙",
+  outcome:n=>n>20?"Бонус отримано":"Бонусу немає — нічого не виводиться",
+  branches:["if"],minimum:[1],
+  texts:["Бонус"]},
+ {title:"Напиши повне розгалуження",subtitle:"if і else — тепер два можливі результати.",tag:"МІСІЯ 2 · IF / ELSE",emoji:"🚪",scene:"ЕНЕРГОДВЕРІ",v:"energy",task:'Якщо енергія 10 або більше — виведи "Двері відкрито". Інакше — "Мало енергії".',
+  explanation:'<code>if</code> працює, коли умова істинна. <code>else</code> — коли хибна. Для одного запуску виконується лише одна з двох гілок.',
+  hint:'Умову запиши так: <code>if energy &gt;= 10:</code>. Після першого <code>print(...)</code> напиши <code>else:</code> без відступу, а другу дію — з відступом.',
+  skeleton:'if energy >= 10:\n    \nelse:\n    ',
+  solution:'if energy >= 10:\n    print("Двері відкрито")\nelse:\n    print("Мало енергії")',
+  values:[9,10,20],
+  expect:n=>n>=10?["Двері відкрито"]:["Мало енергії"],
+  picture:n=>n>=10?"🚪":"🔒",
+  outcome:n=>n>=10?"Двері відкрито":"Мало енергії",
+  branches:["if","else"],minimum:[1,1],
+  texts:["Двері відкрито","Мало енергії"]},
+ {title:"Додай третій шлях — elif",subtitle:"Вчимо програму обирати одну з трьох дій.",tag:"МІСІЯ 3 · IF / ELIF / ELSE",emoji:"🌡️",scene:"ТЕМПЕРАТУРНА СТАНЦІЯ",v:"temp",
+  task:'Якщо температура нижче 30 — виведи "Холодно". Інакше, якщо температура 70 або нижче — "Норма". У всіх інших випадках — "Спека".',
+  explanation:'<code>elif</code> означає «інакше, якщо». Програма перевіряє умови зверху вниз і виконує тільки <strong>першу відповідну гілку</strong>.',
+  hint:'Почни з <code>if temp &lt; 30:</code>. Далі <code>elif temp &lt;= 70:</code>. Наприкінці — <code>else:</code>. Після кожної двокрапки напиши <code>print(...)</code> з відступом.',
+  skeleton:'if temp < 30:\n    \nelif temp <= 70:\n    \nelse:\n    ',
+  solution:'if temp < 30:\n    print("Холодно")\nelif temp <= 70:\n    print("Норма")\nelse:\n    print("Спека")',
+  values:[25,30,70,71],
+  expect:n=>n<30?["Холодно"]:n<=70?["Норма"]:["Спека"],
+  picture:n=>n<30?"❄️":n<=70?"🌤️":"🔥",
+  outcome:n=>n<30?"Холодно":n<=70?"Норма":"Спека",
+  branches:["if","elif","else"],minimum:[1,1,1],
+  texts:["Холодно","Норма","Спека"]},
+ {title:"⭐ Бонус: кілька дій у кожній гілці",subtitle:"Для тих, хто готовий до завдання підвищеної складності.",tag:"БОНУСНА МІСІЯ · СКЛАДНІШИЙ КОД",emoji:"⚔️",scene:"МАГАЗИН ЛЕГЕНД",v:"coins",
+  task:'Меч коштує 30 монет. Якщо монет достатньо — виведи два рядки: "Меч куплено" і "Шлях відкрито". Інакше — теж два рядки: "Недостатньо монет" і "Зароби ще монет".',
+  explanation:'Після <code>if</code> та <code>else</code> може стояти не одна, а <strong>кілька команд</strong>. Усі команди однієї гілки мають однаковий відступ на 4 пробіли.',
+  hint:'Побудуй <code>if coins &gt;= 30:</code>, потім <strong>два</strong> рядки <code>print(...)</code> з 4 пробілами. Після <code>else:</code> — теж два рядки <code>print(...)</code>.',
+  skeleton:'if coins >= 30:\n    \n    \nelse:\n    \n    ',
+  solution:'if coins >= 30:\n    print("Меч куплено")\n    print("Шлях відкрито")\nelse:\n    print("Недостатньо монет")\n    print("Зароби ще монет")',
+  values:[25,30,45],
+  expect:n=>n>=30?["Меч куплено","Шлях відкрито"]:["Недостатньо монет","Зароби ще монет"],
+  picture:n=>n>=30?"🗡️":"🪙",
+  outcome:n=>n>=30?"Меч куплено, шлях відкрито":"Недостатньо монет, зароби ще",
+  branches:["if","else"],minimum:[2,2],
+  texts:["Меч куплено","Шлях відкрито","Недостатньо монет","Зароби ще монет"]}
+];
+const $=id=>document.getElementById(id);
+const fresh=()=>({level:0,complete:[false,false,false,false],code:["","","",""],tests:[[],[],[],[]],attempts:[0,0,0,0],hints:[0,0,0,0],showHint:false,showSolution:false,
+ student:{first:"",surname:"",klass:"",group:""},sessionId:"",linkedSession:"",startedAt:0,locked:false,
+ reports:{},pending:{},lastSent:0,notice:"",noticeKind:"",finished:false,bonusSkipped:false,latestOutput:""});
+function safe(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"\"&quot;");}
+function readJSON(key){try{return JSON.parse(localStorage.getItem(key)||"null")}catch(e){return null}}
+function load(){
+ var val=readJSON(KEY),base=fresh();
+ if(val&&Number.isInteger(val.level)&&val.level>=0&&val.level<=4&&Array.isArray(val.complete)&&Array.isArray(val.code)&&Array.isArray(val.tests)){
+  return Object.assign(base,val,{student:Object.assign(base.student,val.student||{}),complete:val.complete.slice(0,4),code:val.code.slice(0,4),
+    tests:val.tests.slice(0,4).map(x=>Array.isArray(x)?x:[]),attempts:Array.isArray(val.attempts)?val.attempts.slice(0,4):base.attempts,
+    hints:Array.isArray(val.hints)?val.hints.slice(0,4):base.hints,reports:val.reports||{},pending:val.pending||{}});
+ }
+ var one=readJSON(PART1_KEY);
+ if(one&&one.student&&one.student.first&&one.student.surname){
+  var p=one.student;
+  base.student={first:p.first,surname:p.surname,klass:p.klass,group:p.group};
+  base.linkedSession=one.sessionId||"";
+ }
+ return base;
+}
+let state=load(),sending=false;
+function store(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+function formatHeader(){
+ var p=state.student;
+ [["first",p.first],["surname",p.surname],["klass",p.klass],["group",p.group]].forEach(x=>{
+  var el=$(x[0]);if(el.value!==x[1])el.value=x[1]||"";el.disabled=!!state.locked;
+ });
+ var core=state.complete.slice(0,3).filter(Boolean).length;
+ $("counter").textContent=core+" / 3";
+ $("trackfill").style.width=(core/3*100)+"%";
+ $("bonusStatus").textContent=state.complete[3]?"⭐ Бонус виконано!":"⭐ Бонус — окремо";
+ var old=readJSON(PART1_KEY);
+ $("part1Badge").hidden=!(old&&old.level===5);
+}
+function readProfile(){
+ if(state.locked)return true;
+ var p={first:$("first").value.trim().replace(/\s+/g," "),surname:$("surname").value.trim().replace(/\s+/g," "),
+   klass:$("klass").value,group:$("group").value};
+ state.student=p;store();
+ return p.first.length>=2&&p.surname.length>=2&&["7-А","7-Б","7-В"].includes(p.klass)&&["1","2"].includes(p.group);
+}
+function alertSync(text,bad){
+ $("syncStatus").textContent=text;$("syncStatus").style.color=bad?"#ffb4c3":"#bdd1e6";
+ $("retry").hidden=!bad;
+}
+function ensureProfile(){
+ if(readProfile())return true;
+ alertSync("⚠️ Заповни ім’я, прізвище, клас і групу — тоді можна зберегти результат.",true);
+ for(const id of ["first","surname","klass","group"]){
+  const el=$(id);if(!el.value||(["first","surname"].includes(id)&&el.value.trim().length<2)){el.focus();break;}
+ }
+ return false;
+}
+function getProgress(){return state.complete.filter(Boolean).length;}
+function buildReport(stage){
+ var count=Math.min(stage,4),levels=MISSIONS.slice(0,count).map((m,i)=>{
+  return {level:i+1,missionId:i+1,title:m.title,completed:!!state.complete[i],
+  checks:state.tests[i].length,failed:state.attempts[i],hints:state.hints[i],
+  distinctDatasets:state.tests[i].length,testRuns:state.tests[i].length,invalidRuns:state.attempts[i],
+  selections:0,durationSeconds:0,usedInputs:state.tests[i].map(x=>[x])};
+ });
+ var runs=[];
+ state.tests.forEach((list,i)=>{if(i>=count)return;list.forEach((n,j)=>{
+  runs.push({level:i+1,missionId:i+1,runIndex:j+1,inputs:[n],codeValid:true,executed:true,output:MISSIONS[i].expect(n),
+   scenario:MISSIONS[i].outcome(n),secondsFromStart:Math.max(0,Math.floor((Date.now()-state.startedAt)/1000))});
+ });});
+ var sum=(key)=>levels.reduce((n,x)=>n+Number(x[key]||0),0);
+ return {submissionId:state.sessionId+"-L"+String(stage).padStart(2,"0"),version:VERSION,
+  student:{first:state.student.first,surname:state.student.surname,klass:state.student.klass,group:state.student.group},
+  summary:{completed:stage,total:4,checks:stage,failedChecks:sum("failed"),hints:sum("hints"),
+  durationMinutes:Math.round((Date.now()-state.startedAt)/6000)/10,distinctDatasets:sum("distinctDatasets"),testRuns:runs.length},
+  levels,runs,linkedPart1:state.linkedSession||"",bonusCompleted:stage===4};
+}
+function checkpoint(){
+ if(!ensureProfile())return false;
+ if(!state.sessionId)state.sessionId="acode4-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,10);
+ if(!state.startedAt)state.startedAt=Date.now();
+ state.locked=true;
+ var stage=getProgress();
+ if(stage<1)return false;
+ if(!state.reports[stage])state.reports[stage]=buildReport(stage);
+ if(stage>(state.lastSent||0)||state.pending[stage])state.pending[stage]=true;
+ store();formatHeader();drain();
+ return true;
+}
+async function drain(){
+ if(sending||!state.locked)return;
+ sending=true;
+ try{
+  var stages=Object.keys(state.pending).filter(k=>state.pending[k]).map(Number).sort((a,b)=>a-b);
+  for(const n of stages){
+   if(!state.reports[n])continue;
+   alertSync("⏳ Надсилаємо результат: "+Math.min(n,3)+"/3"+(n===4?" + бонус":""),false);
+   try{
+    await fetch(WEB_APP,{method:"POST",mode:"no-cors",cache:"no-store",redirect:"follow",
+      headers:{"Content-Type":"text/plain;charset=UTF-8"},body:JSON.stringify(state.reports[n]),keepalive:true});
+    delete state.pending[n];state.lastSent=Math.max(state.lastSent||0,n);store();
+    alertSync("📤 Звіт "+n+"/4 надіслано. Підтвердження запису перевіряє вчитель у таблиці.",false);
+   }catch(e){
+    alertSync("⚠️ Не вдалося надіслати. Перевір Інтернет і натисни «Повторити».",true);
+    break;
+   }
+  }
+ }finally{sending=false;}
+}
+function current(){return MISSIONS[state.level];}
+function compilePython(source){
+ var raw=source.replace(/\r/g,"").split("\n");
+ var blocks=[],currentBlock=null;
+ for(var j=0;j<raw.length;j++){
+  var line=raw[j],trim=line.trim();
+  if(!trim||trim.startsWith("#"))continue;
+  if(line.includes("\t"))throw Error("Рядок "+(j+1)+": використовуй 4 пробіли, а не Tab.");
+  var head=line.match(/^(if|elif)\s+([a-zA-Z_]\w*)\s*(>=|<=|==|!=|>|<)\s*(-?\d+)\s*:\s*$/);
+  if(head){
+   if(head[1]==="if"&&blocks.length)throw Error("Рядок "+(j+1)+": для цієї місії потрібен один головний if.");
+   if(head[1]==="elif"&&(!blocks.length||blocks.some(b=>b.kind==="else")))throw Error("Рядок "+(j+1)+": elif пишемо після if і перед else.");
+   currentBlock={kind:head[1],variable:head[2],operator:head[3],threshold:Number(head[4]),prints:[]};blocks.push(currentBlock);continue;
+  }
+  if(/^else\s*:\s*$/.test(line)){
+   if(!blocks.length||blocks.some(b=>b.kind==="else"))throw Error("Рядок "+(j+1)+": else має стояти після if і лише один раз.");
+   currentBlock={kind:"else",prints:[]};blocks.push(currentBlock);continue;
+  }
+  var p=line.match(/^ {4}print\(\s*(["'])(.*?)\1\s*\)\s*$/);
+  if(p){
+   if(!currentBlock)throw Error("Рядок "+(j+1)+": спочатку напиши if з умовою.");
+   currentBlock.prints.push(p[2]);continue;
+  }
+  if(/^\s+print\s*\(/.test(line))throw Error("Рядок "+(j+1)+": перед print потрібні рівно 4 пробіли.");
+  throw Error("Рядок "+(j+1)+": перевір двокрапку, назву змінної, лапки та відступ.");
+ }
+ if(!blocks.length)throw Error("Почни із рядка if ... :");
+ if(blocks[0].kind!=="if")throw Error("Першою має бути команда if.");
+ for(const b of blocks)if(!b.prints.length)throw Error("Після "+b.kind+" обов'язково потрібен рядок print із відступом.");
+ return blocks;
+}
+function evalCond(b,val){
+ switch(b.operator){
+ case ">":return val>b.threshold;case "<":return val<b.threshold;case ">=":return val>=b.threshold;case "<=":return val<=b.threshold;
+ case "==":return val===b.threshold;case "!=":return val!==b.threshold;
+ }return false;
+}
+function execute(blocks,v){
+ var matched=false;
+ for(const b of blocks){
+  if(b.kind==="else"){if(!matched)return b.prints.slice();break;}
+  if(b.variable!==current().v)throw Error("Назва змінної має бути "+current().v+" (точно як у завданні).");
+  if(!matched&&evalCond(b,v)){matched=true;return b.prints.slice();}
+ }
+ return [];
+}
+function validateShape(blocks){
+ var m=current();
+ if(blocks.map(b=>b.kind).join(",")!==m.branches.join(","))throw Error("У цій місії потрібні гілки "+m.branches.join(" → ")+".");
+ blocks.forEach((b,i)=>{if(b.prints.length<m.minimum[i])throw Error("У гілці "+b.kind+" потрібно щонайменше "+m.minimum[i]+" рядків print.");});
+}
+function matches(a,b){return a.length===b.length&&a.every((v,i)=>v===b[i]);}
+function testValue(v){
+ if(state.complete[state.level])return;
+ var m=current(),editor=$("editor"),code=editor.value;
+ if(!code.trim()){showNotice("Спочатку напиши код у редакторі.","bad");return;}
+ state.code[state.level]=code;state.attempts[state.level]++;
+ try{
+  var blocks=compilePython(code);validateShape(blocks);
+  var output=execute(blocks,v),expected=m.expect(v);
+  if(!matches(output,expected)){
+   var printed=output.length?output.join(" / "):"нічого не виводиться";
+   throw Error("Для "+m.v+" = "+v+" програма вивела «"+printed+"», а має: «"+(expected.join(" / ")||"нічого")+"». Перевір умови та текст у print.");
+  }
+  if(!state.tests[state.level].includes(v))state.tests[state.level].push(v);
+  var done=state.tests[state.level].length===m.values.length;
+  if(done)state.complete[state.level]=true;
+  state.latestOutput=output.join(" • ")||"Нічого не виводиться";
+  state.notice=done?"✅ Усі значення перевірено! Місію виконано.":("✅ Правильно! Перевірено "+state.tests[state.level].length+" із "+m.values.length+" значень.");
+  state.noticeKind="good";
+ }catch(err){
+  state.notice=err.message||"Помилка в коді.";state.noticeKind="bad";
+ }
+ store();render();
+}
+function showNotice(text,kind){state.notice=text;state.noticeKind=kind;store();render();}
+function changeLevel(next){
+ state.level=next;state.notice="";state.noticeKind="";state.showHint=false;state.showSolution=false;store();render();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+function finishMandatory(action){
+ if(!state.complete[2])return;
+ if(!checkpoint())return;
+ state.finished=action==="end";state.bonusSkipped=action==="end";
+ changeLevel(action==="bonus"?3:4);
+}
+function nextLevel(){
+ if(!state.complete[state.level])return;
+ if(!checkpoint())return;
+ changeLevel(Math.min(4,state.level+1));
+}
+function sceneHTML(m){
+ var n=state.tests[state.level].length;
+ var reports=state.tests[state.level].map(v=>
+  '<div class="run-line good"><strong>'+m.v+' = '+v+'</strong> → '+(m.expect(v).map(safe).join(' • ')||"нічого не виводиться")+'</div>').join("");
+ return '<aside class="panel"><div class="visual"><div class="emoji" aria-hidden="true">'+(n?m.picture(state.tests[state.level][n-1]):m.emoji)+'</div>'+
+ '<div class="scene-title">'+m.scene+'</div><div class="scene-metric">'+n+' / '+m.values.length+' перевірок</div>'+
+ '<div class="scene-hint">Програма повинна працювати з різними числами. Перевір граничні значення!</div></div>'+
+ '<div class="side"><h3>🧠 Важливо зрозуміти</h3><p>'+m.explanation+'</p>'+
+ '<div class="tip"><strong>Вхідні дані задає гра.</strong><p>Тобі не потрібно писати <code>input()</code> або <code>'+m.v+' = ...</code>. Напиши тільки розгалуження.</p></div>'+
+ (n?'<h3>Вже перевірено</h3>'+reports:'<p>Натисни на тестове число після написання коду.</p>')+
+ '</div></aside>';
+}
+function missionHTML(){
+ var m=current(),i=state.level,done=state.complete[i];
+ var choices=m.values.map(n=>'<button type="button" class="testbtn '+(state.tests[i].includes(n)?"passed":"")+'" data-action="run" data-value="'+n+'"'+(state.tests[i].includes(n)||done?" disabled":"")+'>'+
+  (state.tests[i].includes(n)?"✅ ":"▶ ") +m.v+" = "+n+'</button>').join("");
+ var hint=state.showHint?'<div class="hintbox"><strong>💡 Підказка</strong><p>'+m.hint+'</p><button type="button" class="toolbtn" data-action="skeleton">🧩 Вставити каркас</button></div>':"";
+ var solution=state.showSolution?'<div class="hintbox"><strong>📖 Приклад правильного коду</strong><pre>'+safe(m.solution)+'</pre><span class="micro">Порівняй зі своїм кодом. Спробуй надрукувати власноруч.</span></div>':"";
+ var actions=i===2&&done?
+   '<div class="actions"><button type="button" class="btn primary" data-action="bonus">⭐ Спробувати бонус</button>'+
+   '<button type="button" class="btn secondary" data-action="end">🏁 Завершити основну частину (3/3)</button></div>':
+   (done?'<div class="actions"><button type="button" class="btn primary" data-action="next">'+(i===3?"🏆 Завершити бонус":"Зберегти та перейти →")+'</button></div>':"");
+ return '<div class="workspace"><section class="panel"><div class="pad">'+
+ '<div class="kicker">'+m.tag+'</div><h2>'+m.title+'</h2><p class="lead">'+m.subtitle+'</p>'+
+ '<div class="info">'+(i===3?"⭐ <strong>Бонус необов’язковий.</strong> Це завдання підвищеної складності для претендентів на найвищу оцінку.":"🎯 <strong>Важлива навичка:</strong> писати програму самостійно, а не просто вибирати відповідь.")+'</div>'+
+ '<div class="task"><h3>Що має зробити програма?</h3><p>'+m.task+'</p>'+
+ '<p class="micro">Код пишемо англійськими командами. Відступ після двокрапки — 4 пробіли. Текст у print має збігатися із завданням.</p></div>'+
+ '<div class="editor"><div class="editor-top"><span>🐍 Python • твій редактор</span><span>'+m.v+' задає гра</span></div>'+
+ '<textarea id="editor" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Редактор Python" '+(done?'disabled':'')+' placeholder="Напиши код тут. Наприклад: if ...:&#10;    print(...)">'+safe(state.code[i])+'</textarea></div>'+
+ '<div class="toolbar"><button type="button" class="toolbtn" data-action="indent" '+(done?'disabled':'')+'>↳ 4 пробіли</button>'+
+ '<button type="button" class="toolbtn" data-action="hint">'+(state.showHint?"Сховати підказку":"💡 Підказка")+'</button>'+
+ (state.attempts[i]>=2?'<button type="button" class="toolbtn" data-action="solution">'+(state.showSolution?"Сховати зразок":"📖 Подивитися зразок")+'</button>':"")+
+ '<button type="button" class="toolbtn" data-action="clear" '+(done?'disabled':'')+'>🧽 Очистити код</button></div>'+
+ hint+solution+
+ '<h3 style="margin:12px 0 7px;font-size:17px">Перевір код на різних значеннях</h3>'+
+ '<p class="micro">Кожне число треба запустити окремо. Якщо зміниш код, перевірки почнуться заново.</p>'+
+ '<div class="testlist">'+choices+'</div>'+
+ (state.notice?'<div class="feedback '+(state.noticeKind==="bad"?"bad":"good")+'" role="status">'+safe(state.notice)+'</div>':"")+
+ (done?'<div class="feedback good"><strong>✅ Місія виконана!</strong><p>Ти перевірив усі '+m.values.length+' набори даних.</p></div>':"")+
+ actions+'</div></section>'+sceneHTML(m)+'</div>';
+}
+function finishHTML(){
+ var bonus=state.complete[3],core=state.complete.slice(0,3).filter(Boolean).length;
+ return '<div class="workspace"><section class="panel"><div class="pad"><div class="kicker">ЗАВДАННЯ З PYTHON ВИКОНАНО</div>'+
+ '<h2>🏆 Вітаємо! Ти навчився писати розгалуження.</h2>'+
+ '<p class="lead">Ти вже можеш створювати програму з if, if/else та if/elif/else.</p>'+
+ '<div class="report"><div><strong>'+core+' / 3</strong><span>основні місії</span></div>'+
+ '<div><strong>'+(bonus?"✅":"☆")+'</strong><span>бонус '+(bonus?"виконано":"ще доступний")+'</span></div></div>'+
+ (bonus?'<div class="bonusgold"><strong>🌟 Виконано складний бонус!</strong><p>Ти написав по дві команди в кожній гілці та перевірив результат за різних чисел. Це сильне підтвердження навичок для високого рівня оцінювання; остаточну оцінку визначає вчитель.</p></div>':
+ '<div class="info">Основна частина виконана. ⭐ Бонус можна пройти зараз або повернутися до нього на наступному уроці — без повторення перших трьох місій.</div>')+
+ '<div class="actions">'+(!bonus?'<button type="button" class="btn primary" data-action="start-bonus">⭐ Відкрити бонус</button>':"")+
+ '<a class="btn secondary" href="../python-branching-starter-5/">🧭 Частина 1</a>'+
+ '<button type="button" class="btn secondary" data-action="copy">📋 Скопіювати результат</button></div>'+
+ '<p class="micro" id="copyResult"></p></div></section>'+
+ '<aside class="panel"><div class="visual"><div class="emoji">'+(bonus?"🏅":"🐍")+'</div><div class="scene-title">ПРОГРАМУВАННЯ PYTHON</div>'+
+ '<div class="scene-metric">'+core+'/3 '+(bonus?" + БОНУС":"")+'</div><div class="scene-hint">Друга частина доступна за прямим посиланням і зберігає прогрес у цьому браузері.</div></div>'+
+ '<div class="side"><h3>Ти вмієш</h3><p>✓ Умовний оператор if</p><p>✓ Повне розгалуження if / else</p><p>✓ Кілька варіантів за допомогою elif</p>'+
+ (bonus?'<p>✓ Кілька команд у кожній гілці</p>':"")+'</div></aside></div>';
+}
+function render(){
+ var isFinish=state.level===4,m=MISSIONS[Math.min(state.level,3)];
+ $("heroTitle").textContent=isFinish?"Місія завершена — код працює!":m.title;
+ $("heroText").textContent=isFinish?"Ти можеш повернутися до бонусу пізніше, не проходячи всі завдання заново.":m.subtitle;
+ $("tag").textContent=isFinish?"ФІНІШ · ПРАКТИКА PYTHON":m.tag;
+ $("levels").innerHTML=MISSIONS.map((x,i)=>'<div class="pip '+(state.complete[i]?"done":state.level===i?"active":"")+(i===3?" bonus":"")+'">'+
+ (state.complete[i]?"✓":i===3?"⭐ бонус":i+1)+'</div>').join("");
+ $("app").innerHTML=isFinish?finishHTML():missionHTML();
+ formatHeader();
+}
+function changeCode(text){
+ if(state.complete[state.level])return;
+ if(state.code[state.level]!==text){
+  state.code[state.level]=text;state.tests[state.level]=[];state.latestOutput="";
+  state.notice="";state.noticeKind="";store();render(); // rerender is normally not used for each keypress; see editor input below
+ }
+}
+function insertAtCursor(el,text){
+ var a=el.selectionStart,b=el.selectionEnd;
+ el.value=el.value.slice(0,a)+text+el.value.slice(b);
+ el.selectionStart=el.selectionEnd=a+text.length;el.focus();
+ handleEditorUpdate(el.value);
+}
+function handleEditorUpdate(value){
+ if(state.level>=4||state.complete[state.level])return;
+ if(state.code[state.level]===value)return;
+ state.code[state.level]=value;state.tests[state.level]=[];state.notice="";state.noticeKind="";store();
+ // Avoid replacing the active textarea on every keystroke (important for typing).
+ $("levels").innerHTML=MISSIONS.map((x,i)=>'<div class="pip '+(state.complete[i]?"done":state.level===i?"active":"")+(i===3?" bonus":"")+'">'+(state.complete[i]?"✓":i===3?"⭐ бонус":i+1)+'</div>').join("");
+ var testButtons=document.querySelectorAll(".testbtn");testButtons.forEach(b=>{b.classList.remove("passed");b.disabled=false;b.textContent="▶ "+current().v+" = "+b.getAttribute("data-value")});
+}
+function interact(action,value){
+ if(action==="hint"){if(!state.showHint){state.hints[state.level]++;}state.showHint=!state.showHint;store();render();return;}
+ if(action==="solution"){state.showSolution=!state.showSolution;store();render();return;}
+ if(action==="skeleton"){if(state.level>=4||state.complete[state.level])return;state.code[state.level]=current().skeleton;state.tests[state.level]=[];state.notice="";state.noticeKind="";store();render();$("editor").focus();return;}
+ if(action==="clear"){if(state.level>=4||state.complete[state.level])return;state.code[state.level]="";state.tests[state.level]=[];state.notice="";store();render();$("editor").focus();return;}
+ if(action==="indent"){var ed=$("editor");if(ed)insertAtCursor(ed,"    ");return;}
+ if(action==="run"){var num=Number(value);if(current().values.includes(num))testValue(num);return;}
+ if(action==="next"){nextLevel();return;}
+ if(action==="bonus"){finishMandatory("bonus");return;}
+ if(action==="end"){finishMandatory("end");return;}
+ if(action==="start-bonus"){if(state.complete[2])changeLevel(3);return;}
+ if(action==="copy"){
+  var text="Академія рішень • Частина 2. "+state.student.klass+", група "+state.student.group+", "+state.student.surname+" "+state.student.first+
+    ". Основні місії: "+state.complete.slice(0,3).filter(Boolean).length+"/3. Бонус: "+(state.complete[3]?"так":"ні")+".";
+  Promise.resolve(navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(text):Promise.reject(Error("copy")))
+    .then(()=>$("copyResult").textContent="✅ Результат скопійовано.")
+    .catch(()=>$("copyResult").textContent=text);
+  return;
+ }
+}
+document.addEventListener("click",ev=>{
+ var t=ev.target.closest("[data-action]");if(!t)return;
+ interact(t.getAttribute("data-action"),t.getAttribute("data-value"));
+});
+document.addEventListener("input",ev=>{
+ if(ev.target.id==="editor"){handleEditorUpdate(ev.target.value);return;}
+ if(["first","surname","klass","group"].includes(ev.target.id)&&!state.locked){readProfile();alertSync("💾 Дані учня збережено в браузері; після місії надішлемо звіт.",false);}
+});
+document.addEventListener("change",ev=>{
+ if(["first","surname","klass","group"].includes(ev.target.id)&&!state.locked){readProfile();alertSync("💾 Дані учня готові.",false);}
+});
+document.addEventListener("keydown",ev=>{
+ if(ev.target.id==="editor"&&ev.key==="Tab"){
+  ev.preventDefault();insertAtCursor(ev.target,"    ");
+ }
+});
+$("retry").addEventListener("click",()=>{
+ if(!state.locked){ensureProfile();return;}
+ if(!Object.keys(state.pending).length&&state.lastSent){state.pending[state.lastSent]=true;store();}
+ drain();
+});
+$("restart").addEventListener("click",()=>{
+ if(!confirm("Почати другу частину заново? Усі локальні відповіді цієї частини буде очищено."))return;
+ var p=Object.assign({},state.student),link=state.linkedSession;
+ state=fresh();state.student=p;state.linkedSession=link;store();render();
+ alertSync("Нова спроба готова. Перевір дані учня, перш ніж зберігати.",false);
+});
+window.addEventListener("online",drain);
+render();
+if(Object.keys(state.pending).length)drain();
+})();
+</script>
+</body>
+</html>
