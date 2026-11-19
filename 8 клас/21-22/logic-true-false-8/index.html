@@ -67,7 +67,7 @@
 const KEY='logic-agent-grade8-v2',OLD_KEY='logic-agent-grade8-v1',OUTBOX_KEY='logic-agent-grade8-v2-outbox';
 const VERSION='logic-agent-grade8-v2';
 /* Вставте URL /exec після публікації Google Apps Script у прив'язаній таблиці. */
-const RESULTS_ENDPOINT=''; // Сюди ОДИН РАЗ вставляємо URL універсального скрипта /exec
+const RESULTS_ENDPOINT='https://script.google.com/macros/s/AKfycbzvbbCnwgogkdFa8CRKy6lpWtMJU9--KOcLwV3F6MtBQfRRDjtdrpQFXfjeluU2JijC9Q/exec'; // Сюди ОДИН РАЗ вставляємо URL універсального скрипта /exec
 const LESSON_DATES={'8-А':'2026-11-20','8-Б':'2026-11-23'};
 const chapters=[
 {title:'Місія 1 · Тільки два стани',icon:'💡',intro:'Комп’ютер уміє ухвалювати рішення на основі логічних значень.',explain:'<strong>Логічна величина</strong> має одне із двох значень: <code>True</code> (істина) або <code>False</code> (хиба). У Python такі значення належать до типу <code>bool</code>.',example:'is_online = True\nis_banned = False',cheat:'<p><code>True</code> — істина<br><code>False</code> — хиба<br><code>bool</code> — логічний тип</p>',questions:[{q:'Якого типу значення <code>False</code> у Python?',answers:['int','bool','str'],a:1,why:'<code>False</code> — логічне значення, отже його тип <code>bool</code>.'},{q:'Який результат команди <code>print(is_banned)</code> у наведеному прикладі?',answers:['True','False','7'],a:1,why:'Змінній <code>is_banned</code> присвоєно логічне значення <code>False</code>.'}]},
