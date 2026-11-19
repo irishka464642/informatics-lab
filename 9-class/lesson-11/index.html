@@ -344,7 +344,7 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 <details class="helpStep"><summary><span>9</span> Прогрес, скидання та надсилання Word-файлу</summary><div>
 <p>Відкрий <b>«1. Завдання»</b>: зелені позначки означають, що <b>саме потрібний фрагмент</b> оформлено правильно. Після кожної зміни прогрес оновлюється. Якщо пункт не зарахувався, звір фрагмент зі зразком і перевір форматування.</p>
 <p>Кнопка <b>«↺ Скинути редагування»</b> розташована вгорі сайту. Вона відновлює початковий текст після підтвердження, тож використовуй її обережно.</p>
-<p>Наприкінці перейди до <b>«1. Завдання»</b>, прокрути до форми, обери клас <b>9-А або 9-Б</b>, введи ім’я та прізвище. Натисни <b>«Надіслати роботу на пошту (.docx)»</b>. Надсилання відбувається через FormSubmit; у разі запиту сервісу підтвердь дію. Якщо вкладення не надіслалося, скористайся кнопкою <b>«Зберегти Word-файл»</b>.</p></div></details>
+<p>Наприкінці натисни <b>«Надіслати роботу (.docx)»</b> просто під сторінкою документа — введи клас і прізвище та ім’я. Або перейди до <b>«1. Завдання»</b> і скористайся формою надсилання там. Надсилання відбувається через FormSubmit; у разі запиту сервісу підтвердь дію. Якщо вкладення не надіслалося, скористайся кнопкою <b>«Зберегти Word-файл»</b>.</p></div></details>
 <div class="helpActions"><button type="button" class="btn" id="helpBack">← До документа</button><button type="button" class="btn primary" id="helpTasks">Перевірити прогрес →</button></div>
 </section>
 <section id="outlinePanel" hidden><h2>Структура документа</h2><p>Переміщуйте заголовки разом із текстом розділів. Кнопки ↑ ↓ змінюють їх порядок.</p><div id="outlineList"></div></section>
@@ -1207,5 +1207,5 @@ $("closeShare").addEventListener("click",()=>$("shareDialog").close());
 $("copyShare").addEventListener("click",copyShareLink);
 load();setAccessRole();renderReviewMarks();readShareFromURL();scheduleTasks();viewTasks();
 </script>
-<script src="./word-submit.js?v=20261120-fix-shading"></script>
+<script src="./word-submit.js?v=20261120-editor-send"></script>
 </body></html>
