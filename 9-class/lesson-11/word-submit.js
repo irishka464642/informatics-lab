@@ -18,7 +18,8 @@ const el=id=>document.getElementById(id);
 const xesc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&apos;"}[c])).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g,"");
 const clean=s=>String(s??"").replace(/\s+/g," ").trim();
 function xmlwrap(node,content){
- return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><'+node+'>'+content+'</'+node+'>';
+ const tag=node.trim().split(/\s+/)[0];
+ return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><'+node+'>'+content+'</'+tag+'>';
 }
 function zipStored(entries){
  const crcTable=zipStored.crcTable||(zipStored.crcTable=Array.from({length:256},(_,i)=>{let c=i;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;return c>>>0;}));
