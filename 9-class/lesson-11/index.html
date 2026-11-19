@@ -89,6 +89,54 @@ footer{text-align:center;font-size:12px;color:#738196;margin:24px auto}
 }
 @media(max-width:420px){.top-actions{width:100%}.top-actions .action{flex:1}.tool-group{border-right:0}.tools{gap:4px}.tool.text{font-size:13px;padding:8px 10px}}
 @media print{.ribbon,.top-actions,.intro,.notes,.status,footer{display:none!important}header{border:0}.top{display:none}.workspace{padding:0}.paper{box-shadow:none;border:0;max-width:none;min-height:0;padding:0}.editor{min-height:0}}
+
+/* Document styles & layout */
+.editor{font-family:Arial,sans-serif;font-size:15px}
+.editor p{margin:0 0 11px;min-height:1.3em}
+.editor h1{margin:18px 0 8px;font-size:21px}
+.editor h2{margin:16px 0 7px;font-size:18px}
+.editor table{border-collapse:collapse;width:100%;margin:14px 0;table-layout:auto;font-size:14px}
+.editor td,.editor th{border:1px solid #8291a5;padding:7px 9px;min-width:65px;vertical-align:top;overflow-wrap:anywhere}
+.editor th{background:#edf1f7;font-weight:700}
+.editor table.table-accent th{background:#dbe8fa;color:#234779}
+.editor table.table-accent td{border-color:#8da8cf}
+.editor table.table-clean th{background:#ecf6ef;color:#245a3b}
+.editor table.table-clean td{border-color:#9bc4a8}
+.editor img{display:block;max-width:100%;height:auto;margin:10px 0;border-radius:6px}
+.editor .columns-2{column-count:2;column-gap:20px;column-rule:1px solid #dce4f1}
+.editor .section-break{border:0;border-top:2px dashed #aac0da;margin:20px 0}
+.page-edge{max-width:760px;margin:0 auto 9px;padding:7px 17px;background:#fff;color:#69788b;font-size:12px;border-radius:6px}
+.page-edge input{display:inline-block;border:0;border-bottom:1px dotted #a1b2c8;background:transparent;color:#42546f;padding:6px;width:min(80%,360px);font-size:12px}
+.paper .page-header,.paper .page-footer{font:12px/1.4 system-ui,sans-serif;color:#60718a;border-bottom:1px solid #e4e9f1;margin-bottom:14px;min-height:18px}
+.paper .page-footer{margin-top:28px;border-top:1px solid #e4e9f1;border-bottom:0;padding-top:8px}
+.paper.margins-narrow{padding:20px 22px 28px}
+.paper.margins-wide{padding:52px 92px 70px}
+.tools .palette{width:42px;min-width:42px;height:44px;padding:5px;border:1px solid #c5d1e1;border-radius:8px;background:#fff}
+.tools .number{width:67px;min-width:67px;max-width:77px;height:44px;border:1px solid #bdcce0;border-radius:8px;background:#fff;padding:7px}
+.tools .compact{min-width:91px;max-width:135px}
+.tools .tool-label{font-size:12px;font-weight:600;color:#425a79}
+.toolbox-field{display:flex;align-items:center;gap:5px}
+.sample-panel{max-width:760px;margin:0 auto 16px;background:white;border-radius:10px;border:1px solid #cad8ea;padding:14px 16px}
+.sample-panel[hidden]{display:none}
+.sample-panel h2{margin:0 0 8px;font-size:16px}
+.sample-paper{border:1px solid #dce4ef;padding:18px;background:#fff;line-height:1.55;font-size:14px}
+.sample-paper h1{font-size:22px;color:#1e477c;margin:8px 0}
+.sample-paper h2{font-size:16px;color:#1e477c;margin:15px 0 7px}
+.sample-paper p{margin:6px 0 12px}
+.sample-paper .emph{color:#c0392b;font-weight:bold;background:#fff4a3}
+.sample-paper table{border-collapse:collapse;width:100%;font-size:13px;margin:10px 0}
+.sample-paper td,.sample-paper th{border:1px solid #8da8cf;padding:7px;text-align:left}
+.sample-paper th{background:#dbe8fa}
+.sample-paper a{color:#1b5bac;text-decoration:underline}
+.sample-paper .two{columns:2;column-gap:20px;border-left:3px solid #dce9fc;padding-left:10px}
+.share-actions{display:flex;flex-wrap:wrap;gap:7px}
+.share-actions button{flex:1}
+.review-flag{display:inline-block;font-size:11px;color:#a16422;font-weight:700}
+.editor .formula{font-family:Georgia,serif;font-style:italic;font-size:17px}
+.editor [data-bid].has-suggestion{box-shadow:inset 3px 0 #779cda;padding-left:8px;background:#f2f6ff}
+.pane-hint{font-size:12px;color:#677890;margin:8px 0}
+@media(max-width:700px){.paper.margins-wide{padding:26px 28px}.paper.margins-narrow{padding:20px 12px}.tools{padding-bottom:9px;gap:8px}.toolselect.compact{max-width:129px}.sample-paper{padding:10px}.sample-paper .two{columns:1}}
+
 </style>
 </head>
 <body>
@@ -102,7 +150,7 @@ footer{text-align:center;font-size:12px;color:#738196;margin:24px auto}
   <div class="top-actions">
    <button type="button" class="action primary" id="download">↓ Зберегти</button>
    <button type="button" class="action" id="share">Поділитися</button>
-   <button type="button" class="action" id="newDocument">Новий</button>
+   <button type="button" class="action" id="toggleSample">Зразок</button><button type="button" class="action" id="newDocument">Відновити текст</button>
   </div>
  </div>
 </header>
@@ -111,54 +159,108 @@ footer{text-align:center;font-size:12px;color:#738196;margin:24px auto}
   <div class="tabs" role="tablist" aria-label="Панель інструментів">
    <button type="button" class="tab" data-tab="home" role="tab" aria-selected="true">Головна</button>
    <button type="button" class="tab" data-tab="insert" role="tab" aria-selected="false">Вставлення</button>
+   <button type="button" class="tab" data-tab="layout" role="tab" aria-selected="false">Макет</button>
    <button type="button" class="tab" data-tab="review" role="tab" aria-selected="false">Рецензування</button>
+   <button type="button" class="tab" data-tab="sharing" role="tab" aria-selected="false">Доступ</button>
   </div>
   <div class="tools" id="tools-home" role="tabpanel">
    <div class="tool-group">
-    <select class="toolselect" id="style" aria-label="Стиль абзацу">
-     <option value="p">Звичайний</option><option value="h1">Заголовок 1</option><option value="h2">Заголовок 2</option>
+    <select class="toolselect" id="style" aria-label="Стиль абзацу"><option value="p">Звичайний</option><option value="h1">Заголовок 1</option><option value="h2">Заголовок 2</option></select>
+    <select class="toolselect compact" id="fontFamily" aria-label="Шрифт"><option value="Arial">Arial</option><option value="Georgia">Georgia</option><option value="Times New Roman">Times New Roman</option><option value="Verdana">Verdana</option><option value="Tahoma">Tahoma</option></select>
+    <select class="toolselect" id="fontSize" aria-label="Розмір шрифту" style="min-width:68px;max-width:78px">
+     <option value="10">10</option><option value="12">12</option><option value="14" selected>14</option><option value="16">16</option><option value="18">18</option><option value="20">20</option><option value="24">24</option><option value="28">28</option>
     </select>
    </div>
-   <div class="tool-group" aria-label="Накреслення">
+   <div class="tool-group">
     <button class="tool bold" data-cmd="bold" aria-label="Напівжирний" title="Напівжирний">B</button>
     <button class="tool italic" data-cmd="italic" aria-label="Курсив" title="Курсив">I</button>
     <button class="tool underline" data-cmd="underline" aria-label="Підкреслення" title="Підкреслення">U</button>
+    <label class="toolbox-field" title="Колір шрифту"><span class="tool-label">А</span><input id="fontColor" class="palette" type="color" value="#1c2b40" aria-label="Колір шрифту"></label>
+    <label class="toolbox-field" title="Колір виділення"><span class="tool-label">▧</span><input id="highlightColor" class="palette" type="color" value="#fff59d" aria-label="Колір виділення тексту"></label>
    </div>
-   <div class="tool-group" aria-label="Списки">
-    <button class="tool" data-cmd="insertUnorderedList" aria-label="Маркований список" title="Маркований список">•≡</button>
-    <button class="tool" data-cmd="insertOrderedList" aria-label="Нумерований список" title="Нумерований список">1≡</button>
+   <div class="tool-group">
+    <button class="tool" data-cmd="insertUnorderedList" aria-label="Маркований список">•≡</button>
+    <button class="tool" data-cmd="insertOrderedList" aria-label="Нумерований список">1≡</button>
+    <button class="tool text" id="addParagraph">↵ Абзац</button>
+    <button class="tool text" id="indentOut">← Відступ</button>
+    <button class="tool text" id="indentIn">→ Відступ</button>
    </div>
-   <div class="tool-group" aria-label="Вирівнювання">
-    <button class="tool" data-cmd="justifyLeft" aria-label="Вирівняти ліворуч" title="Ліворуч">☰</button>
-    <button class="tool" data-cmd="justifyCenter" aria-label="Вирівняти по центру" title="По центру">≡</button>
-    <button class="tool" data-cmd="justifyRight" aria-label="Вирівняти праворуч" title="Праворуч">☷</button>
+   <div class="tool-group">
+    <button class="tool" data-cmd="justifyLeft" title="Ліворуч" aria-label="Ліворуч">☰</button>
+    <button class="tool" data-cmd="justifyCenter" title="По центру" aria-label="По центру">≡</button>
+    <button class="tool" data-cmd="justifyRight" title="Праворуч" aria-label="Праворуч">☷</button>
+    <button class="tool" data-cmd="justifyFull" title="За шириною" aria-label="За шириною">▤</button>
+    <select class="toolselect compact" id="lineHeight" aria-label="Міжрядковий інтервал"><option value="1">Інтервал 1,0</option><option value="1.15" selected>Інтервал 1,15</option><option value="1.5">Інтервал 1,5</option><option value="2">Інтервал 2,0</option></select>
+    <select class="toolselect compact" id="firstLine" aria-label="Відступ першого рядка"><option value="0">Перший рядок 0</option><option value="18">Перший рядок 1 см</option><option value="36">Перший рядок 2 см</option></select>
    </div>
-   <div class="tool-group" aria-label="Скасувати або повторити">
-    <button class="tool" data-cmd="undo" aria-label="Скасувати" title="Скасувати">↶</button>
-    <button class="tool" data-cmd="redo" aria-label="Повторити" title="Повторити">↷</button>
-   </div>
+   <div class="tool-group"><button class="tool" data-cmd="undo" aria-label="Скасувати">↶</button><button class="tool" data-cmd="redo" aria-label="Повторити">↷</button></div>
   </div>
   <div class="tools" id="tools-insert" role="tabpanel" hidden>
-   <button class="tool text" id="addLink">🔗 Гіперпосилання</button>
-   <button class="tool text" id="addToc">☷ Вставити зміст</button>
+   <button class="tool text" id="addLink">🔗 Посилання</button>
+   <button class="tool text" id="addToc">☷ Автоматичний зміст</button>
    <button class="tool text" id="removeToc" hidden>Прибрати зміст</button>
+   <button class="tool text" id="addTable">▦ Таблиця</button>
+   <button class="tool text" id="addImage">▧ Зображення</button>
+   <input type="file" id="imageFile" accept="image/png,image/jpeg,image/webp" hidden>
+   <select class="toolselect compact" id="tableStyle" aria-label="Стиль таблиці">
+    <option value="">Стиль таблиці</option><option value="table-accent">Блакитний</option><option value="table-clean">Зелений</option><option value="plain">Звичайний</option>
+   </select>
+   <select class="toolselect compact" id="insertSymbol" aria-label="Спеціальний символ"><option value="">Символ</option><option>№</option><option>§</option><option>©</option><option>®</option><option>°</option><option>±</option><option>→</option><option>✓</option><option>²</option><option>π</option></select>
+   <button class="tool text" id="addFormula">∑ Формула</button>
+  </div>
+  <div class="tools" id="tools-layout" role="tabpanel" hidden>
+   <select id="pageMargins" class="toolselect compact" aria-label="Поля сторінки"><option value="normal">Поля: звичайні</option><option value="narrow">Поля: вузькі</option><option value="wide">Поля: широкі</option></select>
+   <select id="columns" class="toolselect compact" aria-label="Кількість колонок"><option value="1">Одна колонка</option><option value="2">Дві колонки</option></select>
+   <button class="tool text" id="sectionBreak">Розрив розділу</button>
+   <button class="tool text" id="toggleHeader">Колонтитули</button>
+   <button class="tool text" id="showStructure">Структура документа</button>
   </div>
   <div class="tools" id="tools-review" role="tabpanel" hidden>
    <button class="tool text" id="addComment">＋ Коментар</button>
-   <button class="tool text" id="showComments">☰ Показати коментарі</button>
+   <button class="tool text" id="addSuggestion">✎ Запропонувати зміну</button>
+   <button class="tool text" id="showComments">☰ Рецензії</button>
+  </div>
+  <div class="tools" id="tools-sharing" role="tabpanel" hidden>
+   <button class="tool text" id="shareView">🔗 Доступ для перегляду</button>
+   <button class="tool text" id="shareReview">🖊 Доступ для рецензування</button>
+   <button class="tool text" id="returnReview">↗ Повернути рецензію</button>
+   <span class="pane-hint" id="shareNote">Документи передаються копіями через посилання; одночасного редагування немає.</span>
   </div>
  </div>
 </div>
 <main class="workspace">
- <p class="intro">Текстовий редактор для браузера смартфона · без реєстрації та встановлення програм</p>
- <article class="paper" id="paper" aria-label="Сторінка текстового документа">
-  <h1 class="page-title" id="pageTitle">Новий документ</h1>
+ <p class="intro">Навчальний текстовий редактор · оформи готовий документ за зразком · без установлення програм</p>
+ <section class="sample-panel" id="samplePanel" hidden aria-label="Зразок оформлення">
+ <h2>Зразок готового оформлення</h2>
+ <div class="sample-paper">
+  <div style="text-align:right;font-size:11px;color:#76889c">ПРАКТИЧНА РОБОТА № 3</div>
+  <h1 style="text-align:center">Путівник цифрової безпеки</h1>
+  <p style="text-align:center;font-size:13px;color:#48638b">Короткий довідник для школярів</p>
+  <h2>Зміст</h2><ol><li>Безпечний обліковий запис</li><li>Правила роботи в інтернеті</li><li>Корисні джерела</li></ol>
+  <h2>1. Безпечний обліковий запис</h2>
+  <p style="text-indent:18px;line-height:1.5;font-family:Georgia,serif">Особисті дані потребують захисту. <span class="emph">Нікому не повідомляй свій пароль.</span> Використовуй двофакторну автентифікацію.</p>
+  <h2>2. Правила роботи в інтернеті</h2>
+  <p>Основні правила:</p><ul><li>Перевіряй адресу сайту.</li><li>Не відкривай підозрілі посилання.</li><li>Створюй резервні копії.</li></ul>
+  <table><tr><th>Дія</th><th>Результат</th></tr><tr><td>Складний пароль</td><td>Захист облікового запису</td></tr><tr><td>Резервна копія</td><td>Збереження даних</td></tr></table>
+  <p style="font-style:italic">Спеціальний символ: № · Приклад формули: S = a × b</p>
+  <h2>3. Корисні джерела</h2>
+  <p class="two">Для самоосвіти використовуй перевірені навчальні ресурси. Переглянь матеріали з цифрової грамотності.</p>
+  <p><a href="https://osvita.diia.gov.ua/" target="_blank" rel="noopener noreferrer">Дія.Освіта</a></p>
+  <p style="font-size:11px;color:#778">Інформатика · 9 клас | Сторінка 1</p>
+ </div>
+ <p class="pane-hint">Це зразок оформлення. Він не змінює текст документа.</p>
+</section>
+<section class="notes" id="structure" hidden><h2>Структура документа</h2><div id="structureItems"></div></section>
+<article class="paper" id="paper" aria-label="Сторінка текстового документа">
+  <div class="page-header" id="pageHeader" contenteditable="true" spellcheck="true" aria-label="Верхній колонтитул" hidden>Інформатика · 9 клас</div>
+  <h1 class="page-title" id="pageTitle">Путівник цифрової безпеки</h1>
   <nav class="toc" id="toc" aria-label="Автоматичний зміст" hidden></nav>
   <div id="editor" class="editor" contenteditable="true" role="textbox" aria-label="Текст документа" aria-multiline="true" spellcheck="true"><p><br></p></div>
+  <div class="page-footer" id="pageFooter" contenteditable="true" spellcheck="true" aria-label="Нижній колонтитул" hidden>Інформатика · 9 клас | Сторінка 1</div>
  </article>
  <section class="notes" id="notes" hidden>
   <h2>Коментарі редактора</h2>
-  <div id="noteItems"></div>
+  <div id="noteItems"></div><div id="suggestionItems"></div>
  </section>
  <p class="status" id="storageInfo">Зміни зберігаються лише в цьому браузері. Документи не надсилаються вчителю автоматично.</p>
  <footer>Інформатика · 9 клас · Урок 11 · Мобільний текстовий редактор</footer>
@@ -188,15 +290,42 @@ footer{text-align:center;font-size:12px;color:#738196;margin:24px auto}
   </div>
  </form>
 </dialog>
+
+<dialog id="suggestionDialog" aria-labelledby="suggestionHeading">
+ <form id="suggestionForm" method="dialog">
+  <h2 id="suggestionHeading">Запропонувати виправлення</h2>
+  <p id="suggestionContext"></p>
+  <label for="suggestionText">Новий текст абзацу</label>
+  <textarea id="suggestionText" maxlength="1200" required></textarea>
+  <div class="dialog-actions"><button type="button" class="action" data-close="suggestionDialog">Скасувати</button><button type="submit" class="action primary">Запропонувати</button></div>
+ </form>
+</dialog>
+<dialog id="formulaDialog" aria-labelledby="formulaHeading">
+ <form id="formulaForm" method="dialog">
+  <h2 id="formulaHeading">Вставити формулу</h2>
+  <p>Введіть короткий математичний вираз. Можна використовувати символи ± × ÷ ² ³ π Σ √.</p>
+  <label for="formulaText">Вираз</label><input id="formulaText" maxlength="120" value="S = a × b" required>
+  <div class="dialog-actions"><button type="button" class="action" data-close="formulaDialog">Скасувати</button><button type="submit" class="action primary">Вставити</button></div>
+ </form>
+</dialog>
+<dialog id="shareDialog" aria-labelledby="shareHeading">
+ <h2 id="shareHeading">Посилання для доступу</h2>
+ <p id="shareDescription"></p>
+ <label for="shareURL">Посилання</label><textarea id="shareURL" readonly rows="4"></textarea>
+ <p class="pane-hint">Посилання містить копію документа. Не додавайте особисті дані. Без сервера зміни не синхронізуються автоматично.</p>
+ <div class="dialog-actions"><button type="button" class="action" data-close="shareDialog">Закрити</button><button type="button" class="action primary" id="copyShareURL">Копіювати</button></div>
+</dialog>
 <div id="toast" class="toast" role="status" hidden></div>
 <script>
 "use strict";
-const KEY="informatics-lab-9-lesson11-wordlike-v1";
+const KEY="informatics-lab-9-lesson11-final-v2";
 const $=id=>document.getElementById(id);
 const editor=$("editor");
 const notes=$("notes");
 let savedRange=null, lastBlockId=null, commentTargetId=null, commentSelection="", editNotes=[], tocEnabled=false, toastTimer=0;
-const allowedTags=new Set(["P","DIV","H1","H2","UL","OL","LI","STRONG","B","EM","I","U","BR","SPAN","A"]);
+const allowedTags=new Set(["P","DIV","H1","H2","UL","OL","LI","STRONG","B","EM","I","U","BR","SPAN","A","FONT","TABLE","TBODY","THEAD","TR","TD","TH","IMG","HR","SUB","SUP","SECTION"]);
+const START_HTML="<p>1. Безпечний обліковий запис</p>\n<p>Особисті дані потребують захисту. Нікому не повідомляй свій пароль. Використовуй двофакторну автентифікацію.</p>\n<p>2. Правила роботи в інтернеті</p>\n<p>Основні правила:</p>\n<p>Перевіряй адресу сайту.</p>\n<p>Не відкривай підозрілі посилання.</p>\n<p>Створюй резервні копії.</p>\n<p>Дія Результат</p>\n<table><tbody><tr><th>Дія</th><th>Результат</th></tr><tr><td>Складний пароль</td><td>Захист облікового запису</td></tr><tr><td>Резервна копія</td><td>Збереження даних</td></tr></tbody></table>\n<p>Спеціальний символ: №</p><p>Приклад формули: S = a × b</p>\n<p>3. Корисні джерела</p>\n<p>Для самоосвіти використовуй перевірені навчальні ресурси. Переглянь матеріали з цифрової грамотності.</p>\n<p>Дія.Освіта</p>";
+let docId="d"+Date.now().toString(36), suggestions=[], importedRole="owner", headersEnabled=false, twoColumns=false;
 function toast(message){
  const el=$("toast");el.textContent=message;el.hidden=false;
  clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.hidden=true,2700);
@@ -215,23 +344,44 @@ function safeLink(url){
 }
 function createId(){return "s"+Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
 function sanitizeHTML(html){
- const box=document.createElement("div");box.innerHTML=String(html||"").slice(0,120000);
+ const box=document.createElement("div");box.innerHTML=String(html||"").slice(0,180000);
  function clean(node){
   for(const child of Array.from(node.childNodes)){
    if(child.nodeType===8){child.remove();continue;}
    if(child.nodeType!==1)continue;
    const tag=child.tagName;
-   if(["SCRIPT","STYLE","IFRAME","OBJECT","SVG","FORM","INPUT","BUTTON","IMG","META"].includes(tag)){child.remove();continue;}
+   if(["SCRIPT","STYLE","IFRAME","OBJECT","SVG","FORM","INPUT","BUTTON","META","VIDEO","AUDIO"].includes(tag)){child.remove();continue;}
    clean(child);
    if(!allowedTags.has(tag)){child.replaceWith(...Array.from(child.childNodes));continue;}
    const attrs=Array.from(child.attributes).map(a=>[a.name,a.value]);
    for(const a of Array.from(child.attributes))child.removeAttribute(a.name);
    for(const [name,value] of attrs){
-    if(name==="href"&&tag==="A"&&safeLink(value)){child.setAttribute("href",safeLink(value));child.setAttribute("target","_blank");child.setAttribute("rel","noopener noreferrer");}
+    if(name==="href"&&tag==="A"&&safeLink(value)){
+     child.setAttribute("href",safeLink(value));child.setAttribute("target","_blank");child.setAttribute("rel","noopener noreferrer");
+    }
     if(name==="data-bid"&&/^[a-z0-9-]{1,45}$/i.test(value))child.setAttribute("data-bid",value);
+    if(name==="class" && /^(table-accent|table-clean|columns-2|section-break|formula|has-note|has-suggestion)(\s+(table-accent|table-clean|columns-2|section-break|formula|has-note|has-suggestion))*$/.test(value))child.className=value;
+    if(["colspan","rowspan"].includes(name)&&["TD","TH"].includes(tag) && /^[1-4]$/.test(value))child.setAttribute(name,value);
+    if(tag==="FONT" && name==="face" && /^(Arial|Verdana|Tahoma|Georgia|Times New Roman)$/i.test(value))child.setAttribute("face",value);
+    if(tag==="FONT" && name==="color" && /^#[0-9a-f]{3,6}$/i.test(value))child.setAttribute("color",value);
+    if(tag==="FONT" && name==="size" && /^[1-7]$/.test(value))child.setAttribute("size",value);
+    if(tag==="IMG" && name==="alt")child.setAttribute("alt",value.slice(0,150));
+    if(tag==="IMG" && name==="src"){
+     if(/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(value)&&value.length<650000)child.setAttribute("src",value);
+    }
     if(name==="style"){
-     const matching=value.match(/text-align\s*:\s*(left|center|right|justify)/i);
-     if(matching&&["P","DIV","H1","H2","LI"].includes(tag))child.style.textAlign=matching[1].toLowerCase();
+     const template=document.createElement("span");template.setAttribute("style",value);
+     for(const prop of ["textAlign","fontFamily","fontSize","color","backgroundColor","textIndent","marginLeft","marginRight","marginTop","marginBottom","lineHeight","width","maxWidth","columnCount","columnGap","padding","paddingLeft","border","borderColor"]){
+      const val=template.style[prop];
+      if(!val||val.length>110||/url\s*\(|expression|var\s*\(|[\r\n]/i.test(val))continue;
+      if(prop==="textAlign"&&!/^(left|right|center|justify)$/i.test(val))continue;
+      if(prop==="fontFamily"&&!/^(Arial|Verdana|Tahoma|Georgia|Times New Roman)(,.*)?$/i.test(val.replace(/["']/g,"")))continue;
+      if(prop==="columnCount"&&!/^[12]$/.test(val))continue;
+      if(prop==="color"||prop==="backgroundColor"){if(!/^(#[0-9a-f]{3,8}|rgb[a]?\([\d\s.,%]+\))$/i.test(val))continue;}
+      if(["fontSize","textIndent","marginLeft","marginRight","marginTop","marginBottom","width","maxWidth","padding","paddingLeft","columnGap"].includes(prop)&&!/^(\d+(\.\d+)?)(px|pt|em|%)$/.test(val))continue;
+      if(prop==="lineHeight"&&!/^(\d+(\.\d+)?)(px|pt|em|%)?$/.test(val))continue;
+      child.style[prop]=val;
+     }
     }
    }
   }
@@ -318,6 +468,152 @@ function command(cmd){
  }
  captureSelection();save();
 }
+
+function applyInline(commandName,value){
+ restoreRange();
+ const sel=window.getSelection();
+ if(!selectionInEditor(sel)) {toast("Спочатку виділіть текст.");return;}
+ if(sel.isCollapsed){toast("Виділіть потрібний текст, потім оберіть оформлення.");return;}
+ let ok=document.execCommand(commandName,false,value);
+ if(!ok && commandName==="hiliteColor")document.execCommand("backColor",false,value);
+ captureSelection();save();
+}
+function applyFontSize(size){
+ restoreRange();
+ const sel=window.getSelection();
+ if(!selectionInEditor(sel)||sel.isCollapsed){toast("Виділіть текст для зміни розміру.");return;}
+ document.execCommand("fontSize",false,"7");
+ for(const node of Array.from(editor.querySelectorAll('font[size="7"]'))){
+  const span=document.createElement("span");span.style.fontSize=size+"pt";while(node.firstChild)span.append(node.firstChild);node.replaceWith(span);
+ }
+ save();
+}
+function applyParagraphProperty(prop,value){
+ restoreRange();const b=currentBlock();
+ if(!b){toast("Поставте курсор у потрібний абзац.");return;}
+ b.style[prop]=value;save();
+}
+function insertHTMLAtCursor(markup){
+ const safe=sanitizeHTML(markup);const holder=document.createElement("div");holder.innerHTML=safe;
+ restoreRange();
+ const sel=window.getSelection();
+ const range=sel&&sel.rangeCount?sel.getRangeAt(0):null;
+ if(range&&editor.contains(range.commonAncestorContainer)){
+  range.collapse(false);
+  const fragment=document.createDocumentFragment();let last=null;
+  while(holder.firstChild){last=holder.firstChild;fragment.appendChild(last);}
+  range.insertNode(fragment);
+  if(last){const next=document.createRange();next.setStartAfter(last);next.collapse(true);sel.removeAllRanges();sel.addRange(next);}
+ }else editor.append(...Array.from(holder.childNodes));
+ save();
+}
+function insertPlain(text){
+ restoreRange();editor.focus();
+ const sel=window.getSelection();
+ if(!selectionInEditor(sel)){editor.append(make("p",text));save();return;}
+ if(!document.execCommand("insertText",false,text)){
+  const r=sel.getRangeAt(0);r.deleteContents();r.insertNode(document.createTextNode(text));r.collapse(false);
+ }
+ save();
+}
+function insertParagraph(){
+ restoreRange();const block=currentBlock();const p=make("p");p.append(document.createElement("br"));
+ if(block)block.after(p);else editor.append(p);
+ setCaret(p);save();
+}
+function moveIndent(direction){
+ restoreRange();const b=currentBlock();if(!b)return;
+ const current=parseInt(b.style.marginLeft||"0",10)||0;
+ b.style.marginLeft=Math.max(0,Math.min(120,current+direction*18))+"px";save();
+}
+function tableAtCursor(){
+ const rows=3,cols=2;
+ let html="<table><tbody>";
+ for(let r=0;r<rows;r++){html+="<tr>";for(let c=0;c<cols;c++)html+=(r===0?"<th>Заголовок</th>":"<td>Текст</td>");html+="</tr>";}
+ html+="</tbody></table><p><br></p>";insertHTMLAtCursor(html);toast("Таблицю додано. Натисніть клітинку, щоб змінити текст.");
+}
+function currentTable(){
+ const s=window.getSelection(),n=s?.anchorNode;
+ const el=n?.nodeType===1?n:n?.parentElement;
+ return el?.closest("table") || editor.querySelector("table");
+}
+function styleTable(value){
+ const t=currentTable();if(!t){toast("Таблиці в документі немає.");return;}
+ t.classList.remove("table-accent","table-clean");if(["table-accent","table-clean"].includes(value))t.classList.add(value);save();
+}
+async function insertImage(file){
+ if(!file||!["image/png","image/jpeg","image/webp"].includes(file.type)){toast("Виберіть PNG, JPEG або WebP.");return;}
+ if(file.size>400000){toast("Зображення завелике для збереження в браузері (до 400 КБ).");return;}
+ const reader=new FileReader();
+ reader.onload=()=>{const src=String(reader.result||"");if(/^data:image\/(png|jpeg|webp);base64,/.test(src))insertHTMLAtCursor('<p><img src="'+src+'" alt="Зображення в документі"></p>');};
+ reader.readAsDataURL(file);
+}
+function updatePageMargins(value){
+ $("paper").classList.remove("margins-narrow","margins-wide");
+ if(value==="narrow")$("paper").classList.add("margins-narrow");
+ if(value==="wide")$("paper").classList.add("margins-wide");
+ save();
+}
+function toggleColumns(value){
+ twoColumns=value==="2";
+ editor.classList.toggle("columns-2",twoColumns);
+ save();
+}
+function toggleHeaderFooter(){
+ headersEnabled=!headersEnabled;
+ $("pageHeader").hidden=!headersEnabled;$("pageFooter").hidden=!headersEnabled;
+ save();
+}
+function renderStructure(){
+ const host=$("structureItems");host.replaceChildren();
+ const headings=Array.from(editor.querySelectorAll("h1,h2"));
+ if(!headings.length){host.append(make("p","Призначте стилі заголовкам, щоб побачити структуру.","pane-hint"));return;}
+ for(const h of headings){
+  const row=make("div",undefined,"checkrow");
+  const name=make("span",h.textContent.trim()||"Без назви");
+  name.style.flex="1";if(h.tagName==="H2")name.style.paddingLeft="16px";
+  row.append(name);
+  for(const dir of [-1,1]){
+   const b=make("button",dir===-1?"↑":"↓","mini");b.type="button";
+   b.addEventListener("click",()=>{moveSection(h,dir);});
+   row.append(b);
+  }
+  host.append(row);
+ }
+}
+function moveSection(head,dir){
+ const children=Array.from(editor.children);
+ const idx=children.indexOf(head);
+ if(idx<0)return;
+ const level=head.tagName==="H1"?1:2;
+ function boundary(start){
+  for(let i=start+1;i<children.length;i++){
+   const level2=children[i].tagName==="H1"?1:children[i].tagName==="H2"?2:3;
+   if(level2<=level)return i;
+  }
+  return children.length;
+ }
+ let next=boundary(idx), begin=idx,end=next;
+ if(dir<0){
+  let prev=-1;
+  for(let i=idx-1;i>=0;i--){const lev=children[i].tagName==="H1"?1:children[i].tagName==="H2"?2:3;if(lev<=level){prev=i;break;}}
+  if(prev<0)return;
+  const nodes=children.slice(begin,end);
+  for(const node of nodes)editor.insertBefore(node,children[prev]);
+ }else{
+  if(next>=children.length)return;
+  const after=boundary(next);
+  const anchor=children[after]||null;
+  const nodes=children.slice(begin,end);
+  for(const node of nodes)editor.insertBefore(node,anchor);
+ }
+ save();renderStructure();
+}
+function toggleSample(){
+ const p=$("samplePanel");p.hidden=!p.hidden;
+ if(!p.hidden)p.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
 function renderTOC(){
  const toc=$("toc");
  $("removeToc").hidden=!tocEnabled;
@@ -363,7 +659,7 @@ function markNotes(){
 }
 function save(){
  ensureBlocks();renderTOC();markNotes();
- const data={title:$("documentTitle").value.slice(0,100),html:sanitizeHTML(editor.innerHTML),toc:tocEnabled,notes:editNotes};
+ const data={title:$("documentTitle").value.slice(0,100),html:sanitizeHTML(editor.innerHTML),toc:tocEnabled,notes:editNotes,docId,suggestions,headersEnabled,header:$("pageHeader").textContent,footer:$("pageFooter").textContent,twoColumns,margins:$("pageMargins").value,role:importedRole};
  try{localStorage.setItem(KEY,JSON.stringify(data));$("saveInfo").textContent="✓ Збережено на цьому пристрої";}
  catch{$("saveInfo").textContent="Не вдалось зберегти у браузері";}
  $("pageTitle").textContent=data.title.trim()||"Новий документ";
@@ -376,13 +672,28 @@ function load(){
    editor.innerHTML=sanitizeHTML(obj.html||"<p><br></p>");
    tocEnabled=!!obj.toc;
    editNotes=Array.isArray(obj.notes)?obj.notes.slice(0,100).filter(n=>n&&typeof n.text==="string"&&typeof n.blockId==="string").map(n=>({id:String(n.id).slice(0,60),blockId:String(n.blockId).slice(0,45),text:n.text.slice(0,600)})):[];
+   docId=String(obj.docId||docId).slice(0,50);
+   suggestions=Array.isArray(obj.suggestions)?obj.suggestions.slice(0,60):[];
+   headersEnabled=!!obj.headersEnabled;$("pageHeader").textContent=String(obj.header||"Інформатика · 9 клас").slice(0,200);
+   $("pageFooter").textContent=String(obj.footer||"Інформатика · 9 клас | Сторінка 1").slice(0,200);
+   twoColumns=!!obj.twoColumns;
+   $("pageMargins").value=["normal","narrow","wide"].includes(obj.margins)?obj.margins:"normal";
+   importedRole=String(obj.role||"owner");
   }
  }catch{}
+ if(!localStorage.getItem(KEY)){
+  editor.innerHTML=START_HTML;$("documentTitle").value="Путівник цифрової безпеки";
+ }
+ $("pageHeader").hidden=!headersEnabled;$("pageFooter").hidden=!headersEnabled;
+ $("columns").value=twoColumns?"2":"1";
+ editor.classList.toggle("columns-2",twoColumns);
+ $("paper").classList.toggle("margins-narrow",$("pageMargins").value==="narrow");
+ $("paper").classList.toggle("margins-wide",$("pageMargins").value==="wide");
  ensureBlocks();renderTOC();markNotes();$("pageTitle").textContent=$("documentTitle").value||"Новий документ";
 }
 function toggleTab(tab){
  for(const b of document.querySelectorAll(".tab"))b.setAttribute("aria-selected",String(b.dataset.tab===tab));
- for(const p of ["home","insert","review"])$("tools-"+p).hidden=p!==tab;
+ for(const p of ["home","insert","layout","review","sharing"])$("tools-"+p).hidden=p!==tab;
 }
 function insertLink(){
  captureSelection();
@@ -468,9 +779,12 @@ async function shareDocument(){
  try{document.execCommand("copy");toast("Текст скопійовано.");}catch{toast("Відкрийте меню браузера, щоб поділитися.");}t.remove();
 }
 function resetDocument(){
- if(!confirm("Створити новий документ? Поточний незбережений у файл текст буде втрачено."))return;
- editor.innerHTML="<p><br></p>";$("documentTitle").value="Новий документ";
- tocEnabled=false;editNotes=[];savedRange=null;lastBlockId=null;save();editor.focus();toast("Новий документ створено.");
+ if(!confirm("Повернути початковий текст? Поточне оформлення буде втрачено."))return;
+ editor.innerHTML=START_HTML;$("documentTitle").value="Путівник цифрової безпеки";
+ tocEnabled=false;editNotes=[];suggestions=[];savedRange=null;lastBlockId=null;docId=createId();importedRole="owner";
+ headersEnabled=false;twoColumns=false;$("pageHeader").hidden=true;$("pageFooter").hidden=true;
+ $("pageMargins").value="normal";$("columns").value="1";$("paper").classList.remove("margins-narrow","margins-wide");editor.classList.remove("columns-2");
+ save();editor.focus();toast("Початковий текст відновлено.");
 }
 document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>toggleTab(b.dataset.tab)));
 document.querySelectorAll("[data-cmd]").forEach(b=>{
@@ -504,6 +818,31 @@ editor.addEventListener("paste",e=>{
  }
  save();
 });
+
+$("toggleSample").addEventListener("click",toggleSample);
+$("fontFamily").addEventListener("change",e=>applyInline("fontName",e.target.value));
+$("fontSize").addEventListener("change",e=>applyFontSize(e.target.value));
+$("fontColor").addEventListener("change",e=>applyInline("foreColor",e.target.value));
+$("highlightColor").addEventListener("change",e=>applyInline("hiliteColor",e.target.value));
+$("addParagraph").addEventListener("click",insertParagraph);
+$("indentIn").addEventListener("click",()=>moveIndent(1));
+$("indentOut").addEventListener("click",()=>moveIndent(-1));
+$("lineHeight").addEventListener("change",e=>applyParagraphProperty("lineHeight",e.target.value));
+$("firstLine").addEventListener("change",e=>applyParagraphProperty("textIndent",e.target.value+"px"));
+$("addTable").addEventListener("click",tableAtCursor);
+$("tableStyle").addEventListener("change",e=>styleTable(e.target.value));
+$("addImage").addEventListener("click",()=>$("imageFile").click());
+$("imageFile").addEventListener("change",e=>{const f=e.target.files?.[0];if(f)insertImage(f);e.target.value="";});
+$("insertSymbol").addEventListener("change",e=>{if(e.target.value)insertPlain(e.target.value);e.target.value="";});
+$("addFormula").addEventListener("click",()=>{captureSelection();$("formulaDialog").showModal();});
+$("formulaForm").addEventListener("submit",e=>{e.preventDefault();const text=$("formulaText").value.trim();if(text)insertPlain(text);$("formulaDialog").close();});
+$("pageMargins").addEventListener("change",e=>updatePageMargins(e.target.value));
+$("columns").addEventListener("change",e=>toggleColumns(e.target.value));
+$("sectionBreak").addEventListener("click",()=>insertHTMLAtCursor('<hr class="section-break"><p><br></p>'));
+$("toggleHeader").addEventListener("click",toggleHeaderFooter);
+$("showStructure").addEventListener("click",()=>{$("structure").hidden=!$("structure").hidden;if(!$("structure").hidden){renderStructure();$("structure").scrollIntoView({behavior:"smooth"});}});
+$("pageHeader").addEventListener("input",save);
+$("pageFooter").addEventListener("input",save);
 load();
 </script>
 </body>
