@@ -67,7 +67,8 @@
 const KEY='logic-agent-grade8-v2',OLD_KEY='logic-agent-grade8-v1',OUTBOX_KEY='logic-agent-grade8-v2-outbox';
 const VERSION='logic-agent-grade8-v2';
 /* Вставте URL /exec після публікації Google Apps Script у прив'язаній таблиці. */
-const RESULTS_ENDPOINT='';
+const RESULTS_ENDPOINT=''; // Сюди ОДИН РАЗ вставляємо URL універсального скрипта /exec
+const LESSON_DATES={'8-А':'2026-11-20','8-Б':'2026-11-23'};
 const chapters=[
 {title:'Місія 1 · Тільки два стани',icon:'💡',intro:'Комп’ютер уміє ухвалювати рішення на основі логічних значень.',explain:'<strong>Логічна величина</strong> має одне із двох значень: <code>True</code> (істина) або <code>False</code> (хиба). У Python такі значення належать до типу <code>bool</code>.',example:'is_online = True\nis_banned = False',cheat:'<p><code>True</code> — істина<br><code>False</code> — хиба<br><code>bool</code> — логічний тип</p>',questions:[{q:'Якого типу значення <code>False</code> у Python?',answers:['int','bool','str'],a:1,why:'<code>False</code> — логічне значення, отже його тип <code>bool</code>.'},{q:'Який результат команди <code>print(is_banned)</code> у наведеному прикладі?',answers:['True','False','7'],a:1,why:'Змінній <code>is_banned</code> присвоєно логічне значення <code>False</code>.'}]},
 {title:'Місія 2 · Порівняння',icon:'⚖️',intro:'Умова часто складається з порівняння чисел або значень.',explain:'Оператори <code>></code>, <code><</code>, <code>>=</code>, <code><=</code>, <code>==</code>, <code>!=</code> повертають <code>True</code> або <code>False</code>. Не плутай <code>=</code> (присвоювання) та <code>==</code> (порівняння).',example:'score = 85\nprint(score >= 80)   # True\nprint(score == 100)  # False\nprint(score != 100)  # True',cheat:'<p><code>==</code> — дорівнює<br><code>!=</code> — не дорівнює<br><code>>=</code> — більше або дорівнює<br><code><=</code> — менше або дорівнює</p>',questions:[{q:'Який результат <code>14 >= 14</code>?',answers:['True','False','Помилка'],a:0,why:'«Більше або дорівнює» включає рівність.'},{q:'Який вираз перевіряє, що <code>score</code> НЕ дорівнює 100?',answers:['score = 100','score != 100','score == 100'],a:1,why:'<code>!=</code> у Python означає «не дорівнює».'}]},
@@ -102,7 +103,7 @@ let outbox=readOutbox();
 function escape(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function syncText(txt,warn){$('syncStatus').textContent=txt;$('syncStatus').classList.toggle('warning',!!warn);}
 function refreshSync(){
- if(!RESULTS_ENDPOINT){syncText('Журнал створено. Автоматичне надсилання ще не активоване; дані зберігаються тут.',true);return;}
+ if(!RESULTS_ENDPOINT){syncText('Журнал на робочому Диску підготовлено. Підключення очікує URL /exec; дані зберігаються тут.',true);return;}
  if(sending){syncText('Надсилаємо результати…');return;}
  if(outbox.length){syncText('Є записи для повторної відправки: '+outbox.length+'.',true);return;}
  syncText(remoteInfo||'Збереження: журнал Google Таблиць (перевірка у вчителя).');
@@ -148,7 +149,10 @@ function checkIdentity(){
 }
 function enqueue(progress){
  const event={
-  version:VERSION,eventId:state.sessionId+'-'+progress,sessionId:state.sessionId,
+  apiVersion:1,version:VERSION,eventId:state.sessionId+'-'+progress,sessionId:state.sessionId,
+  lessonId:'21-22',lessonDate:LESSON_DATES[state.klass],gameTitle:'TRUE чи FALSE? Зламай код логіки',
+  taskNo:'Місія '+Math.ceil(progress/2)+' / запитання '+((progress-1)%2+1),
+  maxProgress:12,score:state.questionMisses===0?1:0,maxScore:1,
   surname:state.surname.trim(),firstname:state.firstname.trim(),klass:state.klass,group:state.group,
   mission:Math.ceil(progress/2),question:((progress-1)%2)+1,progress:progress,
   questionMisses:state.questionMisses,totalMisses:state.misses,firstTry:state.firstTry
