@@ -174,7 +174,7 @@ const $=id=>document.getElementById(id);
 const fresh=()=>({level:0,complete:[false,false,false,false],code:["","","",""],tests:[[],[],[],[]],attempts:[0,0,0,0],hints:[0,0,0,0],showHint:false,showSolution:false,
  student:{first:"",surname:"",klass:"",group:""},sessionId:"",linkedSession:"",startedAt:0,locked:false,
  reports:{},pending:{},lastSent:0,notice:"",noticeKind:"",finished:false,bonusSkipped:false,latestOutput:""});
-function safe(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"\"&quot;");}
+function safe(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function readJSON(key){try{return JSON.parse(localStorage.getItem(key)||"null")}catch(e){return null}}
 function load(){
  var val=readJSON(KEY),base=fresh();
