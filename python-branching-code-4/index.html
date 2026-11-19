@@ -87,6 +87,52 @@ textarea:focus-visible{outline:2px solid #56bca6;outline-offset:-2px}
 .report>div{background:#233955;border:1px solid #6e83a7;border-radius:15px;padding:19px}
 .report strong{font-size:26px;color:#ffe099}.report span{display:block;font-size:12px;color:#ccdcef}
 .bonusgold{border:1px solid #e3b94f;background:#4c3c22;border-radius:15px;padding:16px;color:#ffe9b2}
+.quest-stack{display:grid;gap:17px;margin-top:18px}
+.quest-panel{border:1px solid #425d81;border-radius:21px;overflow:hidden;background:linear-gradient(150deg,#162841,#111d31);box-shadow:0 12px 38px #0003}
+.quest-pad{padding:22px 24px}
+.section-head{display:flex;gap:12px;align-items:center;margin-bottom:13px}
+.section-number{display:grid;place-items:center;width:40px;height:40px;flex:0 0 40px;border-radius:12px;background:#3c4b75;border:1px solid #799cce;color:#fff4cf;font-weight:950}
+.section-eyebrow{font-size:11px;color:#a8bfdf;font-weight:850;letter-spacing:.1em}
+.section-head h3{margin:0;font-size:22px;letter-spacing:-.02em}
+.block-grid{display:flex;flex-wrap:wrap;gap:9px;margin:12px 0}
+.block-button{border:1px solid #7d9bbb;background:#253e61;color:#f5faff;border-radius:11px;padding:11px 15px;text-align:left;display:grid;gap:4px;min-width:195px;max-width:100%;box-shadow:0 4px 12px #0003}
+.block-button:hover{background:#39567d;border-color:#e0ebff}
+.block-button code{color:#e0f3ff;font-size:14px;padding:0;background:none;white-space:pre-wrap;overflow-wrap:anywhere}
+.block-button small{color:#b7d4ed;font-size:11px;font-weight:750}
+.block-button[disabled]{opacity:.4}
+.editor[readonly],textarea[readonly]{cursor:default;opacity:1}
+.block-feedback{padding:12px 14px;background:#202f50;border:1px solid #718cc0;border-radius:11px;margin:13px 0;color:#eaf2ff}
+.block-feedback strong{color:#ffe2ab}
+.block-feedback p{margin:6px 0}
+.block-next{font-weight:800;color:#a3e9d5}
+.test-choice.active{background:#68562d;border-color:#ffdb91;color:#fff8d8}
+.test-choice.passed{border-color:#60cfad}
+.test-choice{background:#294365;border:1px solid #7395b5;border-radius:12px;padding:12px;color:#f0f7ff;font-weight:800;flex:1;min-width:120px}
+.test-chooser{display:flex;flex-wrap:wrap;gap:9px;margin:13px 0}
+.game-scene{margin-top:13px;border:1px solid #7297bd;border-radius:17px;background:linear-gradient(135deg,#1a3150,#17223e);overflow:hidden;scroll-margin-top:185px}
+.scene-hud{padding:13px 17px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;background:#0d1c2dcc;font-size:12px;font-weight:850;letter-spacing:.07em;color:#deeeff}
+.scene-live{color:#ffdb85}
+.scene-world{position:relative;min-height:245px;display:grid;place-items:center;align-content:center;gap:8px;text-align:center;background:radial-gradient(circle at 50% 35%,#365f83,#182845 64%,#111c30);overflow:hidden}
+.scene-world:before{content:"";position:absolute;inset:0;background:linear-gradient(transparent 94%,#7292ae12 96%) 0 0/100% 28px,linear-gradient(90deg,transparent 94%,#7292ae12 96%) 0 0/28px 100%;opacity:.7}
+.world-emoji{font-size:clamp(84px,10vw,122px);line-height:1.2;z-index:1;filter:drop-shadow(0 18px 24px #0009);animation:world-idle 2.8s ease-in-out infinite}
+.world-label{z-index:1;font-size:13px;color:#ffdea4;font-weight:900;letter-spacing:.12em}
+.world-number{z-index:1;color:white;font-weight:950;font-size:27px}
+@keyframes world-idle{50%{transform:translateY(-8px)}}
+@keyframes world-success{0%{transform:translateY(28px) scale(.7);opacity:.2}55%{transform:translateY(-14px) scale(1.16)}100%{transform:translateY(0) scale(1);opacity:1}}
+@keyframes world-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.game-scene[data-phase="positive"] .world-emoji,.game-scene[data-phase="normal"] .world-emoji{animation:world-success .85s both}
+.game-scene[data-phase="negative"] .world-emoji,.game-scene[data-phase="error"] .world-emoji{animation:world-shake .55s both}
+.game-scene[data-phase="negative"]{border-color:#d58092}
+.game-scene[data-phase="positive"]{border-color:#4dcdab}
+.scene-details{padding:16px 18px;background:#111f33}
+.scene-meter{height:10px;border-radius:99px;overflow:hidden;background:#374d69;margin:9px 0 13px}
+.scene-meter span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#4cc7a6,#ffe18b);transition:width .5s ease}
+.scene-output{display:grid;gap:7px;margin-top:10px}
+.scene-output div{padding:9px 11px;background:#1e3651;border:1px solid #6884a7;border-radius:9px;font-weight:750}
+.scene-output .positive{color:#b5ffdf;border-color:#55cfaa;background:#184339}
+.scene-output .negative{color:#ffd4dc;border-color:#e099a5;background:#492a38}
+.scene-output .normal{color:#c3e1ff;border-color:#86a8d3;background:#1c385a}
+.game-scene:focus{outline:0}
 .footer{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:#9fb6d3;font-size:12px;margin-top:18px}
 @media(max-width:850px){.workspace{grid-template-columns:1fr}.visual{min-height:215px}.student-bar{grid-template-columns:1fr}.field{min-width:0;max-width:none;flex:1 1 35%}.field.small{flex:1 1 19%;max-width:none}.stats{min-width:0}.stats-head{display:flex;justify-content:space-between;gap:10px}}
 @media(max-width:480px){.shell{padding:13px 11px 45px}.student-bar{padding:9px}.hero{padding:22px 19px}.pad{padding:19px}.levels{gap:5px}.pip{font-size:11px;padding:9px 3px}.testlist{grid-template-columns:1fr}.student-bar{border-radius:13px}.field input,.field select{height:35px;font-size:13px}textarea{font-size:14px}.brand-title{font-size:18px}.btn{flex:1 1 45%}}
@@ -171,7 +217,7 @@ const MISSIONS=[
   texts:["Меч куплено","Шлях відкрито","Недостатньо монет","Зароби ще монет"]}
 ];
 const $=id=>document.getElementById(id);
-const fresh=()=>({level:0,complete:[false,false,false,false],code:["","","",""],tests:[[],[],[],[]],attempts:[0,0,0,0],hints:[0,0,0,0],showHint:false,showSolution:false,
+const fresh=()=>({level:0,complete:[false,false,false,false],code:["","","",""],blocks:[[],[],[],[]],activeTests:[15,9,25,25],scene:null,failed:[0,0,0,0],tests:[[],[],[],[]],attempts:[0,0,0,0],hints:[0,0,0,0],showHint:false,showSolution:false,
  student:{first:"",surname:"",klass:"",group:""},sessionId:"",linkedSession:"",startedAt:0,locked:false,
  reports:{},pending:{},lastSent:0,notice:"",noticeKind:"",finished:false,bonusSkipped:false,latestOutput:""});
 function safe(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
@@ -180,7 +226,7 @@ function load(){
  var val=readJSON(KEY),base=fresh();
  if(val&&Number.isInteger(val.level)&&val.level>=0&&val.level<=4&&Array.isArray(val.complete)&&Array.isArray(val.code)&&Array.isArray(val.tests)){
   return Object.assign(base,val,{student:Object.assign(base.student,val.student||{}),complete:val.complete.slice(0,4),code:val.code.slice(0,4),
-    tests:val.tests.slice(0,4).map(x=>Array.isArray(x)?x:[]),attempts:Array.isArray(val.attempts)?val.attempts.slice(0,4):base.attempts,
+    tests:val.tests.slice(0,4).map(x=>Array.isArray(x)?x:[]),blocks:Array.isArray(val.blocks)?val.blocks.map(x=>Array.isArray(x)?x:[]):base.blocks,activeTests:Array.isArray(val.activeTests)?val.activeTests:base.activeTests,failed:Array.isArray(val.failed)?val.failed:base.failed,attempts:Array.isArray(val.attempts)?val.attempts.slice(0,4):base.attempts,
     hints:Array.isArray(val.hints)?val.hints.slice(0,4):base.hints,reports:val.reports||{},pending:val.pending||{}});
  }
  var one=readJSON(PART1_KEY);
@@ -228,8 +274,8 @@ function getProgress(){return state.complete.filter(Boolean).length;}
 function buildReport(stage){
  var count=Math.min(stage,4),levels=MISSIONS.slice(0,count).map((m,i)=>{
   return {level:i+1,missionId:i+1,title:m.title,completed:!!state.complete[i],
-  checks:state.tests[i].length,failed:state.attempts[i],hints:state.hints[i],
-  distinctDatasets:state.tests[i].length,testRuns:state.tests[i].length,invalidRuns:state.attempts[i],
+  checks:state.tests[i].length,failed:state.failed[i]||0,hints:state.hints[i],
+  distinctDatasets:state.tests[i].length,testRuns:state.tests[i].length,invalidRuns:state.failed[i]||0,
   selections:0,durationSeconds:0,usedInputs:state.tests[i].map(x=>[x])};
  });
  var runs=[];
@@ -333,8 +379,8 @@ function validateShape(blocks){
 function matches(a,b){return a.length===b.length&&a.every((v,i)=>v===b[i]);}
 function testValue(v){
  if(state.complete[state.level])return;
- var m=current(),editor=$("editor"),code=editor.value;
- if(!code.trim()){showNotice("Спочатку напиши код у редакторі.","bad");return;}
+ var m=current(),code=state.code[state.level];
+ if(!code.trim()){showNotice("Спочатку склади код з готових рядків.","bad");return;}
  state.code[state.level]=code;state.attempts[state.level]++;
  try{
   var blocks=compilePython(code);validateShape(blocks);
@@ -350,6 +396,7 @@ function testValue(v){
   state.notice=done?"✅ Усі значення перевірено! Місію виконано.":("✅ Правильно! Перевірено "+state.tests[state.level].length+" із "+m.values.length+" значень.");
   state.noticeKind="good";
  }catch(err){
+  state.failed[state.level]=(state.failed[state.level]||0)+1;
   state.notice=err.message||"Помилка в коді.";state.noticeKind="bad";
  }
  store();render();
