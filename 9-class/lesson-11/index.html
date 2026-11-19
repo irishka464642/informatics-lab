@@ -63,6 +63,17 @@ header,.ribbon{background:#fff}.ribbon{position:sticky;top:0;z-index:25;box-shad
 .taskRow.done .taskMark{background:#377b5e;border-color:#377b5e;color:white}
 .taskInfo strong{font-size:14px;color:#223e66;display:block}.taskInfo small{font-size:12px;color:#6d7d97;line-height:1.45;display:block;margin-top:3px}
 .tasksActions{display:flex;justify-content:flex-end;margin-top:18px}
+.sendWordSection{margin-top:22px;border:1px solid #bfd1ea;background:#f6f9ff;border-radius:12px;padding:18px}
+.sendWordSection h3{margin:0 0 9px;font-size:18px;color:#244876}
+.sendWordSection p{font-size:13px;color:#526682;line-height:1.5;margin:0 0 11px}
+.sendFields{display:grid;grid-template-columns:150px 1fr;gap:10px;margin:12px 0}
+.sendFields label{font-size:13px;color:#365578;font-weight:650}
+.sendFields input,.sendFields select{display:block;min-height:44px;width:100%;margin-top:6px;border:1px solid #b8c8df;border-radius:8px;padding:9px 11px;background:white;color:#20324c}
+.sendActions{display:flex;gap:8px;flex-wrap:wrap}
+.sendActions button{flex:1 1 205px}
+.sendWordSection .sendNote{font-size:12px;margin:12px 0 0;color:#6c7c91}
+.sendWordSection.submitted{background:#f0fbf3;border-color:#b8dac7}
+@media(max-width:530px){.sendFields{grid-template-columns:1fr}.sendWordSection{padding:13px}}
 #exampleActions{max-width:830px;margin:12px auto 0;gap:9px;justify-content:space-between;flex-wrap:wrap}
 #reference{max-width:830px;margin:auto}.example{font:16px/1.55 "Times New Roman",serif;color:#25334a}
 .example h1{font:700 20px Arial,sans-serif;text-align:center;color:#244d92;text-transform:uppercase}
@@ -116,7 +127,7 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 <div class="brand" aria-hidden="true">W</div>
 <div class="top-title"><input id="docName" maxlength="90" aria-label="Назва документа" value="Цифрова грамотність"><small id="saveStatus">Локальне збереження</small></div>
 <div class="top-actions">
-<button type="button" class="btn primary" id="saveFile">↓ Зберегти HTML</button>
+<button type="button" class="btn primary" id="saveFile">↓ Word (.docx)</button>
 <button type="button" class="btn" id="printFile">Друк / PDF</button>
 <button type="button" class="btn" id="reset">Початковий текст</button>
 </div></div></header>
@@ -239,6 +250,30 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 <div id="tasksTrack" role="progressbar" aria-valuemin="0" aria-valuemax="17" aria-valuenow="0" aria-label="Прогрес практичної роботи"><div id="tasksFill"></div></div>
 <ol id="taskItems"></ol>
 <div class="tasksActions"><button class="btn primary" type="button" id="tasksBack">Далі: Зразок оформлення →</button></div>
+<section class="sendWordSection" aria-label="Надсилання практичної роботи">
+<h3>Надіслати готову роботу</h3>
+<p>Вкажіть дані учня. Сайт додасть оформлений документ у форматі Word (.docx) до листа та передасть його вчителю через FormSubmit.</p>
+<form id="wordSendForm" method="POST" action="https://formsubmit.co/work.inform@chern12.ukr.education" enctype="multipart/form-data">
+<div class="sendFields">
+<label>Клас <select name="class" id="pupilClass" required><option value="">Оберіть клас</option><option value="9-А">9-А</option><option value="9-Б">9-Б</option></select></label>
+<label>Ім’я та прізвище <input name="student" id="pupilName" type="text" maxlength="70" placeholder="Прізвище Ім’я" autocomplete="name" required></label>
+</div>
+<input name="_subject" id="formSubject" type="hidden">
+<input name="_next" id="formNext" type="hidden">
+<input name="_template" type="hidden" value="table">
+<input name="progress" id="formProgress" type="hidden">
+<input name="description" id="formFeedback" type="hidden">
+<input name="attachment" id="wordAttachment" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden>
+<input id="submitReady" value="false" type="hidden">
+<div class="sendActions">
+<button type="button" class="btn primary" id="sendWord">✉ Надіслати роботу на пошту (.docx)</button>
+<button type="button" class="btn" id="saveWordTask">↓ Зберегти Word-файл</button>
+</div>
+<div id="submitError" role="alert" class="err"></div>
+<p class="sendNote">Адреса вчителя: <b>work.inform@chern12.ukr.education</b>. Ім’я, клас, прогрес і Word-файл передаються через FormSubmit. При першому використанні цієї поштової адреси сервіс може вимагати її підтвердження. Надсилання завершиться після підтвердження на сторінці сервісу.</p>
+</form>
+</section>
+<section id="submissionNotice" class="sendWordSection submitted" hidden><h3>Форму надіслано</h3><p>FormSubmit повернув на сторінку практичної роботи. Надходження листа слід перевірити у пошті вчителя. Якщо це перше надсилання, потрібно підтвердити адресу.</p></section>
 </section>
 <section id="outlinePanel" hidden><h2>Структура документа</h2><p>Переміщуйте заголовки разом із текстом розділів. Кнопки ↑ ↓ змінюють їх порядок.</p><div id="outlineList"></div></section>
 <section id="reviewPanel" hidden><h2>Коментарі та запропоновані виправлення</h2><div id="reviewItems"></div></section>
@@ -955,7 +990,7 @@ $("formulaForm").addEventListener("submit",e=>{e.preventDefault();const span=mak
 $("cancelFormula").addEventListener("click",()=>$("formulaDialog").close());
 $("showOutline").addEventListener("click",()=>{renderOutline();$("outlinePanel").hidden=false;$("outlinePanel").scrollIntoView({behavior:"smooth"});});
 $("modeEdit").addEventListener("click",()=>viewExample(false));$("modeExample").addEventListener("click",()=>viewExample(true));$("modeTasks").addEventListener("click",viewTasks);$("tasksBack").addEventListener("click",()=>viewExample(true));$("exampleBack").addEventListener("click",viewTasks);$("exampleNext").addEventListener("click",()=>viewExample(false));
-$("saveFile").addEventListener("click",saveHTML);$("printFile").addEventListener("click",()=>{viewExample(false);window.print();});
+$("saveFile").addEventListener("click",()=>window.wordSubmission.download());$("printFile").addEventListener("click",()=>{viewExample(false);window.print();});
 $("reset").addEventListener("click",reset);
 for(const id of ["docName","headerText","footerText"])$(id).addEventListener("input",persist);
 editor.addEventListener("input",()=>{remember();persist();});
@@ -985,4 +1020,5 @@ $("closeShare").addEventListener("click",()=>$("shareDialog").close());
 $("copyShare").addEventListener("click",copyShareLink);
 load();setAccessRole();renderReviewMarks();readShareFromURL();scheduleTasks();viewTasks();
 </script>
+<script src="./word-submit.js"></script>
 </body></html>
