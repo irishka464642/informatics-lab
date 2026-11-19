@@ -381,7 +381,7 @@ function renderFirstExample(){
  '<div class="question">Подивись, як змінюється результат:</div>'+
  '<div class="choices-mini"><button class="choice-mini" type="button" data-action="example-coins" data-value="20" aria-pressed="'+(coins===20)+'">🪙 20 монет'+(coins===20?' ✓':'')+'</button>'+
  '<button class="choice-mini" type="button" data-action="example-coins" data-value="35" aria-pressed="'+(coins===35)+'">🪙 35 монет'+(coins===35?' ✓':'')+'</button></div>'+
- '<div class="feedback ok"><strong>Результат: '+(ok?'⚔️ Меч куплено':'❌ Недостатньо монет')+'</strong>'+
+ '<div class="feedback '+(ok?'ok':'bad')+'"><strong>Результат: '+(ok?'✅ ⚔️ Меч куплено':'❌ Недостатньо монет')+'</strong>'+
  '<p>Перевірка '+coins+' &gt;= 30 — <strong>'+(ok?'ТАК':'НІ')+'</strong>. Виконується команда після <span class="glyph">'+branch+'</span>.</p></div>'+
  '<div class="action-row"><button type="button" class="action" data-action="next">Зрозуміло! До 2-ї місії →</button></div>'+
  '</div></section><aside class="panel">'+
