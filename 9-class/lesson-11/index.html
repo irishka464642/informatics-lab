@@ -439,7 +439,17 @@ function ensureIds(){const used=new Set();for(const b of editor.querySelectorAll
  used.add(b.dataset.bid);
 }}
 function selectionOk(){const s=window.getSelection();return !!(s&&s.rangeCount&&(editor===s.anchorNode||editor.contains(s.anchorNode)));}
-function remember(){if(!selectionOk())return;try{savedRange=window.getSelection().getRangeAt(0).cloneRange();}catch{}}
+function remember(){
+ if(!selectionOk())return;
+ try{savedRange=window.getSelection().getRangeAt(0).cloneRange();}catch{}
+ // Keep the style picker synchronized with the actual paragraph under the cursor.
+ // Otherwise selecting "Заголовок 1" again on another paragraph emits no change event.
+ const block=currentBlock();
+ if(block){
+  const actual=block.tagName==="H1"?"h1":block.tagName==="H2"?"h2":"p";
+  $("style").value=actual;
+ }
+}
 function restore(){editor.focus({preventScroll:true});if(!savedRange||!editor.contains(savedRange.commonAncestorContainer))return false;
  try{const s=window.getSelection();s.removeAllRanges();s.addRange(savedRange);return true;}catch{return false;}}
 function exec(cmd,val){restore();let ok=false;try{ok=document.execCommand(cmd,false,val??null);}catch{}remember();persist();return ok;}
@@ -1059,7 +1069,7 @@ $("saveFile").addEventListener("click",()=>window.wordSubmission.download());$("
 $("reset").addEventListener("click",reset);
 for(const id of ["docName","headerText","footerText"])$(id).addEventListener("input",persist);
 editor.addEventListener("input",()=>{remember();persist();});
-editor.addEventListener("mouseup",remember);editor.addEventListener("keyup",remember);
+editor.addEventListener("mouseup",remember);editor.addEventListener("keyup",remember);editor.addEventListener("click",remember);editor.addEventListener("focus",remember);
 editor.addEventListener("touchend",()=>setTimeout(remember,90));
 document.addEventListener("selectionchange",remember);
 editor.addEventListener("paste",e=>{e.preventDefault();insertText(e.clipboardData?.getData("text/plain")||"");});
