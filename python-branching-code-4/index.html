@@ -468,6 +468,10 @@ function scrollScene(){
  if(!el||!el.scrollIntoView)return;
  try{if(el.focus)el.focus({preventScroll:true});}catch(e){}
  var reduced=false;try{reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}
+ var sticky=$("studentBar");
+ if(sticky&&typeof sticky.getBoundingClientRect==="function"){
+  el.style.scrollMarginTop=(Math.ceil(sticky.getBoundingClientRect().height)+16)+"px";
+ }
  el.scrollIntoView({behavior:reduced?"auto":"smooth",block:"start"});
 }
 function sceneHTML(m){
@@ -568,27 +572,6 @@ function render(){
  $("app").innerHTML=isFinish?finishHTML():missionHTML();
  formatHeader();
 }
-function changeCode(text){
- if(state.complete[state.level])return;
- if(state.code[state.level]!==text){
-  state.code[state.level]=text;state.tests[state.level]=[];state.latestOutput="";
-  state.notice="";state.noticeKind="";store();render(); // rerender is normally not used for each keypress; see editor input below
- }
-}
-function insertAtCursor(el,text){
- var a=el.selectionStart,b=el.selectionEnd;
- el.value=el.value.slice(0,a)+text+el.value.slice(b);
- el.selectionStart=el.selectionEnd=a+text.length;el.focus();
- handleEditorUpdate(el.value);
-}
-function handleEditorUpdate(value){
- if(state.level>=4||state.complete[state.level])return;
- if(state.code[state.level]===value)return;
- state.code[state.level]=value;state.tests[state.level]=[];state.notice="";state.noticeKind="";store();
- // Avoid replacing the active textarea on every keystroke (important for typing).
- $("levels").innerHTML=MISSIONS.map((x,i)=>'<div class="pip '+(state.complete[i]?"done":state.level===i?"active":"")+(i===3?" bonus":"")+'">'+(state.complete[i]?"✓":i===3?"⭐ бонус":i+1)+'</div>').join("");
- var testButtons=document.querySelectorAll(".testbtn");testButtons.forEach(b=>{b.classList.remove("passed");b.disabled=false;b.textContent="▶ "+current().v+" = "+b.getAttribute("data-value")});
-}
 function interact(action,value){
  if(action==="hint"){if(!state.showHint)state.hints[state.level]++;state.showHint=!state.showHint;store();render();return;}
  if(action==="add-block"){addBlock(Number(value));return;}
@@ -625,11 +608,6 @@ document.addEventListener("input",ev=>{
 });
 document.addEventListener("change",ev=>{
  if(["first","surname","klass","group"].includes(ev.target.id)&&!state.locked){readProfile();alertSync("💾 Дані учня готові.",false);}
-});
-document.addEventListener("keydown",ev=>{
- if(ev.target.id==="editor"&&ev.key==="Tab"){
-  ev.preventDefault();insertAtCursor(ev.target,"    ");
- }
 });
 $("retry").addEventListener("click",()=>{
  if(!state.locked){ensureProfile();return;}
