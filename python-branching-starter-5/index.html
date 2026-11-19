@@ -93,6 +93,23 @@ pre{margin:0;white-space:pre-wrap;word-wrap:break-word;padding:15px;color:#e5eff
 .choice-mini{background:#283e5b;border:1px solid #819bb8;border-radius:12px;padding:12px 14px;color:white;font-weight:750}
 .codehint{color:#c3d5ed;font-size:13px;margin-top:7px}
 .checkpoint{border:1px solid #5c7594;border-radius:12px;padding:12px;background:#192d46;margin:10px 0}
+.student-bar{position:sticky;top:0;z-index:150;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;margin:12px 0 0;padding:12px 14px;border:1px solid #6586b0;border-radius:17px;background:#0b1828f2;box-shadow:0 10px 28px #0009;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.student-controls{display:flex;align-items:end;gap:8px;flex-wrap:wrap}
+.student-field{min-width:106px;max-width:170px;flex:1 1 120px;display:grid;gap:3px}
+.student-field.short{min-width:77px;max-width:114px;flex:0 1 110px}
+.student-field label{font-size:11px;font-weight:850;color:#b6d3f1}
+.student-field input,.student-field select{width:100%;height:38px;border:1px solid #728bb0;background:#172945;color:#f7fbff;border-radius:10px;padding:5px 9px;font:600 14px system-ui,-apple-system,sans-serif;min-width:0}
+.student-field input:focus-visible,.student-field select:focus-visible{outline:3px solid #81edc2;outline-offset:1px}
+.student-field input:disabled,.student-field select:disabled{color:#d8e9ff;opacity:.85;background:#22364e}
+.student-meter{display:flex;flex-direction:column;gap:5px;min-width:155px;max-width:210px}
+.student-meter strong{font-weight:950;color:#f9dd94;font-size:21px;line-height:1.1}
+.student-meter .meter-label{font-size:11px;color:#c4d6ee;font-weight:800}
+.student-meter .track{height:8px;width:100%;border-radius:10px;background:#344762;overflow:hidden}
+.student-meter .fill{height:100%;width:0%;background:linear-gradient(90deg,#48c8ac,#ffe28f);border-radius:10px;transition:width .22s}
+.sync-line{grid-column:1/-1;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px;color:#bdd0e5}
+.sync-line button{border:1px solid #6584aa;border-radius:9px;color:white;background:#24405d;padding:4px 9px}
+@media(max-width:820px){.student-bar{grid-template-columns:1fr}.student-meter{min-width:0;max-width:100%}.student-meter .meter-row{display:flex;align-items:center;justify-content:space-between;gap:15px}.student-field{flex:1 1 36%;max-width:none}.student-field.short{flex:1 1 18%;max-width:none}}
+@media(max-width:420px){.student-bar{padding:10px;gap:8px}.student-controls{gap:6px}.student-field{min-width:0}.student-field.short{min-width:0}.student-field input,.student-field select{height:35px;font-size:13px}.student-meter strong{font-size:18px}}
 @media(max-width:820px){.cols{grid-template-columns:1fr}.visual{min-height:205px}.visual .emoji{font-size:76px}.hero-inside{padding:23px}.panel-content{padding:22px}.progress{gap:5px}.pip{font-size:11px}}
 @media(max-width:420px){.shell{padding:13px 12px 40px}.brand-name{font-size:18px}.hero h1{font-size:29px}.pip{padding:9px 2px}.token{font-size:13px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
@@ -104,6 +121,7 @@ pre{margin:0;white-space:pre-wrap;word-wrap:break-word;padding:15px;color:#e5eff
   <div class="brand"><div class="logo" aria-hidden="true">🧭</div><div><div class="eyebrow">Інформатика • 7 клас</div><div class="brand-name">Академія рішень</div></div></div>
   <div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap"><span class="help-top">5 коротких рівнів · без поспіху</span><button id="restart" class="navbtn" type="button">↻ Почати спочатку</button></div>
 </header>
+<section class="student-bar" id="studentBar" aria-label="Дані учня і прогрес"><div class="student-controls"><div class="student-field"><label for="profileFirst">Ім’я</label><input id="profileFirst" maxlength="60" autocomplete="given-name" placeholder="Ім’я" required></div><div class="student-field"><label for="profileSurname">Прізвище</label><input id="profileSurname" maxlength="70" autocomplete="family-name" placeholder="Прізвище" required></div><div class="student-field short"><label for="profileClass">Клас</label><select id="profileClass" required><option value="">Оберіть</option><option value="7-А">7-А</option><option value="7-Б">7-Б</option><option value="7-В">7-В</option></select></div><div class="student-field short"><label for="profileGroup">Група</label><select id="profileGroup" required><option value="">Оберіть</option><option value="1">1</option><option value="2">2</option></select></div></div><div class="student-meter"><div class="meter-row"><span class="meter-label">✅ Правильні відповіді</span><strong id="correctCounter">0 / 9</strong></div><div class="track" role="progressbar" id="answerProgress" aria-valuemin="0" aria-valuemax="9" aria-valuenow="0" aria-label="Правильні відповіді"><div class="fill" id="answerFill"></div></div></div><div class="sync-line"><span id="syncStatus" role="status" aria-live="polite">💾 Укажи дані учня. Результати надсилатимуться після «Продовжити».</span><button type="button" id="retrySync" hidden>↻ Повторити</button></div></section>
 <section class="hero" aria-label="Прогрес навчання">
   <div class="hero-inside">
     <div class="eyebrow" id="episode">ПЕРШИЙ КРОК У PYTHON</div>
@@ -119,6 +137,9 @@ pre{margin:0;white-space:pre-wrap;word-wrap:break-word;padding:15px;color:#e5eff
 (function(){
 "use strict";
 var STORAGE_KEY="decision-academy-5-v1";
+var RESULTS_WEB_APP="https://script.google.com/macros/s/AKfycbwt-DCRbrBcXjx8hE3g1bT8f0HtN-3Y8CKvfabe8s7jVKVTHeYhdTx2MYFHF1spHfaqMw/exec";
+var GAME_VERSION="decision-academy-5-v3";
+var TOTAL_ANSWERS=9;
 var LESSONS=[
  {title:"Умова — це запитання",sub:"Починаємо без коду: вчимось обирати «так» або «ні».",caption:"КРОК 1 · ТАК ЧИ НІ"},
  {title:"Два шляхи: if і else",sub:"Якщо умова істинна — перша дія. Інакше — друга.",caption:"КРОК 2 · ВИБІР ШЛЯХУ"},
@@ -126,12 +147,16 @@ var LESSONS=[
  {title:"Перевіряємо межу",sub:"Чому 10 — це не те саме, що 9? Досліди три числа.",caption:"КРОК 4 · ТЕСТУВАННЯ"},
  {title:"Збери власне розгалуження",sub:"Склади чотири рядки й запусти програму двічі.",caption:"КРОК 5 · МІНІПРОЄКТ"}
 ];
-function fresh(){return {level:0,step:0,passed:false,slots:["",""],lines:[],assembled:false,tests:[],exampleCoins:20,hint:false,notice:"",noticeKind:""};}
+function fresh(){return {level:0,step:0,passed:false,slots:["",""],lines:[],assembled:false,tests:[],exampleCoins:20,hint:false,notice:"",noticeKind:"",
+ student:{first:"",surname:"",klass:"",group:""},sessionId:"",startedAt:0,locked:false,
+ mistakes:[0,0,0,0,0],hintsUsed:0,snapshots:{},pending:{},lastSaved:0,lastSent:0,sendError:""};}
 function load(){
  try{
   var v=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null");
   if(v&&Number.isInteger(v.level)&&v.level>=0&&v.level<=5&&Number.isInteger(v.step)&&v.step>=0&&v.step<=3&&Array.isArray(v.slots)&&Array.isArray(v.lines)&&Array.isArray(v.tests)){
-   return Object.assign(fresh(),v,{lines:v.lines.filter(function(id){return ["a","b","c","d"].includes(id);})});
+   return Object.assign(fresh(),v,{lines:v.lines.filter(function(id){return ["a","b","c","d"].includes(id);}),
+ student:Object.assign(fresh().student,v.student||{}),mistakes:Array.isArray(v.mistakes)?v.mistakes.slice(0,5):[0,0,0,0,0],
+ snapshots:v.snapshots&&typeof v.snapshots==="object"?v.snapshots:{},pending:v.pending&&typeof v.pending==="object"?v.pending:{} });
   }
  }catch(e){}
  return fresh();
@@ -141,8 +166,121 @@ var app=document.getElementById("app");
 function store(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(e){}}
 function safe(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function finishPart(){state.passed=true;state.hint=false;state.notice="";state.noticeKind="";store();render();}
-function fail(msg){state.notice=msg;state.noticeKind="bad";store();render();}
+function fail(msg){state.mistakes[state.level]=(state.mistakes[state.level]||0)+1;state.notice=msg;state.noticeKind="bad";store();render();}
+
+function scoreByLevel(){
+ var l=state.level,step=state.step,yes=state.passed?1:0;
+ return [
+  l>0?2:l===0?(step===2?2:step+yes):0,
+  l>1?2:l===1?step+yes:0,
+  l>2?1:l===2?yes:0,
+  l>3?3:l===3?step+yes:0,
+  l>4?1:l===4&&state.assembled?1:0
+ ];
+}
+function correctAnswers(){return scoreByLevel().reduce(function(a,b){return a+b;},0);}
+function finishedLevels(){
+ var l=state.level; 
+ return l===5?5:l===0?(state.step===2?1:0):l===1?(state.step===1&&state.passed?2:1):
+ l===2?(state.passed?3:2):l===3?(state.step===2&&state.passed?4:3):
+ l===4?(state.passed?5:4):0;
+}
+function updateStudentHeader(){
+ var st=state.student;
+ [["profileFirst",st.first],["profileSurname",st.surname],["profileClass",st.klass],["profileGroup",st.group]].forEach(function(p){
+  var el=document.getElementById(p[0]);if(el.value!==p[1])el.value=p[1]||"";el.disabled=!!state.locked;
+ });
+ var count=correctAnswers();
+ document.getElementById("correctCounter").textContent=count+" / "+TOTAL_ANSWERS;
+ document.getElementById("answerProgress").setAttribute("aria-valuenow",String(count));
+ document.getElementById("answerFill").style.width=(count/TOTAL_ANSWERS*100)+"%";
+}
+function profileFromFields(){
+ if(state.locked)return true;
+ var first=document.getElementById("profileFirst").value.trim().replace(/\s+/g," ");
+ var surname=document.getElementById("profileSurname").value.trim().replace(/\s+/g," ");
+ var klass=document.getElementById("profileClass").value;
+ var group=document.getElementById("profileGroup").value;
+ state.student={first:first,surname:surname,klass:klass,group:group};
+ store();
+ return !!(first.length>=2&&surname.length>=2&&["7-А","7-Б","7-В"].includes(klass)&&["1","2"].includes(group));
+}
+function reportData(n){
+ var score=correctAnswers(),counts=scoreByLevel();
+ var complete=finishedLevels();
+ var duration=Math.max(0,Math.round((Date.now()-(state.startedAt||Date.now()))/6000)/10);
+ var levels=LESSONS.map(function(m,i){
+  if(!counts[i]&&i>=complete)return null;
+  var tests=i===4?state.tests.map(function(x){return [x];}):[];
+  return {level:i+1,missionId:i+1,title:m.title,completed:i<complete,
+   checks:counts[i],failed:Number(state.mistakes[i]||0),hints:0,
+   distinctDatasets:tests.length,testRuns:tests.length,invalidRuns:0,selections:0,
+   durationSeconds:0,usedInputs:tests};
+ }).filter(Boolean);
+ var runs=state.tests.map(function(x,i){return {
+  level:5,missionId:5,runIndex:i+1,inputs:[x],codeValid:true,executed:true,
+  output:[x>0?"Робот рухається":"Робот зупинився"],scenario:x>0?"move":"stop",
+  secondsFromStart:Math.round((Date.now()-(state.startedAt||Date.now()))/1000)
+ };});
+ return {submissionId:state.sessionId+"-L"+String(n).padStart(2,"0"),version:GAME_VERSION,
+  student:{klass:state.student.klass,group:state.student.group,surname:state.student.surname,first:state.student.first},
+  summary:{completed:complete,total:5,checks:score,
+   failedChecks:state.mistakes.reduce(function(a,b){return a+Number(b||0);},0),hints:state.hintsUsed,
+   durationMinutes:duration,distinctDatasets:state.tests.length,testRuns:state.tests.length},
+  levels:levels,runs:runs
+ };
+}
+var sending=false;
+function showSyncStatus(message,failed){
+ var el=document.getElementById("syncStatus");
+ el.textContent=message;el.style.color=failed?"#ffbbb6":"#bdd0e5";
+ document.getElementById("retrySync").hidden=!failed;
+}
+function saveCheckpoint(){
+ if(!profileFromFields()){
+  showSyncStatus("⚠️ Уведи ім’я, прізвище, вибери клас і групу, щоб зберегти результат.",true);
+  var invalid=["profileFirst","profileSurname","profileClass","profileGroup"].map(function(id){return document.getElementById(id);})
+   .find(function(el){return !el.value||((el.id==="profileFirst"||el.id==="profileSurname")&&el.value.trim().length<2);});
+  if(invalid)invalid.focus();
+  return false;
+ }
+ if(!state.sessionId)state.sessionId="ad5-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,10);
+ if(!state.startedAt)state.startedAt=Date.now();
+ state.locked=true;
+ var stage=correctAnswers();
+ if(stage<=0)return false;
+ if(!state.snapshots[stage])state.snapshots[stage]=reportData(stage);
+ state.pending[stage]=true;state.lastSaved=Math.max(state.lastSaved||0,stage);
+ store();updateStudentHeader();
+ drainQueue();
+ return true;
+}
+async function drainQueue(){
+ if(sending||!state.locked)return;
+ sending=true;
+ try{
+  var stages=Object.keys(state.pending).filter(function(n){return state.pending[n];}).map(Number).sort(function(a,b){return a-b;});
+  for(var i=0;i<stages.length;i++){
+   var n=stages[i],report=state.snapshots[n];
+   if(!report)continue;
+   showSyncStatus("⏳ Надсилаємо результат "+n+"/"+TOTAL_ANSWERS+" до шкільного журналу…",false);
+   try{
+    await fetch(RESULTS_WEB_APP,{method:"POST",mode:"no-cors",cache:"no-store",redirect:"follow",
+     headers:{"Content-Type":"text/plain;charset=UTF-8"},body:JSON.stringify(report),keepalive:true});
+    delete state.pending[n];state.lastSent=Math.max(state.lastSent||0,n);
+    state.sendError="";store();
+    showSyncStatus("📤 Прогрес "+n+"/"+TOTAL_ANSWERS+" надіслано. Запис перевіряє вчитель у таблиці.",false);
+   }catch(err){
+    state.sendError="Не вдалося надіслати. Перевір мережу та натисни «Повторити».";
+    store();showSyncStatus("⚠️ "+state.sendError,true);
+    break; // черга не стирається: можна повторити пізніше
+   }
+  }
+ }finally{sending=false;}
+}
 function next(){
+ if(!state.passed&&!(state.level===0&&state.step===2))return;
+ if(!saveCheckpoint())return;
  if(state.level===0&&state.step===2){
   state.level=1;state.step=0;state.passed=false;state.slots=["",""];state.lines=[];state.assembled=false;state.tests=[];
  }else{
@@ -320,10 +458,11 @@ function render(){
  else if(state.level===2)app.innerHTML=renderCodeLesson();
  else if(state.level===4)app.innerHTML=renderBuilder();
  else app.innerHTML=renderSimple();
+ updateStudentHeader();
 }
 function handle(action,value,index){
  if(action==="restart"){if(confirm("Почати заново? Поточний прогрес у цьому браузері буде очищено.")){state=fresh();store();render();}return;}
- if(action==="hint"){state.hint=!state.hint;store();render();return;}
+ if(action==="hint"){if(!state.hint)state.hintsUsed++;state.hint=!state.hint;store();render();return;}
  if(action==="next"){next();return;}
  if(state.level===0&&state.step===2&&action==="example-coins"){
   state.exampleCoins=value==="35"?35:20;store();render();return;
@@ -388,7 +527,19 @@ document.addEventListener("click",function(event){
  handle(target.getAttribute("data-action"),target.getAttribute("data-value"),target.getAttribute("data-index"));
 });
 document.getElementById("restart").addEventListener("click",function(){handle("restart");});
+["profileFirst","profileSurname","profileClass","profileGroup"].forEach(function(id){
+ var el=document.getElementById(id);
+ el.addEventListener("input",function(){if(!state.locked){profileFromFields();showSyncStatus("💾 Дані учня готові до збереження після «Продовжити».",false);}});
+ el.addEventListener("change",function(){if(!state.locked){profileFromFields();showSyncStatus("💾 Дані учня готові до збереження після «Продовжити».",false);}});
+});
+document.getElementById("retrySync").addEventListener("click",function(){
+ if(!state.locked){profileFromFields();updateStudentHeader();return;}
+ if(!Object.keys(state.pending).length&&state.lastSaved){state.pending[state.lastSaved]=true;store();}
+ drainQueue();
+});
+window.addEventListener("online",drainQueue);
 render();
+if(Object.keys(state.pending).length)drainQueue();
 })();
 </script>
 </body>
