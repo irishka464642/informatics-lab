@@ -86,6 +86,18 @@ textarea:focus-visible{outline:2px solid #56bca6;outline-offset:-2px}
 .report{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
 .report>div{background:#233955;border:1px solid #6e83a7;border-radius:15px;padding:19px}
 .report strong{font-size:26px;color:#ffe099}.report span{display:block;font-size:12px;color:#ccdcef}
+.bonus-gate{border:2px solid #d9aa52;border-radius:23px;background:linear-gradient(125deg,#3d2e42,#313753 54%,#233c47);box-shadow:0 20px 65px #0007,0 0 30px #e4b25119;text-align:center;padding:26px 22px 28px;scroll-margin-top:180px}
+.bonus-gate.ready{border-color:#6ee4bb;background:linear-gradient(120deg,#153e3d,#293b4e 60%,#43384d);box-shadow:0 0 34px #49d9b52b}
+.bonus-gate h3{font-size:clamp(25px,4.2vw,41px);line-height:1.13;letter-spacing:-.035em;text-transform:uppercase;color:#ffe0a4;margin:10px auto;max-width:850px}
+.bonus-gate.ready h3{color:#a4ffdb}
+.bonus-gate p{color:#e0ecfa;font-size:clamp(15px,2vw,19px);margin:10px auto;max-width:800px}
+.bonus-gate .gate-count{font-weight:950;font-size:clamp(26px,4.8vw,44px);color:#fff4c8;line-height:1.25}
+.bonus-gate .gate-choices{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:16px 0 19px}
+.bonus-gate .gate-chip{display:inline-block;padding:8px 13px;border-radius:11px;border:1px solid #8b91b4;background:#303751;color:#e8e9fa;font-weight:850;font-size:14px}
+.bonus-gate .gate-chip.ok{border-color:#62d3ac;background:#195b4c;color:#e0fff4}
+.bonus-gate .actions{justify-content:center;margin-top:17px}
+.bonus-gate .big-cta{font-size:clamp(17px,2.5vw,24px);font-weight:950;padding:15px 24px;min-height:60px}
+.bonus-gate .big-cta:disabled{opacity:.65;background:#354156;color:#e4e9f0;border:1px dashed #9ba6bf}
 .bonusgold{border:1px solid #e3b94f;background:#4c3c22;border-radius:15px;padding:16px;color:#ffe9b2}
 .quest-stack{display:grid;gap:17px;margin-top:18px}
 .quest-panel{border:1px solid #425d81;border-radius:21px;overflow:hidden;background:linear-gradient(150deg,#162841,#111d31);box-shadow:0 12px 38px #0003}
@@ -530,9 +542,16 @@ function missionHTML(){
  var choice=m.values.map(v=>'<button type="button" class="test-choice '+(chosen===v?"active ":"")+(state.tests[i].includes(v)?"passed":"")+
  '" aria-pressed="'+(chosen===v)+'" data-action="select-test" data-value="'+v+'">'+(state.tests[i].includes(v)?"✓ ":"")+m.v+" = "+v+'</button>').join("");
  var help=state.showHint?'<div class="hintbox"><strong>💡 Підказка</strong><p>'+m.hint+'</p></div>':"";
- var actions=i===2&&done?
- '<div class="actions"><button type="button" class="btn primary" data-action="bonus">⭐ Спробувати бонус</button><button type="button" class="btn secondary" data-action="end">🏁 Завершити основну частину (3/3)</button></div>':
- done?'<div class="actions"><button type="button" class="btn primary" data-action="next">'+(i===3?"🏆 Завершити бонус":"💾 Зберегти та перейти →")+'</button></div>':"";
+ var actions=done?'<div class="actions"><button type="button" class="btn primary" data-action="next">'+(i===3?"🏆 Завершити бонус":"💾 Зберегти та перейти →")+'</button></div>':"";
+ var gate=i===2?'<section class="bonus-gate '+(done?'ready':'')+'" id="bonusGate" aria-label="Умови відкриття бонусного рівня">'+
+ '<div class="eyebrow">⭐ БОНУСНИЙ РІВЕНЬ</div>'+
+ '<h3>'+(done?'🎉 БОНУС ВІДКРИТО!':'🔒 ЩОБ ВІДКРИТИ БОНУС — ПЕРЕВІР УСІ 4 ТЕСТОВІ ЗНАЧЕННЯ!')+'</h3>'+
+ '<div class="gate-count">Перевірено: '+state.tests[i].length+' / '+m.values.length+'</div>'+
+ '<div class="gate-choices">'+m.values.map(function(n){return '<span class="gate-chip '+(state.tests[i].includes(n)?'ok':'')+'">'+(state.tests[i].includes(n)?'✓ ':'○ ')+'temp = '+n+' °C</span>';}).join('')+'</div>'+
+ '<p>'+(done?'Усі перевірки виконано. Можеш переходити до складнішої місії з кількома рядками коду.':'Перевір код по черзі на кожному числі вище. Після четвертої успішної перевірки кнопка стане доступною.')+'</p>'+
+ '<div class="actions"><button type="button" class="btn primary big-cta" data-action="bonus" '+(done?'':'disabled')+'>⭐ ПЕРЕЙТИ ДО БОНУСУ →</button>'+
+ (done?'<button type="button" class="btn secondary" data-action="end">🏁 Завершити основну частину (3/3)</button>':'')+
+ '</div></section>':"";
  return '<div class="quest-stack">'+
  '<section class="quest-panel"><div class="quest-pad">'+
  '<div class="kicker">'+m.tag+'</div><h2>'+m.title+'</h2><p class="lead">'+m.subtitle+'</p>'+
@@ -559,7 +578,8 @@ function missionHTML(){
  '<span class="micro">Перевірено '+state.tests[i].length+' з '+m.values.length+'</span></div>'+
  '</div></section>'+
  sceneHTML(m)+
- (done?'<section class="quest-panel"><div class="quest-pad"><div class="feedback good"><strong>✅ Усі тести пройдено!</strong><p>Ти побачив, як Python обирає різні гілки залежно від умов.</p></div>'+actions+'</div></section>':"")+
+ (done&&i!==2?'<section class="quest-panel"><div class="quest-pad"><div class="feedback good"><strong>✅ Усі тести пройдено!</strong><p>Ти побачив, як Python обирає різні гілки залежно від умов.</p></div>'+actions+'</div></section>':"")+
+ gate+
  '</div>';
 }
 
