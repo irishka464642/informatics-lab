@@ -181,7 +181,7 @@ function scoreByLevel(){
 function correctAnswers(){return scoreByLevel().reduce(function(a,b){return a+b;},0);}
 function finishedLevels(){
  var l=state.level; 
- return l===5?5:l===0?(state.step===2?1:0):l===1?(state.step===1&&state.passed?2:1):
+ return l===5?5:l===0?(state.step===2||(state.step===1&&state.passed)?1:0):l===1?(state.step===1&&state.passed?2:1):
  l===2?(state.passed?3:2):l===3?(state.step===2&&state.passed?4:3):
  l===4?(state.passed?5:4):0;
 }
@@ -250,7 +250,8 @@ function saveCheckpoint(){
  var stage=correctAnswers();
  if(stage<=0)return false;
  if(!state.snapshots[stage])state.snapshots[stage]=reportData(stage);
- state.pending[stage]=true;state.lastSaved=Math.max(state.lastSaved||0,stage);
+ if(stage>(state.lastSent||0)||state.pending[stage])state.pending[stage]=true;
+ state.lastSaved=Math.max(state.lastSaved||0,stage);
  store();updateStudentHeader();
  drainQueue();
  return true;
