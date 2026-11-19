@@ -466,9 +466,13 @@ function remember(){
 }
 function restore(){
  if(!savedRange||!editor.contains(savedRange.commonAncestorContainer))return false;
+ // Snapshot before focus: a mobile browser may fire focus/selectionchange
+ // and replace savedRange when the keyboard or formatting controls appear.
+ const target=savedRange.cloneRange();
  try{
   editor.focus({preventScroll:true});
-  const s=window.getSelection();s.removeAllRanges();s.addRange(savedRange.cloneRange());
+  const s=window.getSelection();s.removeAllRanges();s.addRange(target);
+  savedRange=target.cloneRange();
   return selectionOk();
  }catch{return false;}
 }
