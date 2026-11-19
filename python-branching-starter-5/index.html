@@ -53,6 +53,14 @@ h2{font-size:clamp(24px,3.2vw,31px);letter-spacing:-.045em;margin:7px 0 10px;lin
 .feedback{padding:14px 16px;border-radius:13px;margin-top:16px;border:1px solid #567398;background:#22334f;font-size:15px}
 .feedback.ok{border-color:#48c8a2;background:#154e47;color:#e2fff4}
 .feedback.bad{border-color:#e59b9b;background:#4b2835;color:#fff0ee}
+.test-results{border-color:#557391;background:#182b41;color:#e7f2ff}
+.run-results{display:grid;gap:9px;margin-top:10px}
+.run-result{display:block;padding:11px 13px;border-radius:11px;line-height:1.5;font-weight:700}
+.run-result.move{border:1px solid #49c6a3;background:#123f38;color:#b7ffe4}
+.run-result.stop{border:1px solid #e18189;background:#462731;color:#ffd1d4}
+.run-result .outcome{font-weight:900}
+.run-result.move .outcome{color:#84f5ce}
+.run-result.stop .outcome{color:#ff9fa8}
 .feedback p{margin:4px 0 0}
 .small{color:var(--muted);font-size:13px}
 .visual{min-height:285px;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:24px 21px;background:radial-gradient(circle at center 25%,#35577c 0%,#17233c 50%,#111b2f 85%);position:relative;isolation:isolate}
@@ -426,7 +434,11 @@ function renderBuilder(){
   status='<div class="feedback ok"><strong>✅ Правильне розгалуження!</strong><p>Тепер перевір обидва можливі варіанти виконання програми.</p></div>'+
    '<div class="lesson"><h3>Запусти з двома значеннями</h3><p><span class="glyph">hp = 1</span> — робот має енергію, виконується if.<br><span class="glyph">hp = 0</span> — енергії немає, виконується else.</p>'+
    '<div class="choices-mini"><button class="choice-mini" data-action="run" data-value="1"'+(tested.includes(1)?' disabled':'')+'>▶ Запустити: hp = 1 '+(tested.includes(1)?"✓":"")+'</button><button class="choice-mini" data-action="run" data-value="0"'+(tested.includes(0)?' disabled':'')+'>▶ Запустити: hp = 0 '+(tested.includes(0)?"✓":"")+'</button></div>'+
-   (tested.length?'<div class="feedback ok">Перевірено: '+tested.map(function(n){return 'hp = '+n+' → '+(n?'Робот рухається':'Робот зупинився');}).join('; ')+'</div>':'')+
+   (tested.length?'<div class="feedback test-results"><strong>Перевірено:</strong><div class="run-results">'+
+      tested.map(function(n){
+       return '<div class="run-result '+(n?'move':'stop')+'">hp = '+n+' → <span class="outcome">'+
+        (n?'Робот рухається':'Робот зупинився')+'</span></div>';
+      }).join('')+'</div></div>':'')+
    '</div>';
  }else status=noticeHTML()+'<div class="action-row"><button class="action" data-action="check-lines"'+(state.lines.length!==4?' disabled':'')+'>Перевірити 4 рядки</button><button class="action secondary" data-action="undo"'+(!state.lines.length?' disabled':'')+'>↶ Прибрати останній</button><button class="action secondary" data-action="clear-lines">Очистити</button></div>';
  return '<div class="cols"><section class="panel"><div class="panel-content"><div class="kicker">ОСТАННЯ МІСІЯ · ЧОТИРИ РЯДКИ</div><h2>Оживи робота 🤖</h2><p class="lead">Якщо в робота є енергія (<span class="glyph">hp &gt; 0</span>), він рухається. Інакше — зупиняється.</p>'+
