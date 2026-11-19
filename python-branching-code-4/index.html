@@ -123,6 +123,17 @@ textarea:focus-visible{outline:2px solid #56bca6;outline-offset:-2px}
 .game-scene[data-phase="positive"] .world-emoji,.game-scene[data-phase="normal"] .world-emoji{animation:world-success .85s both}
 .game-scene[data-phase="negative"] .world-emoji,.game-scene[data-phase="error"] .world-emoji{animation:world-shake .55s both}
 .game-scene[data-phase="negative"]{border-color:#d58092}
+/* Тематичне оформлення сцен: скарбниця, двері, станція, магазин */
+.game-scene[data-kind="0"] .scene-world{background:radial-gradient(ellipse at 50% 32%,#806330 0%,#35416b 53%,#15223a 100%)}
+.game-scene[data-kind="1"] .scene-world{background:radial-gradient(ellipse at 50% 30%,#396787 0%,#243a69 58%,#151e39 100%)}
+.game-scene[data-kind="2"] .scene-world{background:radial-gradient(ellipse at 50% 30%,#485f84 0%,#1b3854 55%,#16213c 100%)}
+.game-scene[data-kind="3"] .scene-world{background:radial-gradient(ellipse at 50% 30%,#795b4e 0%,#394069 52%,#1b203c 100%)}
+.game-scene[data-phase="positive"] .scene-world:after,
+.game-scene[data-phase="normal"] .scene-world:after{content:"✦ ✧ ✦";position:absolute;top:24px;left:15%;right:15%;z-index:0;color:#ffecad;font-size:26px;letter-spacing:2.3em;animation:world-success 1s both}
+.game-scene[data-phase="negative"] .scene-world:after{content:"●";position:absolute;top:18px;right:18px;color:#ff929f;font-size:25px;filter:drop-shadow(0 0 14px #f35e82)}
+.game-scene[data-kind="2"][data-phase="negative"] .scene-world{background:radial-gradient(ellipse at 50% 32%,#374b7e 0%,#1c3159 55%,#121c35 100%)}
+.game-scene[data-kind="2"][data-phase="normal"] .scene-world{background:radial-gradient(ellipse at 50% 32%,#356c63 0%,#204651 55%,#111e32 100%)}
+
 .game-scene[data-phase="positive"]{border-color:#4dcdab}
 .scene-details{padding:16px 18px;background:#111f33}
 .scene-meter{height:10px;border-radius:99px;overflow:hidden;background:#374d69;margin:9px 0 13px}
