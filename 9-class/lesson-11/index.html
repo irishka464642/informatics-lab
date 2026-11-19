@@ -63,6 +63,7 @@ header,.ribbon{background:#fff}.ribbon{position:sticky;top:0;z-index:25;box-shad
 .taskRow.done .taskMark{background:#377b5e;border-color:#377b5e;color:white}
 .taskInfo strong{font-size:14px;color:#223e66;display:block}.taskInfo small{font-size:12px;color:#6d7d97;line-height:1.45;display:block;margin-top:3px}
 .tasksActions{display:flex;justify-content:flex-end;margin-top:18px}
+#exampleActions{max-width:830px;margin:12px auto 0;gap:9px;justify-content:space-between;flex-wrap:wrap}
 #reference{max-width:830px;margin:auto}.example{font:16px/1.55 "Times New Roman",serif;color:#25334a}
 .example h1{font:700 20px Arial,sans-serif;text-align:center;color:#244d92;text-transform:uppercase}
 .example h2{font:bold 17px Arial,sans-serif;color:#244d92;margin-top:20px}
@@ -201,10 +202,10 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 </div></div>
 <main class="main">
 <div class="modebar">
-<div class="seg"><button type="button" class="active" id="modeEdit">Мій документ</button><button type="button" id="modeExample">Зразок оформлення</button><button type="button" id="modeTasks">Завдання <span id="taskBadge">0/17</span></button></div>
-<small>Готовий текст уже додано. Форматуйте його за зразком.</small>
+<div class="seg"><button type="button" class="active" id="modeTasks">1. Завдання <span id="taskBadge">0/17</span></button><button type="button" id="modeExample">2. Зразок оформлення</button><button type="button" id="modeEdit">3. Мій документ</button></div>
+<small>Порядок роботи: завдання → зразок → оформлення готового тексту.</small>
 </div>
-<article id="document" class="paper" aria-label="Текстовий документ">
+<article id="document" class="paper" aria-label="Текстовий документ" hidden>
 <input class="headfoot topline" id="headerText" aria-label="Колонтитул зверху" placeholder="Верхній колонтитул">
 <h1 id="docTitle">Цифрова грамотність</h1>
 <nav id="toc" hidden aria-label="Автоматичний зміст"></nav>
@@ -230,13 +231,14 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 <div class="two"><p style="text-indent:0">Будьте уважними до особистих даних.</p><p style="text-indent:0">Регулярно перевіряйте налаштування приватності.</p></div>
 <div style="border-top:1px solid #d4deef;font:12px Arial;color:#657895;padding-top:7px;text-align:center">Практична робота № 3</div>
 </article>
-<section id="tasksPage" hidden>
+<div id="exampleActions" class="tasksActions" hidden><button type="button" class="btn" id="exampleBack">← До завдань</button><button type="button" class="btn primary" id="exampleNext">Далі: Мій документ →</button></div>
+<section id="tasksPage">
 <h2>Завдання практичної роботи</h2>
 <p class="tasksIntro">Оформіть готовий документ за зразком. Пункти зараховуються автоматично лише тоді, коли <b>потрібний фрагмент</b> оформлено правильно. У разі скасування форматування прогрес зменшиться.</p>
 <div class="tasksStats"><span id="tasksCount" role="status" aria-live="polite">Виконано 0 із 17</span><span id="tasksPercent">0 %</span></div>
 <div id="tasksTrack" role="progressbar" aria-valuemin="0" aria-valuemax="17" aria-valuenow="0" aria-label="Прогрес практичної роботи"><div id="tasksFill"></div></div>
 <ol id="taskItems"></ol>
-<div class="tasksActions"><button class="btn primary" type="button" id="tasksBack">Повернутися до документа</button></div>
+<div class="tasksActions"><button class="btn primary" type="button" id="tasksBack">Далі: Зразок оформлення →</button></div>
 </section>
 <section id="outlinePanel" hidden><h2>Структура документа</h2><p>Переміщуйте заголовки разом із текстом розділів. Кнопки ↑ ↓ змінюють їх порядок.</p><div id="outlineList"></div></section>
 <section id="reviewPanel" hidden><h2>Коментарі та запропоновані виправлення</h2><div id="reviewItems"></div></section>
@@ -441,12 +443,12 @@ function load(){
 }
 function applyLayout(){editor.classList.toggle("columns2",columns===2);$("document").classList.toggle("landscape",orientation==="landscape");}
 function viewExample(example){
- $("tasksPage").hidden=true;$("reference").hidden=!example;$("document").hidden=example;
+ $("tasksPage").hidden=true;$("reference").hidden=!example;$("document").hidden=example;$("exampleActions").hidden=!example;
  $("modeEdit").classList.toggle("active",!example);$("modeExample").classList.toggle("active",example);$("modeTasks").classList.remove("active");
  $("outlinePanel").hidden=true;
 }
 function viewTasks(){
- $("document").hidden=true;$("reference").hidden=true;$("tasksPage").hidden=false;$("outlinePanel").hidden=true;$("reviewPanel").hidden=true;
+ $("document").hidden=true;$("reference").hidden=true;$("tasksPage").hidden=false;$("exampleActions").hidden=true;$("outlinePanel").hidden=true;$("reviewPanel").hidden=true;
  $("modeEdit").classList.remove("active");$("modeExample").classList.remove("active");$("modeTasks").classList.add("active");renderTasks();
 }
 function switchTab(name){
@@ -913,7 +915,7 @@ function reset(){
  editor.innerHTML=safeHTML(DRAFT);$("docName").value="Цифрова грамотність";$("headerText").value="";$("footerText").value="";
  tocActive=false;columns=1;orientation="portrait";$("columns").value="1";$("orientation").value="portrait";
  documentId="doc"+Math.random().toString(36).slice(2,12);accessRole="owner";comments=[];suggestions=[];
- applyLayout();setAccessRole();persist();viewExample(false);toast("Початковий текст відновлено.");
+ applyLayout();setAccessRole();persist();viewTasks();toast("Початковий текст відновлено.");
 }
 for(const b of document.querySelectorAll(".tab"))b.addEventListener("click",()=>switchTab(b.dataset.tab));
 for(const b of document.querySelectorAll("[data-cmd]")){
@@ -952,7 +954,7 @@ $("insertFormula").addEventListener("click",()=>{$("formulaDialog").showModal();
 $("formulaForm").addEventListener("submit",e=>{e.preventDefault();const span=make("span",$("formulaText").value);span.className="formula";insertNode(span);$("formulaDialog").close();});
 $("cancelFormula").addEventListener("click",()=>$("formulaDialog").close());
 $("showOutline").addEventListener("click",()=>{renderOutline();$("outlinePanel").hidden=false;$("outlinePanel").scrollIntoView({behavior:"smooth"});});
-$("modeEdit").addEventListener("click",()=>viewExample(false));$("modeExample").addEventListener("click",()=>viewExample(true));$("modeTasks").addEventListener("click",viewTasks);$("tasksBack").addEventListener("click",()=>viewExample(false));
+$("modeEdit").addEventListener("click",()=>viewExample(false));$("modeExample").addEventListener("click",()=>viewExample(true));$("modeTasks").addEventListener("click",viewTasks);$("tasksBack").addEventListener("click",()=>viewExample(true));$("exampleBack").addEventListener("click",viewTasks);$("exampleNext").addEventListener("click",()=>viewExample(false));
 $("saveFile").addEventListener("click",saveHTML);$("printFile").addEventListener("click",()=>{viewExample(false);window.print();});
 $("reset").addEventListener("click",reset);
 for(const id of ["docName","headerText","footerText"])$(id).addEventListener("input",persist);
@@ -981,6 +983,6 @@ $("shareReviewer").addEventListener("click",()=>createShare("review"));
 $("sendReview").addEventListener("click",returnReview);
 $("closeShare").addEventListener("click",()=>$("shareDialog").close());
 $("copyShare").addEventListener("click",copyShareLink);
-load();setAccessRole();renderReviewMarks();readShareFromURL();scheduleTasks();
+load();setAccessRole();renderReviewMarks();readShareFromURL();scheduleTasks();viewTasks();
 </script>
 </body></html>
