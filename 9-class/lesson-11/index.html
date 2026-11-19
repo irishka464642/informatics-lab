@@ -75,6 +75,21 @@ header,.ribbon{background:#fff}.ribbon{position:sticky;top:0;z-index:25;box-shad
 .sendWordSection.submitted{background:#f0fbf3;border-color:#b8dac7}
 @media(max-width:530px){.sendFields{grid-template-columns:1fr}.sendWordSection{padding:13px}}
 #exampleActions{max-width:830px;margin:12px auto 0;gap:9px;justify-content:space-between;flex-wrap:wrap}
+#editorHelpNext{max-width:830px;margin:12px auto 0}
+#helpPage{max-width:830px;background:white;border:1px solid #dbe3ef;border-radius:13px;padding:clamp(15px,4vw,28px);margin:0 auto}
+#helpPage h2{font-size:22px;color:#21477e;margin:0 0 9px}
+.helpIntro{line-height:1.55;color:#64738a;font-size:14px;margin:0 0 16px}
+.helpImportant{background:#fff8e6;border:1px solid #eed9aa;border-radius:9px;padding:13px 15px;font-size:14px;line-height:1.5;margin-bottom:14px}
+.helpStep{border:1px solid #dce4ef;border-radius:10px;margin:9px 0;overflow:hidden}
+.helpStep summary{display:flex;align-items:center;gap:11px;cursor:pointer;padding:12px 14px;font-weight:720;font-size:15px;color:#244775;background:#f8fafe;line-height:1.4}
+.helpStep summary span{flex:none;width:28px;height:28px;border-radius:50%;background:#e3ecfb;color:#2754a0;display:grid;place-items:center}
+.helpStep summary::marker{color:#6c84a9}
+.helpStep>div{padding:9px 16px 13px;color:#344861;font-size:14px;line-height:1.6}
+.helpStep p{margin:7px 0 11px}.helpStep ol{padding-left:21px;margin:8px 0 14px}
+.helpStep li{margin:7px 0}
+.helpTip{border-left:3px solid #4c76b1;background:#f5f8fd;padding:9px 12px}
+.helpStep code{font-size:13px;background:#f1f3f8;padding:2px 4px;overflow-wrap:anywhere}
+.helpActions{display:flex;justify-content:space-between;flex-wrap:wrap;gap:9px;margin-top:16px}
 #reference{max-width:830px;margin:auto}.example{font:16px/1.55 "Times New Roman",serif;color:#25334a}
 .example h1{font:700 20px Arial,sans-serif;text-align:center;color:#244d92;text-transform:uppercase}
 .example h2{font:bold 17px Arial,sans-serif;color:#244d92;margin-top:20px}
@@ -213,8 +228,8 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 </div></div>
 <main class="main">
 <div class="modebar">
-<div class="seg"><button type="button" class="active" id="modeTasks">1. Завдання <span id="taskBadge">0/17</span></button><button type="button" id="modeExample">2. Зразок оформлення</button><button type="button" id="modeEdit">3. Мій документ</button></div>
-<small>Порядок роботи: завдання → зразок → оформлення готового тексту.</small>
+<div class="seg"><button type="button" class="active" id="modeTasks">1. Завдання <span id="taskBadge">0/17</span></button><button type="button" id="modeExample">2. Зразок оформлення</button><button type="button" id="modeEdit">3. Мій документ</button><button type="button" id="modeHelp">4. Як виконувати</button></div>
+<small>Порядок: завдання → зразок → редактор → пояснення. До інструкції можна повернутися будь-коли.</small>
 </div>
 <article id="document" class="paper" aria-label="Текстовий документ" hidden>
 <input class="headfoot topline" id="headerText" aria-label="Колонтитул зверху" placeholder="Верхній колонтитул">
@@ -223,6 +238,7 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 <div id="editor" contenteditable="true" spellcheck="true" role="textbox" aria-label="Редагований текст документа" aria-multiline="true"></div>
 <input class="headfoot bottomline" id="footerText" aria-label="Колонтитул знизу" placeholder="Нижній колонтитул">
 </article>
+<div id="editorHelpNext" class="tasksActions" hidden><button type="button" class="btn primary" id="editorToHelp">Далі: Як виконувати →</button></div>
 <article id="reference" class="paper example" hidden aria-label="Приклад оформленого документа">
 <div style="font:12px Arial;color:#657895;border-bottom:1px solid #d4deef;padding-bottom:8px;text-align:center">ІНФОРМАТИКА · 9 КЛАС</div>
 <h1>ЦИФРОВА ГРАМОТНІСТЬ</h1>
@@ -274,6 +290,50 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 </form>
 </section>
 <section id="submissionNotice" class="sendWordSection submitted" hidden><h3>Форму надіслано</h3><p>FormSubmit повернув на сторінку практичної роботи. Надходження листа слід перевірити у пошті вчителя. Якщо це перше надсилання, потрібно підтвердити адресу.</p></section>
+</section>
+<section id="helpPage" hidden aria-label="Покрокова інструкція з форматування тексту">
+<h2>Як виконувати практичну роботу</h2>
+<p class="helpIntro">Всі інструменти працюють у вкладці <strong>«3. Мій документ»</strong>. Тут показано саме ті кнопки, які є в нашому редакторі. Можна будь-коли повернутися до інструкції — текст і прогрес залишаться збереженими.</p>
+<div class="helpImportant"><strong>Спочатку виділяємо, потім форматуємо!</strong> На телефоні натисни й утримуй палець на потрібному слові, а далі перетягни маркери виділення, щоб охопити всю фразу. Для форматування цілого абзацу зазвичай достатньо поставити курсор усередині нього.</div>
+
+<details class="helpStep" open><summary><span>1</span> Шрифт, розмір, жирний, курсив і підкреслення</summary><div>
+<p>Відкрий <b>«Мій документ» → «Головна»</b>. Виділи потрібний текст довгим натисканням. У списку шрифтів обери <b>Times New Roman</b>, поруч розмір <b>14</b>. Щоб зробити слова «надійні паролі» жирними, виділи тільки ці слова й торкнися <b>B</b>. Кнопки <b>I</b> та <b>U</b> — курсив і підкреслення.</p>
+<p class="helpTip">У завданні шрифт 14 пт перевіряється саме в абзаці, що починається словами «Створюйте надійні паролі…».</p></div></details>
+
+<details class="helpStep" open><summary><span>2</span> Колір тексту та жовтий маркер</summary><div>
+<ol><li><b>Спочатку виділи слова</b> «надійні паролі».</li><li>У вкладці <b>«Головна»</b> натисни кольоровий квадратик поруч із написом <b>«Колір»</b>.</li><li>Обери темно-синій відтінок.</li><li><b>Підтвердь вибір клавішею Enter або кнопкою «Готово»</b> в палітрі кольорів. У деяких браузерах треба торкнутися поза палітрою, щоб вона закрилася.</li><li>Для фрази <b>«Не передавайте нікому коди входу»</b> зроби так само, але через квадратик <b>«Маркер»</b> і вибери жовтий.</li></ol>
+<p class="helpTip">Якщо колір не змінився, перевір, чи була виділена саме потрібна фраза, і підтвердь вибір ще раз. Лише зміна кольору квадратика на панелі не гарантує, що текст оформлено.</p></div></details>
+
+<details class="helpStep"><summary><span>3</span> Абзаци, вирівнювання, відступи та інтервал</summary><div>
+<p>Торкнися абзацу «Створюйте надійні паролі…», щоб поставити в ньому курсор. У вкладці <b>«Головна»</b> натисни <b>▤</b> (вирівнювання <b>по ширині</b>). У вкладці <b>«Макет»</b> встанови <b>«Перший рядок» → 1,25 см</b> та <b>«Міжрядковий інтервал» → 1,5</b>.</p>
+<p>Для нового абзацу постав курсор у потрібному місці й натисни <b>Enter</b> на клавіатурі телефона або кнопку <b>¶+</b> на вкладці «Головна». Стрілки <b>←</b> і <b>→</b> зменшують або збільшують відступ абзацу.</p></div></details>
+
+<details class="helpStep"><summary><span>4</span> Стилі заголовків і автоматичний зміст</summary><div>
+<p>Торкнися назви <b>«Безпека облікового запису»</b>. У вкладці <b>«Головна»</b> відкрий список <b>«Звичайний»</b> і обери <b>«Заголовок 1»</b>. Так само оформи «Перевірка інформації» та «Цифровий слід». Для «Двофакторний захист» обери <b>«Заголовок 2»</b>.</p>
+<p>Після цього відкрий <b>«Вставлення» → «Створити зміст»</b>. Зміст генерується автоматично на початку сторінки. Якщо змінила заголовки або їх порядок, скористайся <b>«Структура» → «Оновити зміст»</b>.</p>
+<p>Щоб змінити порядок розділів, відкрий <b>«Структура» → «Структура заголовків»</b> і використовуй кнопки <b>↑ ↓</b> навпроти заголовків.</p></div></details>
+
+<details class="helpStep"><summary><span>5</span> Марковані й багаторівневі списки</summary><div>
+<p>У розділі «Перевірка інформації» виділи три абзаци з порадами: «Перевірте автора…», «Порівняйте дані…», «Зверніть увагу…». На вкладці <b>«Головна»</b> натисни <b>•≡</b> — маркований список.</p>
+<p>Щоб зробити пункт <b>«Знайдіть першоджерело»</b> вкладеним, постав курсор саме в ньому й натисни <b>→</b> (збільшити відступ). Для нумерованого списку є кнопка <b>1≡</b>.</p></div></details>
+
+<details class="helpStep"><summary><span>6</span> Таблиця та малюнок</summary><div>
+<p>Постав курсор у розділі «Цифровий слід». Відкрий <b>«Вставлення» → «Таблиця 3×3»</b>. Заповни рядки даними, які вже є в початковому тексті: назви стовпців «Ризик», «Рішення», «Результат» та два рядки про слабкий пароль і сумнівний допис. Постав курсор у таблицю й обери <b>«Стиль таблиці» → «Синій»</b>.</p>
+<p>Після таблиці постав курсор перед словами «Корисний ресурс». Натисни <b>«Вставлення» → «Малюнок»</b>, щоб вставити готову ілюстрацію, або <b>«Фото з телефона»</b>, якщо є потрібне зображення.</p></div></details>
+
+<details class="helpStep"><summary><span>7</span> Гіперпосилання, символ і формула</summary><div>
+<p>Виділи саме слова <b>«Дія.Освіта»</b> в останній частині тексту. Натисни <b>«Вставлення» → «Посилання»</b>, введи адресу <code>https://osvita.diia.gov.ua/</code> і натисни <b>«Вставити»</b>. Перевір, чи не дублюються слова — якщо так, видали звичайний текст, залишивши активне посилання.</p>
+<p>У цьому ж меню є <b>«Ω Символ»</b> для спеціальних знаків та <b>«∑ Формула»</b>. Для формули встав вираз <b>P = (a / b) × 100 %</b> як окремий формульний об’єкт після слова «Формула:». Якщо цей вираз уже був звичайним текстом, видали його стару копію.</p></div></details>
+
+<details class="helpStep"><summary><span>8</span> Колонки, розділи й колонтитули</summary><div>
+<p>У вкладці <b>«Макет»</b> можна обрати одну або дві колонки, книжкову чи альбомну орієнтацію. Кнопка <b>«Роздільник»</b> вставляє межу нового розділу у спрощеному вигляді.</p>
+<p>Щоб додати верхній колонтитул, відкрий <b>«Мій документ»</b> і торкнися вузького поля <b>над назвою документа</b>. Введи <b>ІНФОРМАТИКА · 9 КЛАС</b>. Для нижнього колонтитула прокрути документ донизу й уведи <b>Практична робота № 3</b>.</p></div></details>
+
+<details class="helpStep"><summary><span>9</span> Прогрес, скидання та надсилання Word-файлу</summary><div>
+<p>Відкрий <b>«1. Завдання»</b>: зелені позначки означають, що <b>саме потрібний фрагмент</b> оформлено правильно. Після кожної зміни прогрес оновлюється. Якщо пункт не зарахувався, звір фрагмент зі зразком і перевір форматування.</p>
+<p>Кнопка <b>«↺ Скинути редагування»</b> розташована вгорі сайту. Вона відновлює початковий текст після підтвердження, тож використовуй її обережно.</p>
+<p>Наприкінці перейди до <b>«1. Завдання»</b>, прокрути до форми, обери клас <b>9-А або 9-Б</b>, введи ім’я та прізвище. Натисни <b>«Надіслати роботу на пошту (.docx)»</b>. Надсилання відбувається через FormSubmit; у разі запиту сервісу підтвердь дію. Якщо вкладення не надіслалося, скористайся кнопкою <b>«Зберегти Word-файл»</b>.</p></div></details>
+<div class="helpActions"><button type="button" class="btn" id="helpBack">← До документа</button><button type="button" class="btn primary" id="helpTasks">Перевірити прогрес →</button></div>
 </section>
 <section id="outlinePanel" hidden><h2>Структура документа</h2><p>Переміщуйте заголовки разом із текстом розділів. Кнопки ↑ ↓ змінюють їх порядок.</p><div id="outlineList"></div></section>
 <section id="reviewPanel" hidden><h2>Коментарі та запропоновані виправлення</h2><div id="reviewItems"></div></section>
@@ -478,13 +538,18 @@ function load(){
 }
 function applyLayout(){editor.classList.toggle("columns2",columns===2);$("document").classList.toggle("landscape",orientation==="landscape");}
 function viewExample(example){
- $("tasksPage").hidden=true;$("reference").hidden=!example;$("document").hidden=example;$("exampleActions").hidden=!example;
- $("modeEdit").classList.toggle("active",!example);$("modeExample").classList.toggle("active",example);$("modeTasks").classList.remove("active");
+ $("tasksPage").hidden=true;$("helpPage").hidden=true;$("editorHelpNext").hidden=example;$("reference").hidden=!example;$("document").hidden=example;$("exampleActions").hidden=!example;
+ $("modeEdit").classList.toggle("active",!example);$("modeExample").classList.toggle("active",example);$("modeTasks").classList.remove("active");$("modeHelp").classList.remove("active");
  $("outlinePanel").hidden=true;
 }
 function viewTasks(){
- $("document").hidden=true;$("reference").hidden=true;$("tasksPage").hidden=false;$("exampleActions").hidden=true;$("outlinePanel").hidden=true;$("reviewPanel").hidden=true;
- $("modeEdit").classList.remove("active");$("modeExample").classList.remove("active");$("modeTasks").classList.add("active");renderTasks();
+ $("document").hidden=true;$("reference").hidden=true;$("tasksPage").hidden=false;$("helpPage").hidden=true;$("editorHelpNext").hidden=true;$("exampleActions").hidden=true;$("outlinePanel").hidden=true;$("reviewPanel").hidden=true;
+ $("modeEdit").classList.remove("active");$("modeExample").classList.remove("active");$("modeHelp").classList.remove("active");$("modeTasks").classList.add("active");renderTasks();
+}
+function viewHelp(){
+ $("document").hidden=true;$("reference").hidden=true;$("tasksPage").hidden=true;$("helpPage").hidden=false;
+ $("editorHelpNext").hidden=true;$("exampleActions").hidden=true;$("outlinePanel").hidden=true;$("reviewPanel").hidden=true;
+ $("modeTasks").classList.remove("active");$("modeExample").classList.remove("active");$("modeEdit").classList.remove("active");$("modeHelp").classList.add("active");
 }
 function switchTab(name){
  tab=name;for(const b of document.querySelectorAll("[data-tab]"))b.setAttribute("aria-selected",String(b.dataset.tab===name));
@@ -959,8 +1024,8 @@ for(const b of document.querySelectorAll("[data-cmd]")){
 $("style").addEventListener("change",e=>setParagraph(e.target.value));
 $("fontFamily").addEventListener("change",e=>exec("fontName",e.target.value));
 $("fontSize").addEventListener("change",e=>applyFontSize(e.target.value));
-$("fontColor").addEventListener("input",e=>exec("foreColor",e.target.value));
-$("highlightColor").addEventListener("input",e=>exec("hiliteColor",e.target.value));
+$("fontColor").addEventListener("input",e=>exec("foreColor",e.target.value));$("fontColor").addEventListener("change",e=>exec("foreColor",e.target.value));
+$("highlightColor").addEventListener("input",e=>exec("hiliteColor",e.target.value));$("highlightColor").addEventListener("change",e=>exec("hiliteColor",e.target.value));
 $("indentMore").addEventListener("click",()=>{const b=currentBlock();if(b?.tagName==="LI")exec("indent");else paragraphProperty("marginLeft",(parseFloat(b?.style.marginLeft)||0)+20+"px");});
 $("indentLess").addEventListener("click",()=>{const b=currentBlock();if(b?.tagName==="LI")exec("outdent");else paragraphProperty("marginLeft",Math.max(0,(parseFloat(b?.style.marginLeft)||0)-20)+"px");});
 $("newParagraph").addEventListener("click",addParagraph);
@@ -989,7 +1054,7 @@ $("insertFormula").addEventListener("click",()=>{$("formulaDialog").showModal();
 $("formulaForm").addEventListener("submit",e=>{e.preventDefault();const span=make("span",$("formulaText").value);span.className="formula";insertNode(span);$("formulaDialog").close();});
 $("cancelFormula").addEventListener("click",()=>$("formulaDialog").close());
 $("showOutline").addEventListener("click",()=>{renderOutline();$("outlinePanel").hidden=false;$("outlinePanel").scrollIntoView({behavior:"smooth"});});
-$("modeEdit").addEventListener("click",()=>viewExample(false));$("modeExample").addEventListener("click",()=>viewExample(true));$("modeTasks").addEventListener("click",viewTasks);$("tasksBack").addEventListener("click",()=>viewExample(true));$("exampleBack").addEventListener("click",viewTasks);$("exampleNext").addEventListener("click",()=>viewExample(false));
+$("modeEdit").addEventListener("click",()=>viewExample(false));$("modeExample").addEventListener("click",()=>viewExample(true));$("modeTasks").addEventListener("click",viewTasks);$("modeHelp").addEventListener("click",viewHelp);$("editorToHelp").addEventListener("click",viewHelp);$("helpBack").addEventListener("click",()=>viewExample(false));$("helpTasks").addEventListener("click",viewTasks);$("tasksBack").addEventListener("click",()=>viewExample(true));$("exampleBack").addEventListener("click",viewTasks);$("exampleNext").addEventListener("click",()=>viewExample(false));
 $("saveFile").addEventListener("click",()=>window.wordSubmission.download());$("printFile").addEventListener("click",()=>{viewExample(false);window.print();});
 $("reset").addEventListener("click",reset);
 for(const id of ["docName","headerText","footerText"])$(id).addEventListener("input",persist);
