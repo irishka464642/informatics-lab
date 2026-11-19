@@ -29,7 +29,7 @@ header,.ribbon{background:#fff}.ribbon{position:sticky;top:0;z-index:25;box-shad
 .paint input{width:34px;height:34px;border:0;background:transparent;padding:0}
 .main{max-width:1200px;margin:auto;padding:15px 10px 45px}
 .modebar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin:0 auto 12px;max-width:830px}
-.modebar small{color:#697892}.seg{display:flex;gap:3px;padding:3px;background:#e4eaf5;border-radius:10px}
+.modebar small{color:#697892}.seg{display:flex;flex-wrap:wrap;gap:3px;padding:3px;background:#e4eaf5;border-radius:10px}
 .seg button{border:0;background:transparent;color:#304e7e;border-radius:8px;padding:8px 14px;min-height:41px;font-weight:650}
 .seg button.active{background:white;box-shadow:0 1px 5px #1a376b18}
 .paper{width:100%;max-width:830px;min-height:730px;margin:auto;background:#fff;box-shadow:0 6px 26px #21365b1d;border:1px solid #dbe1eb;padding:30px clamp(15px,5vw,68px) 54px;overflow-wrap:anywhere;border-radius:3px}
@@ -49,6 +49,20 @@ header,.ribbon{background:#fff}.ribbon{position:sticky;top:0;z-index:25;box-shad
 #editor.columns2{column-count:2;column-gap:28px}
 #toc{border:1px solid #d8e3f5;background:#f7faff;border-radius:8px;padding:14px 17px;margin:16px 0 23px;font:14px/1.45 system-ui,sans-serif}
 #toc h2{margin:0 0 8px;font-size:17px;color:#224474}#toc ol{margin:0;padding-left:23px}#toc li{margin:4px 0}#toc li.sub{margin-left:18px;list-style:circle}
+#taskBadge{font-size:11px;padding:3px 6px;background:#dfe9fb;border-radius:8px;margin-left:3px}
+#tasksPage{max-width:830px;margin:auto;padding:clamp(15px,4vw,28px);background:#fff;border:1px solid #d9e2f0;border-radius:15px}
+#tasksPage h2{font-size:22px;color:#21457c;margin:0 0 6px}
+.tasksIntro{font-size:14px;color:#657693;margin-bottom:15px;line-height:1.55}
+.tasksStats{display:flex;align-items:center;justify-content:space-between;gap:9px;font-weight:750;margin-bottom:9px}
+#tasksTrack{height:12px;border-radius:18px;background:#e6ecf6;overflow:hidden;margin-bottom:18px}
+#tasksFill{width:0;height:100%;background:#4778c3;border-radius:18px;transition:width .2s}
+#taskItems{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.taskRow{display:flex;align-items:flex-start;gap:11px;padding:12px;background:#f9fbfe;border:1px solid #e2e8f3;border-radius:11px}
+.taskRow.done{background:#f4fbf7;border-color:#bbdccd}
+.taskMark{flex:none;display:grid;place-items:center;width:27px;height:27px;border:1px solid #becce0;border-radius:50%;color:#527093;background:white;font-weight:800}
+.taskRow.done .taskMark{background:#377b5e;border-color:#377b5e;color:white}
+.taskInfo strong{font-size:14px;color:#223e66;display:block}.taskInfo small{font-size:12px;color:#6d7d97;line-height:1.45;display:block;margin-top:3px}
+.tasksActions{display:flex;justify-content:flex-end;margin-top:18px}
 #reference{max-width:830px;margin:auto}.example{font:16px/1.55 "Times New Roman",serif;color:#25334a}
 .example h1{font:700 20px Arial,sans-serif;text-align:center;color:#244d92;text-transform:uppercase}
 .example h2{font:bold 17px Arial,sans-serif;color:#244d92;margin-top:20px}
@@ -187,7 +201,7 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 </div></div>
 <main class="main">
 <div class="modebar">
-<div class="seg"><button type="button" class="active" id="modeEdit">Мій документ</button><button type="button" id="modeExample">Зразок оформлення</button></div>
+<div class="seg"><button type="button" class="active" id="modeEdit">Мій документ</button><button type="button" id="modeExample">Зразок оформлення</button><button type="button" id="modeTasks">Завдання <span id="taskBadge">0/17</span></button></div>
 <small>Готовий текст уже додано. Форматуйте його за зразком.</small>
 </div>
 <article id="document" class="paper" aria-label="Текстовий документ">
@@ -202,7 +216,7 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 <h1>ЦИФРОВА ГРАМОТНІСТЬ</h1>
 <div style="border:1px solid #d9e4f5;background:#f6f9ff;padding:12px 16px;margin:15px 0"><b>Зміст</b><ol style="padding-left:24px;margin:6px 0"><li>Безпека облікового запису</li><li style="margin-left:18px">Двофакторний захист</li><li>Перевірка інформації</li><li>Цифровий слід</li></ol></div>
 <h2>1. Безпека облікового запису</h2>
-<p>Створюйте <b>надійні паролі</b>, використовуйте різні паролі для різних сервісів. <mark>Не передавайте нікому коди входу.</mark></p>
+<p style="font-family:Times New Roman;font-size:14pt">Створюйте <b style="color:#244d92">надійні паролі</b>, використовуйте різні паролі для різних сервісів. <mark>Не передавайте нікому коди входу.</mark></p>
 <h3>1.1. Двофакторний захист</h3><p>Додаткова перевірка зменшує ризик несанкціонованого входу, навіть якщо пароль став відомий іншій людині.</p>
 <h2>2. Перевірка інформації</h2>
 <p>Перед поширенням повідомлення звертайте увагу на автора, дату публікації та першоджерело.</p>
@@ -216,6 +230,14 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 <div class="two"><p style="text-indent:0">Будьте уважними до особистих даних.</p><p style="text-indent:0">Регулярно перевіряйте налаштування приватності.</p></div>
 <div style="border-top:1px solid #d4deef;font:12px Arial;color:#657895;padding-top:7px;text-align:center">Практична робота № 3</div>
 </article>
+<section id="tasksPage" hidden>
+<h2>Завдання практичної роботи</h2>
+<p class="tasksIntro">Оформіть готовий документ за зразком. Пункти зараховуються автоматично лише тоді, коли <b>потрібний фрагмент</b> оформлено правильно. У разі скасування форматування прогрес зменшиться.</p>
+<div class="tasksStats"><span id="tasksCount" role="status" aria-live="polite">Виконано 0 із 17</span><span id="tasksPercent">0 %</span></div>
+<div id="tasksTrack" role="progressbar" aria-valuemin="0" aria-valuemax="17" aria-valuenow="0" aria-label="Прогрес практичної роботи"><div id="tasksFill"></div></div>
+<ol id="taskItems"></ol>
+<div class="tasksActions"><button class="btn primary" type="button" id="tasksBack">Повернутися до документа</button></div>
+</section>
 <section id="outlinePanel" hidden><h2>Структура документа</h2><p>Переміщуйте заголовки разом із текстом розділів. Кнопки ↑ ↓ змінюють їх порядок.</p><div id="outlineList"></div></section>
 <section id="reviewPanel" hidden><h2>Коментарі та запропоновані виправлення</h2><div id="reviewItems"></div></section>
 <p class="fineprint">Редактор працює без додатків. Документ зберігається на цьому телефоні. Через посилання можна передати копію на перегляд або рецензування — без одночасного редагування.</p>
@@ -402,7 +424,7 @@ function persist(){
  const obj={name:$("docName").value,html:safeHTML(editor.innerHTML),toc:tocActive,head:$("headerText").value,foot:$("footerText").value,columns,orientation,documentId,accessRole,comments,suggestions};
  renderReviewMarks();
  try{localStorage.setItem(KEY,JSON.stringify(obj));$("saveStatus").textContent="✓ Збережено на цьому телефоні";}catch{$("saveStatus").textContent="Немає місця для збереження";toast("Збережіть HTML-файл, щоб не втратити текст.");}
- $("docTitle").textContent=$("docName").value.trim()||"Документ";
+ $("docTitle").textContent=$("docName").value.trim()||"Документ";scheduleTasks();
 }
 function load(){
  let obj=null;try{obj=JSON.parse(localStorage.getItem(KEY)||"null");}catch{}
@@ -415,13 +437,17 @@ function load(){
  comments=Array.isArray(obj?.comments)?obj.comments.slice(0,80):[];
  suggestions=Array.isArray(obj?.suggestions)?obj.suggestions.slice(0,80):[];
  $("columns").value=String(columns);$("orientation").value=orientation;applyLayout();ensureIds();updateTOC();
- $("docTitle").textContent=$("docName").value;$("saveStatus").textContent="Локальне збереження";
+ $("docTitle").textContent=$("docName").value;$("saveStatus").textContent="Локальне збереження";scheduleTasks();
 }
 function applyLayout(){editor.classList.toggle("columns2",columns===2);$("document").classList.toggle("landscape",orientation==="landscape");}
 function viewExample(example){
- $("reference").hidden=!example;$("document").hidden=example;
- $("modeEdit").classList.toggle("active",!example);$("modeExample").classList.toggle("active",example);
+ $("tasksPage").hidden=true;$("reference").hidden=!example;$("document").hidden=example;
+ $("modeEdit").classList.toggle("active",!example);$("modeExample").classList.toggle("active",example);$("modeTasks").classList.remove("active");
  $("outlinePanel").hidden=true;
+}
+function viewTasks(){
+ $("document").hidden=true;$("reference").hidden=true;$("tasksPage").hidden=false;$("outlinePanel").hidden=true;$("reviewPanel").hidden=true;
+ $("modeEdit").classList.remove("active");$("modeExample").classList.remove("active");$("modeTasks").classList.add("active");renderTasks();
 }
 function switchTab(name){
  tab=name;for(const b of document.querySelectorAll("[data-tab]"))b.setAttribute("aria-selected",String(b.dataset.tab===name));
@@ -758,6 +784,130 @@ function saveHTML(){
  const doc="<!doctype html><html lang='uk'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>"+escapeHTML(title)+"</title><style>body{max-width:900px;margin:30px auto;padding:0 22px;font:16px/1.6 'Times New Roman',serif}header,footer{text-align:center;color:#54637b;font:12px Arial;border-block:1px solid #dde3ee;padding:10px}h1,h2{font-family:Arial;color:#254d86}table{border-collapse:collapse;width:100%;margin:12px 0}td,th{border:1px solid #bdcde3;padding:8px}table.blue th{background:#dce8fa}table.mint th{background:#d9f0e8}table.gray th{background:#e9eaf0}img{max-width:100%;height:auto}nav{padding:12px;background:#f1f6ff}a{color:#1d56a2}article{column-count:"+columns+";column-gap:28px}@media(max-width:650px){article{column-count:"+columns+"}}</style></head><body><header>"+escapeHTML($("headerText").value)+"</header><h1>"+escapeHTML(title)+"</h1>"+toc+"<article>"+clone.innerHTML+"</article>"+annotations+"<footer>"+escapeHTML($("footerText").value)+"</footer></body></html>";
  const url=URL.createObjectURL(new Blob([doc],{type:"text/html;charset=utf-8"}));const a=make("a");a.href=url;a.download="informatyka-9-urok-11.html";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
 }
+
+/* Практична робота: автоматично перевіряємо оформлення конкретних частин документа. */
+const TASKS=[
+ ["h1","Стилі трьох розділів","Стиль «Заголовок 1» для «Безпека облікового запису», «Перевірка інформації», «Цифровий слід».",()=>["Безпека облікового запису","Перевірка інформації","Цифровий слід"].every(t=>isHeading(t,"H1"))],
+ ["h2","Стиль підрозділу","«Двофакторний захист» оформлено стилем «Заголовок 2».",()=>isHeading("Двофакторний захист","H2")],
+ ["order","Порядок розділів","Розділи та підрозділ ідуть у послідовності зі зразка.",()=>orderedHeadings()],
+ ["toc","Автоматичний зміст","Створіть зміст із чотирма робочими переходами до заголовків.",()=>correctToc()],
+ ["font","Шрифт і кегль","Абзац «Створюйте надійні паролі…»: Times New Roman, 14 пт.",()=>correctFont()],
+ ["para","Абзац і відступ","Той самий абзац: по ширині, перший рядок 1,25 см, інтервал 1,5.",()=>correctParagraph()],
+ ["bold","Напівжирне накреслення","Слова «надійні паролі» виділено напівжирним.",()=>phraseHas("надійні паролі",el=>{const w=getComputedStyle(el).fontWeight;return w==="bold"||Number(w)>=600;})],
+ ["color","Колір шрифту","Тільки слова «надійні паролі» пофарбовано темно-синім.",()=>phraseHas("надійні паролі",el=>blue(getComputedStyle(el).color))],
+ ["mark","Виділення маркером","Жовтим виділено фразу «Не передавайте нікому коди входу».",()=>phraseHas("Не передавайте нікому коди входу",yellowMark)],
+ ["list","Маркований список","Три основні поради про перевірку інформації оформлено одним маркованим списком.",()=>!!findList()],
+ ["nested","Багаторівневий список","«Знайдіть першоджерело» — вкладений пункт у «Порівняйте дані у двох джерелах».",()=>correctNested()],
+ ["table","Таблиця за зразком","Синя таблиця 3×3 з правильними заголовками й двома заповненими рядками.",()=>correctTable()],
+ ["img","Малюнок","Ілюстрація розміщена між таблицею та рядком «Корисний ресурс».",()=>correctImage()],
+ ["link","Гіперпосилання","Слова «Дія.Освіта» ведуть на https://osvita.diia.gov.ua/.",()=>correctLink()],
+ ["formula","Формула","Біля слова «Формула:» вставлено формульний об’єкт P = (a / b) × 100 %.",()=>correctFormula()],
+ ["header","Верхній колонтитул","Текст: «ІНФОРМАТИКА · 9 КЛАС».",()=>norm($("headerText").value)==="ІНФОРМАТИКА · 9 КЛАС"],
+ ["footer","Нижній колонтитул","Текст: «Практична робота № 3».",()=>norm($("footerText").value)==="Практична робота № 3"]
+];
+let taskFrame=false;
+function norm(t){return String(t||"").trim().replace(/\s+/g," ");}
+function headingLabel(t){return norm(t).replace(/^\d+(\.\d+)*\.?\s+/,"");}
+function exactTextBlock(t){return [...editor.querySelectorAll("p,h1,h2,li")].find(el=>headingLabel(el.textContent)===t);}
+function isHeading(t,tag){return exactTextBlock(t)?.tagName===tag;}
+function orderedHeadings(){
+ const expected=["Безпека облікового запису","Двофакторний захист","Перевірка інформації","Цифровий слід"];
+ const actual=[...editor.querySelectorAll("h1,h2")].map(e=>headingLabel(e.textContent));
+ const index=expected.map(t=>actual.indexOf(t));
+ return index.every((v,i)=>v>=0&&(i===0||v>index[i-1]))&&
+ isHeading(expected[0],"H1")&&isHeading(expected[1],"H2")&&isHeading(expected[2],"H1")&&isHeading(expected[3],"H1");
+}
+function correctToc(){
+ if(!tocActive||!orderedHeadings())return false;
+ const links=[...$("toc").querySelectorAll("a")];
+ const expected=["Безпека облікового запису","Двофакторний захист","Перевірка інформації","Цифровий слід"];
+ return links.length===4&&links.every((a,i)=>{
+  const target=editor.querySelector('[id="'+a.getAttribute("href").slice(1)+'"]');
+  return headingLabel(a.textContent)===expected[i]&&target&&headingLabel(target.textContent)===expected[i];
+ });
+}
+function bodyP(){return [...editor.querySelectorAll("p")].find(p=>norm(p.textContent).startsWith("Створюйте надійні паролі,"));}
+function textNodes(root){
+ if(!root)return [];const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),nodes=[];let n;
+ while((n=w.nextNode()))if(n.nodeValue.trim())nodes.push(n);
+ return nodes;
+}
+function correctFont(){
+ const n=textNodes(bodyP());
+ return n.length>0&&n.every(t=>{const c=getComputedStyle(t.parentElement);return c.fontFamily.replace(/["']/g,"").toLowerCase().includes("times new roman")&&parseFloat(c.fontSize)>=18&&parseFloat(c.fontSize)<=20;});
+}
+function correctParagraph(){
+ const p=bodyP();if(!p)return false;const c=getComputedStyle(p);
+ return c.textAlign==="justify"&&parseFloat(c.textIndent)>=41&&parseFloat(c.textIndent)<=54&&p.style.lineHeight==="1.5";
+}
+function phraseHas(phrase,test){
+ const n=textNodes(bodyP());if(!n.length)return false;const joined=n.map(x=>x.nodeValue).join("");
+ const start=joined.indexOf(phrase);if(start<0)return false;
+ let pos=0, hits=[];
+ for(const x of n){const end=pos+x.nodeValue.length;if(end>start&&pos<start+phrase.length)hits.push(x.parentElement);pos=end;}
+ return hits.length>0&&hits.every(test);
+}
+function rgb(t){const n=(String(t).match(/[\d.]+/g)||[]).map(Number);return n.length>=3?n:null;}
+function blue(c){const v=rgb(c);return !!v&&v[2]>=95&&v[2]>1.5*v[0]&&v[2]>1.22*v[1]&&v[0]<125;}
+function yellowMark(n){
+ for(let el=n;el&&el!==editor;el=el.parentElement){const c=rgb(getComputedStyle(el).backgroundColor);if(c&&c[0]>194&&c[1]>174&&c[2]<205)return true;}
+ return false;
+}
+function findList(){
+ const labels=["Перевірте автора повідомлення.","Порівняйте дані у двох джерелах.","Зверніть увагу на дату."];
+ return [...editor.querySelectorAll("ul")].find(ul=>{
+  const items=[...ul.children].filter(x=>x.tagName==="LI");
+  return items.length===3&&items.every((li,i)=>norm(li.textContent).startsWith(labels[i]));
+ });
+}
+function correctNested(){
+ const ul=findList();if(!ul)return false;
+ const li=[...ul.children].find(x=>norm(x.textContent).startsWith("Порівняйте дані у двох джерелах."));
+ return !!li&&[...li.querySelectorAll("ul>li,ol>li")].some(x=>norm(x.textContent)==="Знайдіть першоджерело.");
+}
+function correctTable(){
+ const expected=[["Ризик","Рішення","Результат"],["Слабкий пароль","Складний пароль","Захист доступу"],["Сумнівний допис","Перевірка джерела","Менше помилок"]];
+ return [...editor.querySelectorAll("table.blue")].some(t=>{
+  const rows=[...t.querySelectorAll("tr")];return rows.length===3&&rows.every((r,i)=>{
+   const cells=[...r.children].filter(c=>["TH","TD"].includes(c.tagName));
+   return cells.length===3&&cells.every((c,j)=>norm(c.textContent)===expected[i][j]);
+  });
+ });
+}
+function correctImage(){
+ const table=[...editor.querySelectorAll("table")].find(t=>norm(t.textContent).includes("Ризик"));
+ const res=[...editor.querySelectorAll("p")].find(p=>norm(p.textContent).startsWith("Корисний ресурс:"));
+ return !!(table&&res&&[...editor.querySelectorAll("img")].some(img=>img.src?.startsWith("data:image/")&&!img.closest("table")&&
+ (table.compareDocumentPosition(img)&Node.DOCUMENT_POSITION_FOLLOWING)&&(img.compareDocumentPosition(res)&Node.DOCUMENT_POSITION_FOLLOWING)));
+}
+function correctLink(){
+ const p=[...editor.querySelectorAll("p")].find(x=>norm(x.textContent).startsWith("Корисний ресурс:"));
+ if(!p)return false;
+ return [...p.querySelectorAll("a")].some(a=>{const href=safeUrl(a.getAttribute("href"));return href&&norm(a.textContent)==="Дія.Освіта"&&new URL(href).hostname==="osvita.diia.gov.ua";});
+}
+function correctFormula(){
+ const p=[...editor.querySelectorAll("p")].find(x=>norm(x.textContent).startsWith("Формула:"));
+ return !!p&&[...p.querySelectorAll("span.formula")].some(n=>norm(n.textContent)==="P = (a / b) × 100 %");
+}
+function renderTasks(){
+ taskFrame=false;const checks=TASKS.map(t=>{let ok=false;try{ok=!!t[3]();}catch{}return {t,ok};});
+ const ready=checks.filter(c=>c.ok).length;const total=TASKS.length,pct=Math.round(100*ready/total);
+ $("taskBadge").textContent=ready+"/"+total;$("tasksCount").textContent="Виконано "+ready+" із "+total;
+ $("tasksPercent").textContent=pct+" %";$("tasksTrack").setAttribute("aria-valuenow",String(ready));$("tasksFill").style.width=pct+"%";
+ if($("tasksPage").hidden)return;
+ const list=$("taskItems");list.replaceChildren();
+ for(const {t,ok} of checks){
+  const item=make("li");item.className="taskRow"+(ok?" done":"");
+  const sign=make("span",ok?"✓":"○");sign.className="taskMark";sign.setAttribute("aria-hidden","true");
+  const info=make("div");info.className="taskInfo";info.append(make("strong",t[1]),make("small",t[2]));
+  item.append(sign,info);item.setAttribute("aria-label",(ok?"Виконано: ":"Не виконано: ")+t[1]);list.append(item);
+ }
+}
+function scheduleTasks(){
+ if(taskFrame)return;taskFrame=true;
+ if(typeof requestAnimationFrame==="function")requestAnimationFrame(renderTasks);else renderTasks();
+}
+
 function reset(){
  if(!confirm("Замінити поточний документ початковим текстом? Зміни буде втрачено."))return;
  editor.innerHTML=safeHTML(DRAFT);$("docName").value="Цифрова грамотність";$("headerText").value="";$("footerText").value="";
@@ -802,7 +952,7 @@ $("insertFormula").addEventListener("click",()=>{$("formulaDialog").showModal();
 $("formulaForm").addEventListener("submit",e=>{e.preventDefault();const span=make("span",$("formulaText").value);span.className="formula";insertNode(span);$("formulaDialog").close();});
 $("cancelFormula").addEventListener("click",()=>$("formulaDialog").close());
 $("showOutline").addEventListener("click",()=>{renderOutline();$("outlinePanel").hidden=false;$("outlinePanel").scrollIntoView({behavior:"smooth"});});
-$("modeEdit").addEventListener("click",()=>viewExample(false));$("modeExample").addEventListener("click",()=>viewExample(true));
+$("modeEdit").addEventListener("click",()=>viewExample(false));$("modeExample").addEventListener("click",()=>viewExample(true));$("modeTasks").addEventListener("click",viewTasks);$("tasksBack").addEventListener("click",()=>viewExample(false));
 $("saveFile").addEventListener("click",saveHTML);$("printFile").addEventListener("click",()=>{viewExample(false);window.print();});
 $("reset").addEventListener("click",reset);
 for(const id of ["docName","headerText","footerText"])$(id).addEventListener("input",persist);
@@ -831,6 +981,6 @@ $("shareReviewer").addEventListener("click",()=>createShare("review"));
 $("sendReview").addEventListener("click",returnReview);
 $("closeShare").addEventListener("click",()=>$("shareDialog").close());
 $("copyShare").addEventListener("click",copyShareLink);
-load();setAccessRole();renderReviewMarks();readShareFromURL();
+load();setAccessRole();renderReviewMarks();readShareFromURL();scheduleTasks();
 </script>
 </body></html>
