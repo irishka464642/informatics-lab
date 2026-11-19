@@ -379,28 +379,33 @@ function validateShape(blocks){
 function matches(a,b){return a.length===b.length&&a.every((v,i)=>v===b[i]);}
 function testValue(v){
  if(state.complete[state.level])return;
- var m=current(),code=state.code[state.level];
- if(!code.trim()){showNotice("Спочатку склади код з готових рядків.","bad");return;}
- state.code[state.level]=code;state.attempts[state.level]++;
+ var m=current(),i=state.level,code=state.code[i]||"";
+ state.attempts[i]++;
  try{
-  var blocks=compilePython(code);validateShape(blocks);
-  var output=execute(blocks,v),expected=m.expect(v);
+  if((state.blocks[i]||[]).length!==m.solution.split("\n").length)
+   throw Error("У редакторі ще не всі рядки. Додай потрібні блоки, а потім перевір.");
+  var parsed=compilePython(code);validateShape(parsed);
+  var output=execute(parsed,v),expected=m.expect(v);
   if(!matches(output,expected)){
-   var printed=output.length?output.join(" / "):"нічого не виводиться";
-   throw Error("Для "+m.v+" = "+v+" програма вивела «"+printed+"», а має: «"+(expected.join(" / ")||"нічого")+"». Перевір умови та текст у print.");
+   throw Error("Для "+m.v+" = "+v+" отримано «"+(output.join(" / ")||"нічого")+"», а потрібно «"+(expected.join(" / ")||"нічого")+"». Перевір порядок рядків.");
   }
-  if(!state.tests[state.level].includes(v))state.tests[state.level].push(v);
-  var done=state.tests[state.level].length===m.values.length;
-  if(done)state.complete[state.level]=true;
+  if(!state.tests[i].includes(v))state.tests[i].push(v);
+  state.complete[i]=state.tests[i].length===m.values.length;
   state.latestOutput=output.join(" • ")||"Нічого не виводиться";
-  state.notice=done?"✅ Усі значення перевірено! Місію виконано.":("✅ Правильно! Перевірено "+state.tests[state.level].length+" із "+m.values.length+" значень.");
+  state.notice=state.complete[i]?"✅ Усі тестові набори перевірено! Місію виконано.":"✅ Код спрацював! Перевір ще "+(m.values.length-state.tests[i].length)+" варіант(и).";
   state.noticeKind="good";
+  var mood=i===2?(v<30?"negative":v>70?"negative":"normal"):i===0?(v>20?"positive":"negative"):i===1?(v>=10?"positive":"negative"):(v>=30?"positive":"negative");
+  state.scene={level:i,input:v,phase:mood,outputs:output.slice(),correct:true,description:m.outcome(v)};
  }catch(err){
-  state.failed[state.level]=(state.failed[state.level]||0)+1;
-  state.notice=err.message||"Помилка в коді.";state.noticeKind="bad";
+  state.failed[i]=(state.failed[i]||0)+1;
+  state.notice=String(err.message||"Помилка в коді.");
+  state.noticeKind="bad";
+  state.scene={level:i,input:v,phase:"error",outputs:[],correct:false,description:"Знайди неточність у порядку блоків."};
  }
  store();render();
+ scrollScene();
 }
+
 function showNotice(text,kind){state.notice=text;state.noticeKind=kind;store();render();}
 function changeLevel(next){
  state.level=next;state.notice="";state.noticeKind="";state.showHint=false;state.showSolution=false;store();render();
@@ -417,47 +422,124 @@ function nextLevel(){
  if(!checkpoint())return;
  changeLevel(Math.min(4,state.level+1));
 }
+
+const BLOCK_ORDER=[[1,0],[2,0,3,1],[4,2,0,5,1,3],[3,1,4,0,5,2]];
+const STEP_GUIDE=[
+ ["Почни з if: це умова, яку програма перевіряє.","Після if потрібна дія з відступом — команда print."],
+ ["Спочатку перевір умову за допомогою if.","Напиши дію, коли умова виконується.","Після цього додай else: — інший шлях.","Друга дія print має відступ 4 пробіли."],
+ ["if перевіряє перший випадок.","Команда print виконується за першої умови.","elif перевіряє іншу умову, якщо перша була хибна.","Додай дію print для elif.","else охоплює всі решта випадки.","Після else додай останню дію print."],
+ ["Напиши if для перевірки достатньої кількості монет.","Перший print повідомляє про покупку.","Другий print виконується в тій самій гілці if.","Тепер else — коли грошей недостатньо.","Перший print для else.","Другий print у тій самій гілці else."]
+];
+function solutionLines(i){return MISSIONS[i].solution.split("\n");}
+function blockDescription(line){
+ var t=line.trim();
+ if(t.startsWith("if "))return "Це if: умова визначає, чи виконуватимуться наступні команди.";
+ if(t.startsWith("elif "))return "Це elif: додаткова умова, яку перевіряють, якщо попередня не підійшла.";
+ if(t==="else:")return "Це else: дії для всіх випадків, коли умови if та elif хибні.";
+ if(t.startsWith("print("))return "Це print(): виведення повідомлення. Чотири пробіли показують, до якої гілки належить дія.";
+ return "Цей рядок є частиною програми.";
+}
+function codeFromBlocks(i){
+ var lines=solutionLines(i),selected=state.blocks[i]||[];
+ return selected.map(n=>lines[n]).join("\n");
+}
+function addBlock(idx){
+ var i=state.level,lines=solutionLines(i);
+ if(state.complete[i]||!Number.isInteger(idx)||idx<0||idx>=lines.length)return;
+ if(state.blocks[i].includes(idx))return;
+ state.blocks[i].push(idx);
+ state.code[i]=codeFromBlocks(i);
+ state.tests[i]=[];state.scene=null;
+ state.notice="";state.noticeKind="";
+ store();render();
+}
+function undoBlock(){
+ var i=state.level;if(state.complete[i]||!state.blocks[i].length)return;
+ state.blocks[i].pop();state.code[i]=codeFromBlocks(i);state.tests[i]=[];state.scene=null;
+ state.notice="";store();render();
+}
+function clearBlocks(){
+ var i=state.level;if(state.complete[i])return;
+ state.blocks[i]=[];state.code[i]="";state.tests[i]=[];state.scene=null;
+ state.notice="";store();render();
+}
+function scrollScene(){
+ var el=$("gameScene");
+ if(!el||!el.scrollIntoView)return;
+ try{if(el.focus)el.focus({preventScroll:true});}catch(e){}
+ var reduced=false;try{reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}
+ el.scrollIntoView({behavior:reduced?"auto":"smooth",block:"start"});
+}
 function sceneHTML(m){
- var n=state.tests[state.level].length;
- var reports=state.tests[state.level].map(v=>
-  '<div class="run-line good"><strong>'+m.v+' = '+v+'</strong> → '+(m.expect(v).map(safe).join(' • ')||"нічого не виводиться")+'</div>').join("");
- return '<aside class="panel"><div class="visual"><div class="emoji" aria-hidden="true">'+(n?m.picture(state.tests[state.level][n-1]):m.emoji)+'</div>'+
- '<div class="scene-title">'+m.scene+'</div><div class="scene-metric">'+n+' / '+m.values.length+' перевірок</div>'+
- '<div class="scene-hint">Програма повинна працювати з різними числами. Перевір граничні значення!</div></div>'+
- '<div class="side"><h3>🧠 Важливо зрозуміти</h3><p>'+m.explanation+'</p>'+
- '<div class="tip"><strong>Вхідні дані задає гра.</strong><p>Тобі не потрібно писати <code>input()</code> або <code>'+m.v+' = ...</code>. Напиши тільки розгалуження.</p></div>'+
- (n?'<h3>Вже перевірено</h3>'+reports:'<p>Натисни на тестове число після написання коду.</p>')+
- '</div></aside>';
+ var i=state.level,p=state.scene&&state.scene.level===i?state.scene:null;
+ var phase=p?p.phase:"idle",value=p?p.input:null;
+ var n=state.tests[i].length;
+ var icon=p?(p.correct?m.picture(value):"⚠️"):m.emoji;
+ var score=Math.round(n/m.values.length*100);
+ var outputs=p?(p.correct?(p.outputs.length?p.outputs:["Програма нічого не виводить — це правильно для неповного if."]):[state.notice]):[];
+ var label=p?(p.correct?"● PYTHON-КОД ВИКОНАНО":"● ПЕРЕВІРКА ЗНАЙШЛА ПОМИЛКУ"):"● ОЧІКУЄМО ЗАПУСКУ";
+ var outputHTML=outputs.map(x=>'<div class="'+(p.correct?(phase==="normal"?"normal":phase==="positive"?"positive":"negative"):"negative")+'">'+safe(x)+'</div>').join("");
+ var previous=state.tests[i].map(v=>'<div class="run-line good"><strong>'+m.v+' = '+v+'</strong> → '+(m.expect(v).map(safe).join(" • ")||"нічого не виводиться")+'</div>').join("");
+ return '<section class="quest-panel"><div class="quest-pad">'+
+ '<div class="section-head"><span class="section-number">4</span><div><span class="section-eyebrow">КРОК 4 · ДИВИСЬ, ЩО СТАЛОСЯ</span><h3>🎮 АНІМОВАНА СЦЕНА</h3></div></div>'+
+ '<div id="gameScene" tabindex="-1" class="game-scene" data-phase="'+phase+'" data-kind="'+i+'" aria-label="Результат перевірки програми">'+
+ '<div class="scene-hud"><span>'+safe(m.scene)+'</span><span class="scene-live">'+label+'</span></div>'+
+ '<div class="scene-world"><div class="world-emoji" aria-hidden="true">'+icon+'</div><div class="world-label">'+(p?m.v.toUpperCase()+" = "+value:"ГОТОВІ ДО ПЕРЕВІРКИ")+'</div>'+
+ '<div class="world-number">'+(p?(p.correct?m.outcome(value):"Помилка в коді"):"Натисни «Перевірити код»")+'</div></div>'+
+ '<div class="scene-details"><div class="micro">Перевірено тестових даних: <strong>'+n+' із '+m.values.length+'</strong></div>'+
+ '<div class="scene-meter"><span style="width:'+score+'%"></span></div>'+
+ (p?'<div class="scene-output"><strong>'+(p.correct?"Результат програми":"Що потрібно виправити")+'</strong>'+outputHTML.join("")+'</div>':'<p>Тут оживуть скарбниця, двері, температурна станція або магазин залежно від результату твого коду.</p>')+
+ (state.notice?'<div class="feedback '+(state.noticeKind==="bad"?"bad":"good")+'" role="status">'+safe(state.notice)+'</div>':'')+
+ (previous?'<div class="tip"><strong>Вже перевірено</strong>'+previous+'</div>':"")+
+ '</div></div></div></section>';
 }
 function missionHTML(){
- var m=current(),i=state.level,done=state.complete[i];
- var choices=m.values.map(n=>'<button type="button" class="testbtn '+(state.tests[i].includes(n)?"passed":"")+'" data-action="run" data-value="'+n+'"'+(state.tests[i].includes(n)||done?" disabled":"")+'>'+
-  (state.tests[i].includes(n)?"✅ ":"▶ ") +m.v+" = "+n+'</button>').join("");
- var hint=state.showHint?'<div class="hintbox"><strong>💡 Підказка</strong><p>'+m.hint+'</p><button type="button" class="toolbtn" data-action="skeleton">🧩 Вставити каркас</button></div>':"";
- var solution=state.showSolution?'<div class="hintbox"><strong>📖 Приклад правильного коду</strong><pre>'+safe(m.solution)+'</pre><span class="micro">Порівняй зі своїм кодом. Спробуй надрукувати власноруч.</span></div>':"";
+ var i=state.level,m=current(),done=state.complete[i];
+ var lines=solutionLines(i),ids=state.blocks[i]||[],chosen=state.activeTests[i];
+ if(!m.values.includes(chosen))chosen=m.values[0];
+ var displayCode=state.code[i]||codeFromBlocks(i);
+ var tokens=BLOCK_ORDER[i].map(n=>
+  '<button class="block-button" type="button" data-action="add-block" data-value="'+n+'" '+(done||ids.includes(n)?"disabled":"")+'>'+
+  '<code>'+safe(lines[n])+'</code><small>'+(lines[n].startsWith("    ")?"↳ команда з відступом":"↳ команда або умова")+'</small></button>').join("");
+ var explanation=ids.length?'<div class="block-feedback"><strong>💡 Що зробив цей блок?</strong><p>'+blockDescription(lines[ids[ids.length-1]])+
+ '</p><div class="block-next">'+(ids.length===lines.length?"Усі рядки зібрано! Обери тестові дані та перевір код.":"Наступний крок: "+STEP_GUIDE[i][ids.length])+'</div></div>':
+ '<div class="block-feedback"><strong>🧩 Як працювати?</strong><p>Натискай на готові рядки в правильному порядку. У редакторі вони складуть справжню Python-програму.</p><div class="block-next">'+STEP_GUIDE[i][0]+'</div></div>';
+ var choice=m.values.map(v=>'<button type="button" class="test-choice '+(chosen===v?"active ":"")+(state.tests[i].includes(v)?"passed":"")+
+ '" aria-pressed="'+(chosen===v)+'" data-action="select-test" data-value="'+v+'">'+(state.tests[i].includes(v)?"✓ ":"")+m.v+" = "+v+'</button>').join("");
+ var help=state.showHint?'<div class="hintbox"><strong>💡 Підказка</strong><p>'+m.hint+'</p></div>':"";
  var actions=i===2&&done?
-   '<div class="actions"><button type="button" class="btn primary" data-action="bonus">⭐ Спробувати бонус</button>'+
-   '<button type="button" class="btn secondary" data-action="end">🏁 Завершити основну частину (3/3)</button></div>':
-   (done?'<div class="actions"><button type="button" class="btn primary" data-action="next">'+(i===3?"🏆 Завершити бонус":"Зберегти та перейти →")+'</button></div>':"");
- return '<div class="workspace"><section class="panel"><div class="pad">'+
+ '<div class="actions"><button type="button" class="btn primary" data-action="bonus">⭐ Спробувати бонус</button><button type="button" class="btn secondary" data-action="end">🏁 Завершити основну частину (3/3)</button></div>':
+ done?'<div class="actions"><button type="button" class="btn primary" data-action="next">'+(i===3?"🏆 Завершити бонус":"💾 Зберегти та перейти →")+'</button></div>':"";
+ return '<div class="quest-stack">'+
+ '<section class="quest-panel"><div class="quest-pad">'+
  '<div class="kicker">'+m.tag+'</div><h2>'+m.title+'</h2><p class="lead">'+m.subtitle+'</p>'+
- '<div class="info">'+(i===3?"⭐ <strong>Бонус необов’язковий.</strong> Це завдання підвищеної складності для претендентів на найвищу оцінку.":"🎯 <strong>Важлива навичка:</strong> писати програму самостійно, а не просто вибирати відповідь.")+'</div>'+
- '<div class="task"><h3>Що має зробити програма?</h3><p>'+m.task+'</p>'+
- '<p class="micro">Код пишемо англійськими командами. Відступ після двокрапки — 4 пробіли. Текст у print має збігатися із завданням.</p></div>'+
- '<div class="editor"><div class="editor-top"><span>🐍 Python • твій редактор</span><span>'+m.v+' задає гра</span></div>'+
- '<textarea id="editor" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Редактор Python" '+(done?'disabled':'')+' placeholder="Напиши код тут. Наприклад: if ...:&#10;    print(...)">'+safe(state.code[i])+'</textarea></div>'+
- '<div class="toolbar"><button type="button" class="toolbtn" data-action="indent" '+(done?'disabled':'')+'>↳ 4 пробіли</button>'+
- '<button type="button" class="toolbtn" data-action="hint">'+(state.showHint?"Сховати підказку":"💡 Підказка")+'</button>'+
- (state.attempts[i]>=2?'<button type="button" class="toolbtn" data-action="solution">'+(state.showSolution?"Сховати зразок":"📖 Подивитися зразок")+'</button>':"")+
- '<button type="button" class="toolbtn" data-action="clear" '+(done?'disabled':'')+'>🧽 Очистити код</button></div>'+
- hint+solution+
- '<h3 style="margin:12px 0 7px;font-size:17px">Перевір код на різних значеннях</h3>'+
- '<p class="micro">Кожне число треба запустити окремо. Якщо зміниш код, перевірки почнуться заново.</p>'+
- '<div class="testlist">'+choices+'</div>'+
- (state.notice?'<div class="feedback '+(state.noticeKind==="bad"?"bad":"good")+'" role="status">'+safe(state.notice)+'</div>':"")+
- (done?'<div class="feedback good"><strong>✅ Місія виконана!</strong><p>Ти перевірив усі '+m.values.length+' набори даних.</p></div>':"")+
- actions+'</div></section>'+sceneHTML(m)+'</div>';
+ (i===3?'<div class="bonusgold">⭐ <strong>Бонус необов’язковий.</strong> По дві команди всередині кожної гілки — завдання підвищеної складності для тих, хто прагне високого рівня.</div>':"")+
+ '<div class="section-head"><span class="section-number">1</span><div><span class="section-eyebrow">КРОК 1 · ПРОЧИТАЙ УМОВУ</span><h3>📜 ЗАВДАННЯ</h3></div></div>'+
+ '<div class="task"><p>'+m.task+'</p></div>'+
+ '<div class="info"><strong>🧠 Пояснення:</strong> '+m.explanation+'</div>'+
+ '<p class="micro">Значення '+m.v+' вже задає гра. Команду input() писати не потрібно.</p></div></section>'+
+ '<section class="quest-panel"><div class="quest-pad">'+
+ '<div class="section-head"><span class="section-number">2</span><div><span class="section-eyebrow">КРОК 2 · СКЛАДИ ПРОГРАМУ</span><h3>⌨️ РЕДАКТОР КОДУ</h3></div></div>'+
+ '<div class="editor"><div class="editor-top"><span>🐍 Python · Складання з готових рядків</span><span>Рядків '+ids.length+'/'+lines.length+'</span></div>'+
+ '<textarea id="editor" readonly spellcheck="false" aria-label="Код із вибраних блоків" placeholder="Тут з’являться вибрані рядки Python">'+safe(displayCode)+'</textarea></div>'+
+ '<div class="toolbar"><button type="button" class="toolbtn" data-action="undo-block" '+(done||!ids.length?"disabled":"")+'>↶ Прибрати останній рядок</button>'+
+ '<button type="button" class="toolbtn" data-action="clear-blocks" '+(done||!ids.length?"disabled":"")+'>🧽 Очистити редактор</button>'+
+ '<button type="button" class="toolbtn" data-action="hint">'+(state.showHint?"Сховати підказку":"💡 Підказка")+'</button></div>'+
+ '<p class="block-help"><strong>Готові блоки коду:</strong> тут немає зайвих команд. Важливо скласти їх у правильному порядку. Відступи вже підготовлені.</p>'+
+ '<div class="block-grid" id="blockButtons">'+tokens+'</div>'+
+ explanation+help+'</div></section>'+
+ '<section class="quest-panel"><div class="quest-pad">'+
+ '<div class="section-head"><span class="section-number">3</span><div><span class="section-eyebrow">КРОК 3 · ОБЕРИ ЧИСЛО ДЛЯ ЗАПУСКУ</span><h3>🧪 ТЕСТОВІ ДАНІ</h3></div></div>'+
+ '<p class="lead">Вибери один набір даних і натисни <strong>«Перевірити код»</strong>. Потім повтори для інших чисел. Межі умов теж важливі!</p>'+
+ '<div class="test-chooser">'+choice+'</div>'+
+ '<div class="actions"><button type="button" class="btn primary" data-action="check" '+(done?"disabled":"")+'>▶ Перевірити код ⚡</button>'+
+ '<span class="micro">Перевірено '+state.tests[i].length+' з '+m.values.length+'</span></div>'+
+ '</div></section>'+
+ sceneHTML(m)+
+ (done?'<section class="quest-panel"><div class="quest-pad"><div class="feedback good"><strong>✅ Усі тести пройдено!</strong><p>Ти побачив, як Python обирає різні гілки залежно від умов.</p></div>'+actions+'</div></section>':"")+
+ '</div>';
 }
+
 function finishHTML(){
  var bonus=state.complete[3],core=state.complete.slice(0,3).filter(Boolean).length;
  return '<div class="workspace"><section class="panel"><div class="pad"><div class="kicker">ЗАВДАННЯ З PYTHON ВИКОНАНО</div>'+
@@ -508,22 +590,29 @@ function handleEditorUpdate(value){
  var testButtons=document.querySelectorAll(".testbtn");testButtons.forEach(b=>{b.classList.remove("passed");b.disabled=false;b.textContent="▶ "+current().v+" = "+b.getAttribute("data-value")});
 }
 function interact(action,value){
- if(action==="hint"){if(!state.showHint){state.hints[state.level]++;}state.showHint=!state.showHint;store();render();return;}
- if(action==="solution"){state.showSolution=!state.showSolution;store();render();return;}
- if(action==="skeleton"){if(state.level>=4||state.complete[state.level])return;state.code[state.level]=current().skeleton;state.tests[state.level]=[];state.notice="";state.noticeKind="";store();render();$("editor").focus();return;}
- if(action==="clear"){if(state.level>=4||state.complete[state.level])return;state.code[state.level]="";state.tests[state.level]=[];state.notice="";store();render();$("editor").focus();return;}
- if(action==="indent"){var ed=$("editor");if(ed)insertAtCursor(ed,"    ");return;}
- if(action==="run"){var num=Number(value);if(current().values.includes(num))testValue(num);return;}
+ if(action==="hint"){if(!state.showHint)state.hints[state.level]++;state.showHint=!state.showHint;store();render();return;}
+ if(action==="add-block"){addBlock(Number(value));return;}
+ if(action==="undo-block"){undoBlock();return;}
+ if(action==="clear-blocks"){clearBlocks();return;}
+ if(action==="select-test"){
+  var num=Number(value);if(!current().values.includes(num))return;
+  state.activeTests[state.level]=num;store();render();return;
+ }
+ if(action==="check"){
+  var num=state.activeTests[state.level];
+  if(!current().values.includes(num))num=current().values[0];
+  testValue(num);return;
+ }
  if(action==="next"){nextLevel();return;}
  if(action==="bonus"){finishMandatory("bonus");return;}
  if(action==="end"){finishMandatory("end");return;}
  if(action==="start-bonus"){if(state.complete[2])changeLevel(3);return;}
  if(action==="copy"){
-  var text="Академія рішень • Частина 2. "+state.student.klass+", група "+state.student.group+", "+state.student.surname+" "+state.student.first+
+  var out="Академія рішень • Частина 2. "+state.student.klass+", група "+state.student.group+", "+state.student.surname+" "+state.student.first+
     ". Основні місії: "+state.complete.slice(0,3).filter(Boolean).length+"/3. Бонус: "+(state.complete[3]?"так":"ні")+".";
-  Promise.resolve(navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(text):Promise.reject(Error("copy")))
+  Promise.resolve(navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(out):Promise.reject(Error("copy")))
     .then(()=>$("copyResult").textContent="✅ Результат скопійовано.")
-    .catch(()=>$("copyResult").textContent=text);
+    .catch(()=>$("copyResult").textContent=out);
   return;
  }
 }
@@ -532,7 +621,6 @@ document.addEventListener("click",ev=>{
  interact(t.getAttribute("data-action"),t.getAttribute("data-value"));
 });
 document.addEventListener("input",ev=>{
- if(ev.target.id==="editor"){handleEditorUpdate(ev.target.value);return;}
  if(["first","surname","klass","group"].includes(ev.target.id)&&!state.locked){readProfile();alertSync("💾 Дані учня збережено в браузері; після місії надішлемо звіт.",false);}
 });
 document.addEventListener("change",ev=>{
