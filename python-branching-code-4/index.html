@@ -260,9 +260,12 @@ async function drain(){
  if(sending||!state.locked)return;
  sending=true;
  try{
-  var stages=Object.keys(state.pending).filter(k=>state.pending[k]).map(Number).sort((a,b)=>a-b);
-  for(const n of stages){
-   if(!state.reports[n])continue;
+  // Обробляємо й нові контрольні точки, додані під час поточного надсилання.
+  while(true){
+   var stages=Object.keys(state.pending).filter(k=>state.pending[k]).map(Number).sort((a,b)=>a-b);
+   if(!stages.length)break;
+   var n=stages[0];
+   if(!state.reports[n]){delete state.pending[n];store();continue;}
    alertSync("⏳ Надсилаємо результат: "+Math.min(n,3)+"/3"+(n===4?" + бонус":""),false);
    try{
     await fetch(WEB_APP,{method:"POST",mode:"no-cors",cache:"no-store",redirect:"follow",
