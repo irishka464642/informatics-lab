@@ -228,7 +228,7 @@ const MISSIONS=[
   texts:["Меч куплено","Шлях відкрито","Недостатньо монет","Зароби ще монет"]}
 ];
 const $=id=>document.getElementById(id);
-const fresh=()=>({level:0,complete:[false,false,false,false],code:["","","",""],blocks:[[],[],[],[]],activeTests:[15,9,25,25],scene:null,failed:[0,0,0,0],tests:[[],[],[],[]],attempts:[0,0,0,0],hints:[0,0,0,0],showHint:false,showSolution:false,
+const fresh=()=>({level:0,complete:[false,false,false,false],code:["","","",""],blocks:[[],[],[],[]],activeTests:[15,9,10,25],scene:null,failed:[0,0,0,0],tests:[[],[],[],[]],attempts:[0,0,0,0],hints:[0,0,0,0],showHint:false,showSolution:false,
  student:{first:"",surname:"",klass:"",group:""},sessionId:"",linkedSession:"",startedAt:0,locked:false,
  reports:{},pending:{},lastSent:0,notice:"",noticeKind:"",finished:false,bonusSkipped:false,latestOutput:""});
 function safe(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
@@ -236,9 +236,17 @@ function readJSON(key){try{return JSON.parse(localStorage.getItem(key)||"null")}
 function load(){
  var val=readJSON(KEY),base=fresh();
  if(val&&Number.isInteger(val.level)&&val.level>=0&&val.level<=4&&Array.isArray(val.complete)&&Array.isArray(val.code)&&Array.isArray(val.tests)){
-  return Object.assign(base,val,{student:Object.assign(base.student,val.student||{}),complete:val.complete.slice(0,4),code:val.code.slice(0,4),
+  var restored=Object.assign(base,val,{student:Object.assign(base.student,val.student||{}),complete:val.complete.slice(0,4),code:val.code.slice(0,4),
     tests:val.tests.slice(0,4).map(x=>Array.isArray(x)?x:[]),blocks:Array.isArray(val.blocks)?val.blocks.map(x=>Array.isArray(x)?x:[]):base.blocks,activeTests:Array.isArray(val.activeTests)?val.activeTests:base.activeTests,failed:Array.isArray(val.failed)?val.failed:base.failed,attempts:Array.isArray(val.attempts)?val.attempts.slice(0,4):base.attempts,
     hints:Array.isArray(val.hints)?val.hints.slice(0,4):base.hints,reports:val.reports||{},pending:val.pending||{}});
+  // Для учнів, які зупинились на третій місії: замінюємо стару вправу
+  // з помилковими температурними межами, не чіпаючи вже завершені місії 1–2.
+  if(!restored.complete[2]&&restored.weatherLesson!=="air-15-25"){
+    restored.blocks[2]=[];restored.code[2]="";restored.tests[2]=[];
+    restored.activeTests[2]=10;restored.scene=null;
+  }
+  restored.weatherLesson="air-15-25";
+  return restored;
  }
  var one=readJSON(PART1_KEY);
  if(one&&one.student&&one.student.first&&one.student.surname){
