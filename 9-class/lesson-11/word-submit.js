@@ -311,11 +311,11 @@ async function downloadWord(){
 }
 let sending=false;
 async function submitWord(){
- if(sending)return;
+ if(sending)return false;
  const form=el("wordSendForm"),button=el("sendWord");
  el("submitError").textContent="";
  let data;
- try{data=details(true);}catch{return;}
+ try{data=details(true);}catch{return false;}
  sending=true;button.disabled=true;button.textContent="Підготовка Word-файлу…";
  try{
   const blob=wordFile(data.student,data.klass,data.score);
@@ -333,9 +333,11 @@ async function submitWord(){
   // The service will redirect to its verification page on first use.
   el("submitReady").value="true";
   form.requestSubmit();
+  return true;
  }catch(e){
   el("submitError").textContent=e.message+" Можна окремо зберегти .docx.";
   sending=false;button.disabled=false;button.textContent="Надіслати роботу на пошту (.docx)";
+  return false;
  }
 }
 const form=el("wordSendForm");
@@ -346,6 +348,34 @@ form.addEventListener("submit",e=>{
 });
 el("sendWord").addEventListener("click",submitWord);
 el("saveWordTask").addEventListener("click",downloadWord);
+// The second send button is placed just below the editable document.
+el("editorSendWord").addEventListener("click",()=>{
+ el("editorPupilClass").value=el("pupilClass").value;
+ el("editorPupilName").value=el("pupilName").value;
+ el("editorSendError").textContent="";
+ el("editorSendDialog").showModal();
+});
+el("editorSendCancel").addEventListener("click",()=>el("editorSendDialog").close());
+el("editorSendForm").addEventListener("submit",async event=>{
+ event.preventDefault();
+ const klass=el("editorPupilClass").value;
+ const name=clean(el("editorPupilName").value).slice(0,70);
+ if(!["9-А","9-Б"].includes(klass)||!name){
+  el("editorSendError").textContent="Оберіть клас і введіть прізвище та ім’я.";
+  return;
+ }
+ el("pupilClass").value=klass;el("pupilName").value=name;
+ const button=el("editorSendConfirm");
+ button.disabled=true;button.textContent="Готуємо Word-файл…";
+ const accepted=await submitWord();
+ if(!accepted){
+  el("editorSendError").textContent=el("submitError").textContent||"Не вдалося підготувати вкладення. Спробуйте зберегти Word-файл.";
+ }else{
+  // The FormSubmit page will open after the browser submits the multipart form.
+  el("editorSendDialog").close();
+ }
+ button.disabled=false;button.textContent="✉ Надіслати .docx";
+});
 if(new URLSearchParams(location.search).get("submitted")==="1"){
  el("submissionNotice").hidden=false;
  try{history.replaceState(null,"",location.pathname);}catch{}
