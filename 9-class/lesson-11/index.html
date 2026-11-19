@@ -91,6 +91,9 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 .share-notice{font-size:12px;color:#687b94;padding:8px}
 @media(max-width:550px){#reviewPanel{padding:12px}.review-item{padding:10px}.review-buttons .btn{flex:1 1 140px}}
 
+.editor img.image-frame{border:3px solid #5a83bb;border-radius:4px;padding:5px}
+.editor img.image-rounded{border-radius:26px;box-shadow:0 3px 10px #23456a33}
+@media print{#reviewPanel,.toolbar#tools-review,.toolbar#tools-sharing{display:none!important}}
 </style>
 </head>
 <body>
@@ -147,7 +150,11 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 <button class="tool" id="insertTable">▦ Таблиця 3×3</button>
 <select class="toolselect" id="tableStyle" aria-label="Стиль таблиці"><option value="">Стиль таблиці</option><option value="blue">Синій</option><option value="mint">Зелений</option><option value="gray">Сірий</option></select>
 <button class="tool" id="insertImage">▧ Малюнок</button>
-<button class="tool" id="pickImage">Фото з телефона</button><input id="imageFile" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+<button class="tool" id="pickImage">Фото з телефона</button>
+<select class="toolselect" id="imageStyle" aria-label="Стиль зображення">
+ <option value="">Стиль зображення</option><option value="plain">Звичайний</option>
+ <option value="image-frame">Рамка</option><option value="image-rounded">Заокруглення</option>
+</select><input id="imageFile" type="file" accept="image/png,image/jpeg,image/webp" hidden>
 <button class="tool" id="insertSymbol">Ω Символ</button>
 <button class="tool" id="insertFormula">∑ Формула</button>
 </div>
@@ -166,6 +173,7 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 <button class="tool" id="makeComment">＋ Коментар</button>
 <button class="tool" id="makeSuggestion">✎ Запропонувати зміну</button>
 <button class="tool" id="makeStyleSuggestion">▤ Запропонувати стиль</button>
+<button class="tool" id="suggestTocRemoval">Запропонувати видалення змісту</button>
 <button class="tool" id="openReviews">Переглянути рецензії</button>
 </div>
 <div class="toolbar" id="tools-sharing" hidden>
@@ -234,7 +242,7 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 </form></dialog>
 <dialog id="styleDialog"><form id="styleForm" method="dialog">
 <h2>Запропонувати зміну стилю</h2><p id="styleContext"></p>
-<label>Стиль<select id="reviewStyle"><option value="p">Звичайний текст</option><option value="h1">Заголовок 1</option><option value="h2">Заголовок 2</option><option value="blue">Синя таблиця</option><option value="mint">Зелена таблиця</option><option value="gray">Сіра таблиця</option></select></label>
+<label>Стиль<select id="reviewStyle"><option value="p">Звичайний текст</option><option value="h1">Заголовок 1</option><option value="h2">Заголовок 2</option><option value="blue">Синя таблиця</option><option value="mint">Зелена таблиця</option><option value="gray">Сіра таблиця</option><option value="image-frame">Зображення: рамка</option><option value="image-rounded">Зображення: заокруглення</option></select></label>
 <div class="review-buttons"><button type="button" class="btn" id="cancelStyle">Скасувати</button><button type="submit" class="btn primary">Запропонувати</button></div>
 </form></dialog>
 <dialog id="shareDialog">
@@ -249,7 +257,7 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 const KEY="informatics-lab-9-lesson11-final-v3", $=id=>document.getElementById(id), editor=$("editor");
 const DRAFT="<p>Безпека облікового запису</p><p>Створюйте надійні паролі, використовуйте різні паролі для різних сервісів. Не передавайте нікому коди входу.</p><p>Двофакторний захист</p><p>Додаткова перевірка зменшує ризик несанкціонованого входу, навіть якщо пароль став відомий іншій людині.</p><p>Перевірка інформації</p><p>Перед поширенням повідомлення звертайте увагу на автора, дату публікації та першоджерело.</p><p>Перевірте автора повідомлення.</p><p>Порівняйте дані у двох джерелах.</p><p>Знайдіть першоджерело.</p><p>Зверніть увагу на дату.</p><p>Цифровий слід</p><p>Публікації та повідомлення можуть залишатися доступними після видалення. Продумуйте, яку інформацію розміщуєте у відкритому доступі.</p><p>Ризик — Рішення — Результат</p><p>Слабкий пароль — Складний пароль — Захист доступу</p><p>Сумнівний допис — Перевірка джерела — Менше помилок</p><p>Корисний ресурс: Дія.Освіта</p><p>Формула: P = (a / b) × 100 %</p><p>Будьте уважними до особистих даних.</p><p>Регулярно перевіряйте налаштування приватності.</p>";
 let savedRange=null,tocActive=false,tab="home",toastTimer,columns=1,orientation="portrait";
-let documentId="doc"+Math.random().toString(36).slice(2,12), accessRole="owner",comments=[],suggestions=[],reviewTarget=null;
+let documentId="doc"+Math.random().toString(36).slice(2,12), accessRole="owner",comments=[],suggestions=[],reviewTarget=null,lastImage=null;
 function toast(msg){const e=$("toast");e.textContent=msg;e.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.hidden=true,2700);}
 function safeUrl(value){try{const u=new URL(String(value).trim());return /^(https?:)$/.test(u.protocol)?u.href:null;}catch{return null;}}
 function escapeHTML(t){return String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
@@ -280,7 +288,10 @@ function safeHTML(html){
    }
    if(n.dataset&&/^[a-z0-9-]{1,42}$/i.test(n.dataset.bid||""))props["data-bid"]=n.dataset.bid;
    if(n.tagName==="TABLE"&&["blue","mint","gray"].includes(n.className))props.class=n.className;
-   if(n.tagName==="IMG"&&n.classList.contains("review-anchor"))props.class="review-anchor";
+   if(n.tagName==="IMG"){
+    const styles=["image-frame","image-rounded"].filter(x=>n.classList.contains(x));
+    if(styles.length)props.class=styles[0];
+   }
    if(n.tagName==="HR"&&n.className==="section-break")props.class="section-break";
    if(n.tagName==="SPAN"&&n.className==="formula")props.class="formula";
    const decls=[];
@@ -536,6 +547,8 @@ function decideReview(id,accept){
  if(!item||item.status!=="pending")return;
  const target=findReviewTarget(item.target);
  if(accept){
+  if(item.kind==="toc"){tocActive=false;updateTOC();}
+  else {
   if(!target){toast("Фрагмент, до якого належала пропозиція, не знайдено.");return;}
   if(item.kind==="text"){
    if(target.textContent.trim()!==item.before&&!confirm("Текст змінився. Замінити його запропонованим?"))return;
@@ -543,11 +556,16 @@ function decideReview(id,accept){
   }else if(item.kind==="table"){
    if(target.tagName!=="TABLE")return;
    target.className=item.after;
+  }else if(item.kind==="image"){
+   if(target.tagName!=="IMG")return;
+   target.classList.remove("image-frame","image-rounded");
+   if(["image-frame","image-rounded"].includes(item.after))target.classList.add(item.after);
   }else if(item.kind==="style"){
    if(!["p","h1","h2"].includes(item.after))return;
    const newElement=make(item.after);newElement.innerHTML=target.innerHTML;
    newElement.dataset.bid=target.dataset.bid;
    target.replaceWith(newElement);
+  }
   }
  }
  item.status=accept?"accepted":"rejected";persist();renderReviewPanel();toast(accept?"Зміну прийнято.":"Зміну відхилено.");
@@ -579,21 +597,36 @@ function saveSuggestion(e){
  $("suggestDialog").close();persist();$("reviewPanel").hidden=false;renderReviewPanel();toast("Пропозицію додано.");
 }
 function openStyleBox(){
- remember();const target=targetBlock();if(!target){toast("Оберіть абзац або таблицю.");return;}
+ remember();
+ const target=lastImage&&editor.contains(lastImage)?lastImage:targetBlock();
+ if(!target){toast("Оберіть абзац, зображення або таблицю.");return;}
+ if(!target.dataset.bid)target.dataset.bid="b"+Math.random().toString(36).slice(2,11);
  reviewTarget=target.dataset.bid;
- $("styleContext").textContent=target.textContent.trim().slice(0,120);
- $("reviewStyle").value=target.tagName==="TABLE"?"blue":"h1";
+ $("styleContext").textContent=target.tagName==="IMG"?"Зображення":target.textContent.trim().slice(0,120);
+ $("reviewStyle").value=target.tagName==="TABLE"?"blue":target.tagName==="IMG"?"image-frame":"h1";
  $("styleDialog").showModal();
 }
 function saveStyleSuggestion(e){
- e.preventDefault();const target=findReviewTarget(reviewTarget);
- if(!target)return;
+ e.preventDefault();const target=findReviewTarget(reviewTarget);if(!target)return;
  const after=$("reviewStyle").value;
- const isTable=target.tagName==="TABLE",isTableStyle=["blue","mint","gray"].includes(after);
- if(isTable!==isTableStyle){toast(isTable?"Оберіть стиль таблиці.":"Оберіть стиль абзацу.");return;}
- const before=isTable?(target.className||"plain"):target.tagName.toLowerCase();
- suggestions.push({id:reviewId(),target:reviewTarget,kind:isTable?"table":"style",before,after,status:"pending"});
+ const isTable=target.tagName==="TABLE",isImage=target.tagName==="IMG";
+ const isTableStyle=["blue","mint","gray"].includes(after),isImageStyle=["image-frame","image-rounded"].includes(after);
+ if((isTable&&!isTableStyle)||(isImage&&!isImageStyle)||(!isTable&&!isImage&&(isTableStyle||isImageStyle))){toast("Оберіть стиль відповідного об’єкта.");return;}
+ const before=isTable?(target.className||"plain"):isImage?(target.className||"plain"):target.tagName.toLowerCase();
+ suggestions.push({id:reviewId(),target:reviewTarget,kind:isTable?"table":isImage?"image":"style",before,after,status:"pending"});
  $("styleDialog").close();persist();$("reviewPanel").hidden=false;renderReviewPanel();toast("Пропозицію оформлення додано.");
+}
+function proposeTocRemoval(){
+ if(!tocActive){toast("У документі ще немає змісту.");return;}
+ suggestions.push({id:reviewId(),target:"toc",kind:"toc",before:"Автоматичний зміст",after:"Видалити зміст",status:"pending"});
+ persist();$("reviewPanel").hidden=false;renderReviewPanel();toast("Вилучення змісту запропоновано. Автор може відхилити зміну.");
+}
+function styleSelectedImage(value){
+ const img=lastImage&&editor.contains(lastImage)?lastImage:editor.querySelector("img");
+ if(!img){toast("Спочатку вставте зображення.");return;}
+ img.classList.remove("image-frame","image-rounded");
+ if(["image-frame","image-rounded"].includes(value))img.classList.add(value);
+ persist();toast("Стиль зображення змінено.");
 }
 function setAccessRole(){
  const owner=accessRole==="owner",review=accessRole==="review",comment=accessRole==="comment";
@@ -693,7 +726,7 @@ function importReview(obj){
  }
  const sids=new Set(suggestions.map(x=>x.id));
  for(const edit of (Array.isArray(obj.suggestions)?obj.suggestions:[]).slice(0,80)){
-  if(edit&&typeof edit.id==="string"&&typeof edit.target==="string"&&["text","style","table"].includes(edit.kind)&&!sids.has(edit.id)){
+  if(edit&&typeof edit.id==="string"&&typeof edit.target==="string"&&["text","style","table","image","toc"].includes(edit.kind)&&!sids.has(edit.id)){
    suggestions.push({id:edit.id.slice(0,55),target:edit.target.slice(0,42),kind:edit.kind,
     before:String(edit.before||"").slice(0,1200),after:String(edit.after||"").slice(0,1200),status:"pending"});
    sids.add(edit.id);
@@ -786,6 +819,9 @@ $("makeSuggestion").addEventListener("click",openSuggestBox);
 $("suggestForm").addEventListener("submit",saveSuggestion);
 $("cancelSuggest").addEventListener("click",()=>$("suggestDialog").close());
 $("makeStyleSuggestion").addEventListener("click",openStyleBox);
+$("suggestTocRemoval").addEventListener("click",proposeTocRemoval);
+$("imageStyle").addEventListener("change",e=>styleSelectedImage(e.target.value));
+editor.addEventListener("click",e=>{const n=e.target;if(n?.tagName==="IMG")lastImage=n;});
 $("styleForm").addEventListener("submit",saveStyleSuggestion);
 $("cancelStyle").addEventListener("click",()=>$("styleDialog").close());
 $("openReviews").addEventListener("click",()=>{$("reviewPanel").hidden=false;renderReviewPanel();$("reviewPanel").scrollIntoView({behavior:"smooth"});});
@@ -795,6 +831,6 @@ $("shareReviewer").addEventListener("click",()=>createShare("review"));
 $("sendReview").addEventListener("click",returnReview);
 $("closeShare").addEventListener("click",()=>$("shareDialog").close());
 $("copyShare").addEventListener("click",copyShareLink);
-load();setAccessRole();readShareFromURL();
+load();setAccessRole();renderReviewMarks();readShareFromURL();
 </script>
 </body></html>
