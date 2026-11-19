@@ -126,12 +126,12 @@ var LESSONS=[
  {title:"Перевіряємо межу",sub:"Чому 10 — це не те саме, що 9? Досліди три числа.",caption:"КРОК 4 · ТЕСТУВАННЯ"},
  {title:"Збери власне розгалуження",sub:"Склади чотири рядки й запусти програму двічі.",caption:"КРОК 5 · МІНІПРОЄКТ"}
 ];
-function fresh(){return {level:0,step:0,passed:false,slots:["",""],lines:[],assembled:false,tests:[],hint:false,notice:"",noticeKind:""};}
+function fresh(){return {level:0,step:0,passed:false,slots:["",""],lines:[],assembled:false,tests:[],exampleCoins:20,hint:false,notice:"",noticeKind:""};}
 function load(){
  try{
   var v=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null");
   if(v&&Number.isInteger(v.level)&&v.level>=0&&v.level<=5&&Number.isInteger(v.step)&&v.step>=0&&v.step<=3&&Array.isArray(v.slots)&&Array.isArray(v.lines)&&Array.isArray(v.tests)){
-   return Object.assign(fresh(),v);
+   return Object.assign(fresh(),v,{lines:v.lines.filter(function(id){return ["a","b","c","d"].includes(id);})});
   }
  }catch(e){}
  return fresh();
@@ -143,11 +143,18 @@ function safe(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").rep
 function finishPart(){state.passed=true;state.hint=false;state.notice="";state.noticeKind="";store();render();}
 function fail(msg){state.notice=msg;state.noticeKind="bad";store();render();}
 function next(){
- if(!state.passed)return;
- if((state.level===0||state.level===1||state.level===3) && state.step < (state.level===3?2:1)){
-  state.step++;state.passed=false;
+ if(state.level===0&&state.step===2){
+  state.level=1;state.step=0;state.passed=false;state.slots=["",""];state.lines=[];state.assembled=false;state.tests=[];
  }else{
-  state.level=Math.min(5,state.level+1);state.step=0;state.passed=false;state.slots=["",""];state.lines=[];state.assembled=false;state.tests=[];
+  if(!state.passed)return;
+  if(state.level===0&&state.step===1){
+   // Після першої місії спочатку показуємо ПОВНИЙ простий код, без перевірки.
+   state.step=2;state.passed=false;state.exampleCoins=20;
+  }else if((state.level===0||state.level===1||state.level===3) && state.step < (state.level===3?2:1)){
+   state.step++;state.passed=false;
+  }else{
+   state.level=Math.min(5,state.level+1);state.step=0;state.passed=false;state.slots=["",""];state.lines=[];state.assembled=false;state.tests=[];
+  }
  }
  state.notice="";state.noticeKind="";state.hint=false;store();render();
  window.scrollTo({top:0,behavior:"smooth"});
@@ -213,6 +220,31 @@ function renderSimple(){
  var affirm=state.passed?'<div class="feedback ok"><strong>🎉 Саме так!</strong><p>'+d.explanation+'</p></div>':noticeHTML();
  return '<div class="cols"><section class="panel"><div class="panel-content"><div class="kicker">СПРОБУЙ · СИТУАЦІЯ '+(state.step+1)+' ІЗ '+(state.level===3?3:2)+'</div><h2>'+safe(LESSONS[state.level].title)+'</h2><p class="lead">'+safe(LESSONS[state.level].sub)+'</p>'+d.left+'<div class="choices">'+buttons+'</div>'+affirm+continueHTML()+hintHTML(d.hint)+'</div></section><aside class="panel">'+d.right+'<div class="panel-content small">Навіть якщо з першого разу не вийшло, можна спробувати ще раз. Тут немає штрафних балів.</div></aside></div>';
 }
+function renderFirstExample(){
+ var coins=state.exampleCoins===35?35:20,ok=coins>=30;
+ var branch=ok?"if":"else";
+ return '<div class="cols"><section class="panel"><div class="panel-content">'+
+ '<div class="kicker">ПІСЛЯ 1-Ї МІСІЇ · ПОЯСНЕННЯ БЕЗ ПАСТОК</div>'+
+ '<h2>Ось як рішення записують у Python</h2>'+
+ '<p class="lead">Ти щойно вирішував, чи можна купити меч. Тепер подивись: <strong>комп’ютер робить такий самий вибір за допомогою коду.</strong></p>'+
+ '<div class="lesson"><h3>Що означають ці слова?</h3><p><span class="glyph">coins</span> — кількість монет; <span class="glyph">if</span> — «якщо»; <span class="glyph">else</span> — «інакше». Знак <span class="glyph">&gt;=</span> означає «більше або дорівнює».</p></div>'+
+ '<div class="code"><div class="code-header">PYTHON · ГОТОВИЙ ПРИКЛАД</div>'+
+ '<pre>coins = <span class="num">'+coins+'</span>\n<span class="kw">if</span> coins &gt;= <span class="num">30</span>:\n    print(<span class="str">"Меч куплено"</span>)\n<span class="kw">else</span>:\n    print(<span class="str">"Недостатньо монет"</span>)</pre></div>'+
+ '<p class="codehint">Після <span class="glyph">:</span> команда має відступ у 4 пробіли. Під час виконання програма обирає лише одну гілку.</p>'+
+ '<div class="question">Подивись, як змінюється результат:</div>'+
+ '<div class="choices-mini"><button class="choice-mini" type="button" data-action="example-coins" data-value="20" aria-pressed="'+(coins===20)+'">🪙 20 монет'+(coins===20?' ✓':'')+'</button>'+
+ '<button class="choice-mini" type="button" data-action="example-coins" data-value="35" aria-pressed="'+(coins===35)+'">🪙 35 монет'+(coins===35?' ✓':'')+'</button></div>'+
+ '<div class="feedback ok"><strong>Результат: '+(ok?'⚔️ Меч куплено':'❌ Недостатньо монет')+'</strong>'+
+ '<p>Перевірка '+coins+' &gt;= 30 — <strong>'+(ok?'ТАК':'НІ')+'</strong>. Виконується команда після <span class="glyph">'+branch+'</span>.</p></div>'+
+ '<div class="action-row"><button type="button" class="action" data-action="next">Зрозуміло! До 2-ї місії →</button></div>'+
+ '</div></section><aside class="panel">'+
+ '<div class="visual"><div class="emoji" aria-hidden="true">'+(ok?'⚔️':'🪙')+'</div>'+
+ '<div class="scene-title">МАГАЗИН ГЕРОЯ · ТАК / НІ</div><div class="big-value">'+coins+' / 30 монет</div>'+
+ '<div class="scene-meter"><span style="width:'+Math.min(100,coins/30*100)+'%"></span></div>'+
+ '<p class="scene-caption">Умова: coins &gt;= 30</p></div>'+
+ '<div class="panel-content"><div class="lesson"><h3>Один вибір — два результати</h3><p><strong>ТАК → if</strong>: «Меч куплено».<br><strong>НІ → else</strong>: «Недостатньо монет».</p></div>'+
+ '<p class="small">Нічого вводити не потрібно. Просто порівняй два приклади.</p></div></aside></div>';
+}
 function renderCodeLesson(){
  var slots=state.slots;
  var a='<button type="button" class="slot '+(slots[0]?'filled':'')+'" data-action="clear-slot" data-index="0" title="Натисни, щоб змінити">'+safe(slots[0]||" ? ")+'</button>';
@@ -222,7 +254,7 @@ function renderCodeLesson(){
  '<div class="lesson"><h3>Три важливі деталі</h3><p><span class="glyph">if</span> — якщо; <span class="glyph">else</span> — інакше.<br><span class="glyph">:</span> — далі йде дія.<br><strong>4 пробіли</strong> — показують, що дія належить до умови.</p></div>'+
  '<div class="code"><div class="code-header">PYTHON · ВСТАВ ПРОПУЩЕНІ СЛОВА</div><pre>key = <span class="num">1</span>\n'+a+' key == <span class="num">1</span>:\n    print(<span class="str">"Двері відкрито"</span>)\n'+b+':\n    print(<span class="str">"Потрібен ключ"</span>)</pre></div>'+
  '<div class="question">Натискай на слова в потрібному порядку:</div>'+
- '<div class="token-grid"><button class="token" data-action="slot" data-value="if">if</button><button class="token" data-action="slot" data-value="else">else</button><button class="token" data-action="slot" data-value="print">print</button></div>'+
+ '<div class="token-grid"><button class="token" data-action="slot" data-value="if">if</button><button class="token" data-action="slot" data-value="else">else</button></div>'+
  '<p class="codehint">Щоб замінити слово, натисни на його місце у коді.</p>'+
  (state.passed?'<div class="feedback ok"><strong>✅ Код правильний!</strong><p>if перевіряє умову; else виконується, коли вона хибна. Відступи виділяють команди всередині гілок.</p></div>':noticeHTML())+
  '<div class="action-row">'+(!state.passed?'<button class="action" data-action="check-slots">Перевірити код</button>':'')+(state.passed?continueHTML():'')+'</div>'+
@@ -237,12 +269,10 @@ var correctLines=[
  '    print("Робот зупинився")'
 ];
 var lineOptions=[
- {id:"a",text:'if hp > 0:'},
- {id:"b",text:'    print("Робот рухається")'},
  {id:"c",text:'else:'},
+ {id:"a",text:'if hp > 0:'},
  {id:"d",text:'    print("Робот зупинився")'},
- {id:"e",text:'if hp < 0:'},
- {id:"f",text:'    print("Робот рухається"):'}
+ {id:"b",text:'    print("Робот рухається")'}
 ];
 function renderBuilder(){
  var source=state.lines.length?state.lines.map(function(id,i){
@@ -286,6 +316,7 @@ function render(){
   return '<div class="pip '+cls+'" aria-label="Рівень '+(n+1)+(n<done?': завершено':n===state.level?': зараз':'')+'">'+(n<done?'✓':n+1)+'</div>';
  }).join("");
  if(state.level===5)app.innerHTML=renderFinish();
+ else if(state.level===0&&state.step===2)app.innerHTML=renderFirstExample();
  else if(state.level===2)app.innerHTML=renderCodeLesson();
  else if(state.level===4)app.innerHTML=renderBuilder();
  else app.innerHTML=renderSimple();
@@ -294,6 +325,9 @@ function handle(action,value,index){
  if(action==="restart"){if(confirm("Почати заново? Поточний прогрес у цьому браузері буде очищено.")){state=fresh();store();render();}return;}
  if(action==="hint"){state.hint=!state.hint;store();render();return;}
  if(action==="next"){next();return;}
+ if(state.level===0&&state.step===2&&action==="example-coins"){
+  state.exampleCoins=value==="35"?35:20;store();render();return;
+ }
  if(state.level===5&&action==="copy"){
   var content="Академія рішень — 5/5 рівнів. Вивчено: умова, if, else, ==, >=, перевірка обох гілок.";
   Promise.resolve(navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(content):Promise.reject(Error("clipboard"))).then(function(){
