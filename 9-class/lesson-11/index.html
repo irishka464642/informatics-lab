@@ -67,7 +67,7 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 @media(max-width:650px){.top{gap:5px;padding:9px}.top-title input{font-size:15px}.top-actions{width:100%}.top-actions .btn{flex:1;font-size:13px;padding:8px}
 .toolbar{padding:6px;gap:4px}.toolgroup{padding-right:4px;border:0}.tool{min-height:43px}.toolselect{max-width:148px}
 .paper{padding:16px 13px 38px;min-height:570px}#docTitle{font-size:21px}#editor{font-size:15px;min-height:390px}
-#editor.columns2{column-count:1}.example .two{columns:1}.main{padding:9px 6px 30px}}
+#editor.columns2{column-count:2;column-gap:12px;font-size:13px}.example .two{columns:2;column-gap:12px;font-size:13px}.main{padding:9px 6px 30px}}
 @media print{header,.ribbon,.modebar,#outlinePanel,.fineprint{display:none!important}.main{padding:0}.paper{box-shadow:none;border:0;width:100%;max-width:none;min-height:0;padding:0}#editor{min-height:0}#reference{display:none!important}}
 </style>
 </head>
@@ -162,7 +162,7 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 <p>Перед поширенням повідомлення звертайте увагу на автора, дату публікації та першоджерело.</p>
 <ul><li>Перевірте автора повідомлення.</li><li>Порівняйте дані у двох джерелах.<ul><li>Знайдіть першоджерело.</li></ul></li><li>Зверніть увагу на дату.</li></ul>
 <h2>3. Цифровий слід</h2>
-<p>Публікації та коментарі можуть залишатися доступними після видалення. Продумуйте, яку інформацію розміщуєте у відкритому доступі.</p>
+<p>Публікації та повідомлення можуть залишатися доступними після видалення. Продумуйте, яку інформацію розміщуєте у відкритому доступі.</p>
 <table><tr><th>Ризик</th><th>Рішення</th><th>Результат</th></tr><tr><td>Слабкий пароль</td><td>Складний пароль</td><td>Захист доступу</td></tr><tr><td>Сумнівний допис</td><td>Перевірка джерела</td><td>Менше помилок</td></tr></table>
 <div class="sample-img">📱🛡️</div>
 <p>Корисний ресурс: <a href="https://osvita.diia.gov.ua/" target="_blank" rel="noopener noreferrer">Дія.Освіта</a></p>
@@ -186,7 +186,7 @@ dialog::backdrop{background:#142f5377}dialog h2{margin:0 0 10px;font-size:19px}d
 <script>
 "use strict";
 const KEY="informatics-lab-9-lesson11-final-v3", $=id=>document.getElementById(id), editor=$("editor");
-const DRAFT="<p>Безпека облікового запису</p><p>Створюйте надійні паролі, використовуйте різні паролі для різних сервісів. Не передавайте нікому коди входу.</p><p>Двофакторний захист</p><p>Додаткова перевірка зменшує ризик несанкціонованого входу, навіть якщо пароль став відомий іншій людині.</p><p>Перевірка інформації</p><p>Перед поширенням повідомлення звертайте увагу на автора, дату публікації та першоджерело.</p><p>Перевірте автора повідомлення.</p><p>Порівняйте дані у двох джерелах.</p><p>Знайдіть першоджерело.</p><p>Зверніть увагу на дату.</p><p>Цифровий слід</p><p>Публікації та коментарі можуть залишатися доступними після видалення. Продумуйте, яку інформацію розміщуєте у відкритому доступі.</p><p>Ризик — Рішення — Результат</p><p>Слабкий пароль — Складний пароль — Захист доступу</p><p>Сумнівний допис — Перевірка джерела — Менше помилок</p><p>Корисний ресурс: Дія.Освіта</p><p>Формула: P = (a / b) × 100 %</p><p>Будьте уважними до особистих даних.</p><p>Регулярно перевіряйте налаштування приватності.</p>";
+const DRAFT="<p>Безпека облікового запису</p><p>Створюйте надійні паролі, використовуйте різні паролі для різних сервісів. Не передавайте нікому коди входу.</p><p>Двофакторний захист</p><p>Додаткова перевірка зменшує ризик несанкціонованого входу, навіть якщо пароль став відомий іншій людині.</p><p>Перевірка інформації</p><p>Перед поширенням повідомлення звертайте увагу на автора, дату публікації та першоджерело.</p><p>Перевірте автора повідомлення.</p><p>Порівняйте дані у двох джерелах.</p><p>Знайдіть першоджерело.</p><p>Зверніть увагу на дату.</p><p>Цифровий слід</p><p>Публікації та повідомлення можуть залишатися доступними після видалення. Продумуйте, яку інформацію розміщуєте у відкритому доступі.</p><p>Ризик — Рішення — Результат</p><p>Слабкий пароль — Складний пароль — Захист доступу</p><p>Сумнівний допис — Перевірка джерела — Менше помилок</p><p>Корисний ресурс: Дія.Освіта</p><p>Формула: P = (a / b) × 100 %</p><p>Будьте уважними до особистих даних.</p><p>Регулярно перевіряйте налаштування приватності.</p>";
 let savedRange=null,tocActive=false,tab="home",toastTimer,columns=1,orientation="portrait";
 function toast(msg){const e=$("toast");e.textContent=msg;e.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.hidden=true,2700);}
 function safeUrl(value){try{const u=new URL(String(value).trim());return /^(https?:)$/.test(u.protocol)?u.href:null;}catch{return null;}}
@@ -219,6 +219,7 @@ function safeHTML(html){
    if(n.dataset&&/^[a-z0-9-]{1,42}$/i.test(n.dataset.bid||""))props["data-bid"]=n.dataset.bid;
    if(n.tagName==="TABLE"&&["blue","mint","gray"].includes(n.className))props.class=n.className;
    if(n.tagName==="HR"&&n.className==="section-break")props.class="section-break";
+   if(n.tagName==="SPAN"&&n.className==="formula")props.class="formula";
    const decls=[];
    const allowed={color:/^(#[0-9a-f]{3,8}|rgb\([0-9 ,.%]+\))$/i,
     "background-color":/^(#[0-9a-f]{3,8}|rgb\([0-9 ,.%]+\))$/i,
@@ -291,7 +292,7 @@ function insertNode(node){
   try{const r=s.getRangeAt(0);r.deleteContents();r.insertNode(node);r.setStartAfter(node);r.collapse(true);s.removeAllRanges();s.addRange(r);}
   catch{editor.append(node);}
  }else editor.append(node);
- remember();persist();node.scrollIntoView({block:"nearest"});
+ remember();persist();if(node.scrollIntoView)node.scrollIntoView({block:"nearest"});
 }
 function addParagraph(){const p=document.createElement("p");p.append(document.createElement("br"));insertNode(p);}
 function addTable(){const table=make("table");table.className="blue";
@@ -398,7 +399,7 @@ function saveHTML(){
  const clone=document.createElement("div");clone.innerHTML=safeHTML(editor.innerHTML);
  for(const h of clone.querySelectorAll("h1,h2"))if(h.dataset.bid)h.id="head-"+h.dataset.bid;
  const toc=(()=>{if(!tocActive)return "";const heads=[...clone.querySelectorAll("h1,h2")];return "<nav><h2>Зміст</h2><ol>"+heads.map(h=>"<li><a href='#"+h.id+"'>"+escapeHTML(h.textContent)+"</a></li>").join("")+"</ol></nav>";})();
- const doc="<!doctype html><html lang='uk'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>"+escapeHTML(title)+"</title><style>body{max-width:900px;margin:30px auto;padding:0 22px;font:16px/1.6 'Times New Roman',serif}header,footer{text-align:center;color:#54637b;font:12px Arial;border-block:1px solid #dde3ee;padding:10px}h1,h2{font-family:Arial;color:#254d86}table{border-collapse:collapse;width:100%;margin:12px 0}td,th{border:1px solid #bdcde3;padding:8px}table.blue th{background:#dce8fa}table.mint th{background:#d9f0e8}table.gray th{background:#e9eaf0}img{max-width:100%;height:auto}nav{padding:12px;background:#f1f6ff}a{color:#1d56a2}article{column-count:"+columns+";column-gap:28px}@media(max-width:650px){article{column-count:1}}</style></head><body><header>"+escapeHTML($("headerText").value)+"</header><h1>"+escapeHTML(title)+"</h1>"+toc+"<article>"+clone.innerHTML+"</article><footer>"+escapeHTML($("footerText").value)+"</footer></body></html>";
+ const doc="<!doctype html><html lang='uk'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>"+escapeHTML(title)+"</title><style>body{max-width:900px;margin:30px auto;padding:0 22px;font:16px/1.6 'Times New Roman',serif}header,footer{text-align:center;color:#54637b;font:12px Arial;border-block:1px solid #dde3ee;padding:10px}h1,h2{font-family:Arial;color:#254d86}table{border-collapse:collapse;width:100%;margin:12px 0}td,th{border:1px solid #bdcde3;padding:8px}table.blue th{background:#dce8fa}table.mint th{background:#d9f0e8}table.gray th{background:#e9eaf0}img{max-width:100%;height:auto}nav{padding:12px;background:#f1f6ff}a{color:#1d56a2}article{column-count:"+columns+";column-gap:28px}@media(max-width:650px){article{column-count:'+columns+'}}</style></head><body><header>"+escapeHTML($("headerText").value)+"</header><h1>"+escapeHTML(title)+"</h1>"+toc+"<article>"+clone.innerHTML+"</article><footer>"+escapeHTML($("footerText").value)+"</footer></body></html>";
  const url=URL.createObjectURL(new Blob([doc],{type:"text/html;charset=utf-8"}));const a=make("a");a.href=url;a.download="informatyka-9-urok-11.html";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
 }
 function reset(){
