@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1e448d">
+<meta name="description" content="Мобільний редактор документів для практичної роботи № 2 з інформатики, 6 клас.">
+<title>Мій Word — Практична робота № 2</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#19263a;background:#edf2f9;font-size:15px}
+*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer;touch-action:manipulation}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #edab35;outline-offset:2px}
+.top{background:linear-gradient(120deg,#193b80,#2f69b3);padding:12px max(12px,env(safe-area-inset-right)) 10px;color:white}
+.topline{max-width:1160px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.brand{font-weight:800;letter-spacing:-.02em;font-size:19px;display:flex;gap:8px;align-items:center}
+.brandicon{background:#fff;color:#164290;border-radius:7px;padding:5px 9px;font-size:24px;line-height:1}
+.subtitle{font-weight:400;font-size:12px;opacity:.88}
+.doc-meta{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.doc-meta input,.doc-meta select{height:34px;max-width:150px;min-width:0;border:1px solid #8daeda;border-radius:8px;background:#fff;color:#14233f;padding:5px 9px}
+.doc-meta #title{min-width:120px;max-width:260px;width:22vw}
+.status{font-size:12px;opacity:.9;min-width:66px}
+.actionbar{background:#fff;border-bottom:1px solid #d8dfeb;box-shadow:0 2px 8px #1e2f4b15;position:sticky;top:0;z-index:15}
+.actions{max-width:1160px;margin:auto;padding:7px 10px 0}
+.tabs{display:flex;gap:5px;overflow-x:auto;scrollbar-width:thin}
+.tab{border:0;background:transparent;color:#405171;border-bottom:3px solid transparent;border-radius:5px 5px 0 0;padding:9px 12px;white-space:nowrap;font-size:14px;font-weight:650}
+.tab[aria-selected=true]{border-bottom-color:#2b64b9;background:#edf3ff;color:#194483}
+.tools{display:none;align-items:center;gap:6px;flex-wrap:wrap;padding:9px 0;min-height:49px}
+.tools.active{display:flex}
+.tool{min-width:37px;min-height:39px;border:1px solid #d4deed;background:#f8faff;color:#183456;border-radius:9px;padding:7px 10px;font-size:14px;font-weight:600}
+.tool:hover,.tool:active{background:#e7f0ff}
+.tool.primary{background:#1f56a3;color:white;border-color:#1f56a3}
+.tool.primary:hover{background:#153f7f}
+.tool.danger{color:#a22b32;border-color:#e6bfc3}
+.tool.icon{font-size:17px;padding:6px 9px}
+.tool[disabled]{opacity:.4;cursor:default}
+.selecttool,.colorlabel{display:inline-flex;align-items:center;border:1px solid #d4deed;border-radius:9px;background:#f8faff;padding:4px 7px;gap:5px;font-size:13px;min-height:39px}
+.selecttool select{border:0;background:transparent;color:#193655;max-width:114px;outline:none}
+.colorlabel input{width:27px;height:29px;padding:0;border:0;background:transparent}
+.sep{width:1px;height:26px;background:#d9dfeb;margin:0 3px}
+.workspace{display:grid;grid-template-columns:minmax(0,1fr) 285px;gap:17px;max-width:1160px;margin:18px auto;padding:0 12px 28px}
+.paperwrap{min-width:0}
+.paper{background:white;min-height:710px;box-shadow:0 5px 25px #1b31532b;border-radius:5px;padding:55px 58px;margin:0 auto;max-width:794px}
+.paper.compact{padding:25px 30px}
+#editor{outline:none;min-height:590px;line-height:1.45;font-family:Arial,sans-serif;font-size:16px;overflow-wrap:anywhere;caret-color:#1a53a1}
+#editor:empty:before{content:"Почніть писати тут…";color:#8391a2}
+#editor h1{font-size:28px;margin:0 0 12px;line-height:1.2;color:#152d57}
+#editor h2{font-size:22px;margin:18px 0 9px;color:#243f6c}
+#editor p{margin:0 0 12px}
+#editor ul,#editor ol{padding-left:24px;margin:0 0 12px}
+#editor img{max-width:100%;height:auto;border-radius:4px;cursor:pointer}
+#editor img.selected-media{outline:3px solid #3975cf;outline-offset:2px}
+#editor a{color:#1655b3;text-decoration:underline}
+#editor hr{border:0;border-top:2px solid #b7c7de;margin:16px 0}
+#editor table{border-collapse:collapse;width:100%;table-layout:fixed;margin:12px 0 16px}
+#editor td,#editor th{border:1px solid #70829d;padding:8px;vertical-align:top;min-width:25px;word-break:break-word}
+#editor th{background:#e7effc;font-weight:700}
+#editor table.zebra tr:nth-child(even){background:#eef5ff}
+#editor td:focus,#editor th:focus{outline:2px solid #3975cf;outline-offset:-2px}
+.sidebar{display:flex;flex-direction:column;gap:13px}
+.panel{background:white;border:1px solid #dce3ef;border-radius:13px;padding:17px;box-shadow:0 2px 10px #1227460b}
+.panel h2{font-size:16px;margin:0 0 9px;color:#16376b}
+.panel p,.panel li{font-size:13px;line-height:1.48;color:#34445b}
+.panel ol{padding-left:20px;margin:6px 0}
+.panel li{margin:7px 0}
+.pill{display:inline-block;background:#e7efff;color:#244e93;border-radius:30px;padding:4px 9px;font-size:11px;font-weight:700}
+.checkrow{display:flex;align-items:flex-start;gap:7px;font-size:13px;margin:10px 0;color:#34445b}
+.checkrow span:first-child{width:21px;height:21px;text-align:center;border:1px solid #b9c8db;border-radius:5px;flex-shrink:0;line-height:19px}
+.checkrow.ok span:first-child{background:#21875f;color:white;border-color:#21875f}
+.meter{height:9px;border-radius:20px;background:#e8ecf3;overflow:hidden;margin:9px 0}
+.meter b{display:block;height:100%;width:0;background:#3175c8;transition:width .2s}
+.hint{font-size:12px;color:#60708a}
+.contextbar{display:none;align-items:center;gap:7px;flex-wrap:wrap;border-top:1px dashed #cbd5e6;padding:8px 0}
+.contextbar.show{display:flex}
+.note{max-width:1160px;margin:0 auto 20px;padding:0 13px;color:#556784;font-size:12px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#193960;color:#fff;padding:10px 18px;border-radius:12px;max-width:94vw;box-shadow:0 4px 16px #152c4655;z-index:50;display:none}
+.toast.show{display:block}
+dialog{width:min(530px,94vw);border:0;border-radius:17px;padding:18px;box-shadow:0 15px 50px #14274565;color:#25344a}
+dialog::backdrop{background:#102d536a}
+dialog h2{margin:4px 0 8px;font-size:20px}
+.dialogbuttons{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin-top:16px}
+.gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+.gallery button{border:1px solid #cbd7e8;background:#f6f9ff;border-radius:12px;padding:11px;min-height:95px;font-weight:700;color:#294368}
+.gallery button span{display:block;font-size:31px;margin-bottom:5px}
+.dialogtext{color:#52627b;font-size:14px;line-height:1.45}
+footer{font-size:12px}
+@media(max-width:870px){.workspace{grid-template-columns:1fr}.sidebar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.paper{padding:38px 28px;min-height:570px}#editor{min-height:500px}}
+@media(max-width:560px){.brand{font-size:17px}.doc-meta{width:100%}.doc-meta #title{flex:1;max-width:none;width:auto}.doc-meta input,.doc-meta select{max-width:95px}.workspace{padding:0;margin:8px auto}.paper{padding:23px 15px;min-height:60vh}.paper.compact{padding:16px 12px}#editor{min-height:57vh;font-size:16px}.sidebar{grid-template-columns:1fr}.actionbar{position:sticky;top:0}.tab{padding:9px 11px}.tool{min-height:42px}.panel{padding:13px}.tools{max-height:165px;overflow-y:auto}}
+@media print{@page{size:A4;margin:17mm}body{background:white}.top,.actionbar,.sidebar,.note,.toast,dialog{display:none!important}.workspace{display:block;margin:0;padding:0}.paper,.paper.compact{box-shadow:none;max-width:none;padding:0;margin:0;min-height:0;border-radius:0}#editor{min-height:0}#editor table{page-break-inside:avoid}#editor img{max-width:100%}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="topline">
+    <div class="brand"><span class="brandicon">W</span><div>Мій Word <div class="subtitle">Інформатика · 6 клас · Практична робота № 2</div></div></div>
+    <div class="doc-meta">
+      <input id="title" aria-label="Назва документа" value="Моя афіша" maxlength="70">
+      <select id="grade" aria-label="Клас"><option>6-А</option><option>6-Б</option><option>6-В</option></select>
+      <input id="studentCode" aria-label="Навчальний код учня" placeholder="Код учня" maxlength="24">
+      <span class="status" id="status" aria-live="polite">Готово</span>
+    </div>
+  </div>
+</header>
+<div class="actionbar">
+  <div class="actions">
+    <nav class="tabs" aria-label="Вкладки редактора">
+      <button class="tab" data-tab="text" aria-selected="true">Головна</button>
+      <button class="tab" data-tab="insert" aria-selected="false">Вставка</button>
+      <button class="tab" data-tab="table" aria-selected="false">Таблиця</button>
+      <button class="tab" data-tab="layout" aria-selected="false">Макет</button>
+      <button class="tab" data-tab="file" aria-selected="false">Файл</button>
+    </nav>
+    <div class="tools active" id="tools-text">
+      <button class="tool icon" data-cmd="undo" title="Скасувати">↶</button><button class="tool icon" data-cmd="redo" title="Повторити">↷</button>
+      <span class="sep"></span>
+      <select class="tool" id="para" aria-label="Стиль абзацу"><option value="P">Звичайний</option><option value="H1">Заголовок 1</option><option value="H2">Заголовок 2</option></select>
+      <select class="tool" id="font" aria-label="Шрифт"><option>Arial</option><option>Georgia</option><option>Times New Roman</option><option>Verdana</option><option>Courier New</option></select>
+      <select class="tool" id="fontSize" aria-label="Розмір шрифту"><option value="2">10</option><option value="3" selected>12</option><option value="4">14</option><option value="5">18</option><option value="6">24</option><option value="7">32</option></select>
+      <span class="sep"></span>
+      <button class="tool icon" data-cmd="bold" title="Жирний"><b>Ж</b></button><button class="tool icon" data-cmd="italic" title="Курсив"><i>К</i></button>
+      <button class="tool icon" data-cmd="underline" title="Підкреслений"><u>П</u></button><button class="tool icon" data-cmd="strikeThrough" title="Закреслений"><s>З</s></button>
+      <label class="colorlabel" title="Колір тексту">А <input id="textColor" aria-label="Колір тексту" type="color" value="#1b2d48"></label>
+      <label class="colorlabel" title="Колір виділення">🖌 <input id="highlight" aria-label="Колір виділення" type="color" value="#fff1a5"></label>
+      <span class="sep"></span>
+      <button class="tool icon" data-cmd="justifyLeft" title="Ліворуч">☷</button><button class="tool icon" data-cmd="justifyCenter" title="По центру">≡</button>
+      <button class="tool icon" data-cmd="justifyRight" title="Праворуч">☰</button>
+      <button class="tool" data-cmd="insertUnorderedList">• Список</button><button class="tool" data-cmd="insertOrderedList">1. Список</button>
+      <button class="tool icon" data-cmd="outdent" title="Зменшити відступ">⇤</button><button class="tool icon" data-cmd="indent" title="Збільшити відступ">⇥</button>
+      <button class="tool" id="clearFormat">Очистити формат</button>
+    </div>
+    <div class="tools" id="tools-insert">
+      <button class="tool primary" id="pickImage">🖼 Зображення з телефона</button>
+      <button class="tool" id="galleryButton">🎨 Готові малюнки</button>
+      <button class="tool" id="insertTable">▦ Вставити таблицю</button>
+      <button class="tool" id="insertLink">🔗 Посилання</button>
+      <button class="tool" id="insertRule">― Роздільник</button>
+      <button class="tool" id="insertSymbol">✓ Символ</button>
+    </div>
+    <div class="tools" id="tools-table">
+      <span class="hint">Торкніться клітинки таблиці, потім використайте кнопки:</span>
+      <button class="tool" data-table="rowAbove">+ Рядок ↑</button><button class="tool" data-table="rowBelow">+ Рядок ↓</button>
+      <button class="tool" data-table="colBefore">+ Стовпець ←</button><button class="tool" data-table="colAfter">+ Стовпець →</button>
+      <button class="tool" data-table="header">Заголовки</button><button class="tool" data-table="zebra">Смугасті рядки</button>
+      <button class="tool danger" data-table="delRow">− Рядок</button><button class="tool danger" data-table="delCol">− Стовпець</button>
+      <button class="tool danger" data-table="delTable">Видалити таблицю</button>
+    </div>
+    <div class="tools" id="tools-layout">
+      <button class="tool" id="marginToggle">↔ Поля: звичайні</button><button class="tool" id="imageSmall">Зображення 30%</button><button class="tool" id="imageMedium">Зображення 60%</button>
+      <button class="tool" id="imageLarge">Зображення 100%</button>
+      <button class="tool" id="imageLeft">Малюнок ліворуч</button><button class="tool" id="imageCenter">По центру</button><button class="tool" id="imageRight">Праворуч</button>
+      <button class="tool danger" id="imageDelete">Видалити малюнок</button>
+    </div>
+    <div class="tools" id="tools-file">
+      <button class="tool primary" id="exportDocx">⬇ Word (.docx)</button>
+      <button class="tool" id="exportHtml">⬇ HTML</button><button class="tool" id="exportProject">⬇ Чернетка (.json)</button>
+      <button class="tool" id="printPdf">🖨 Друк / PDF</button>
+      <button class="tool" id="importButton">📂 Відкрити чернетку / HTML / TXT</button>
+      <button class="tool" id="forceSave">💾 Зберегти в браузері</button>
+      <button class="tool danger" id="reset">Новий документ</button>
+    </div>
+  </div>
+</div>
+<main class="workspace">
+  <section class="paperwrap" aria-label="Документ">
+    <div class="paper" id="paper"><div id="editor" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true" aria-label="Редактор текстового документа"></div></div>
+  </section>
+  <aside class="sidebar">
+    <section class="panel">
+      <span class="pill">23 листопада · 6-А / 6-Б</span>
+      <h2>Практична робота № 2</h2>
+      <p><b>Тема:</b> Створення текстового документа з графічним зображенням і таблицею.</p>
+      <ol>
+        <li>Придумай назву шкільного заходу та оформи заголовок.</li>
+        <li>Напиши запрошення (2–3 речення).</li>
+        <li>Встав малюнок із телефона або готовий малюнок.</li>
+        <li>Додай таблицю програми заходу (від 3 рядків, 2 стовпці).</li>
+        <li>Зміни оформлення. Перевір текст, збережи документ Word.</li>
+      </ol>
+      <p class="hint">Працюй самостійно. Не використовуй чужі зображення без дозволу та не пиши особисті дані.</p>
+    </section>
+    <section class="panel">
+      <h2>Самоперевірка</h2>
+      <div id="checks"></div><div class="meter"><b id="meterBar"></b></div>
+      <p id="checkSummary" class="hint">Перевіримо твою роботу.</p>
+      <button class="tool primary" id="checkButton">✓ Перевірити документ</button>
+      <p class="hint">Це підказки, а не автоматична оцінка. Учитель оцінить якість роботи.</p>
+    </section>
+    <section class="panel">
+      <h2>Підказки</h2>
+      <p><b>На телефоні:</b> виділи слово довгим дотиком, тоді натисни <b>Ж</b> або <b>К</b>.</p>
+      <p><b>Таблиця:</b> після вставлення торкнися клітинки й введи текст. Вкладка «Таблиця» дозволяє додати рядки.</p>
+      <p><b>Фото:</b> зменшуй великі зображення на вкладці «Макет».</p>
+      <p><b>Збереження:</b> редактор автоматично зберігає чернетку лише на цьому пристрої. Для здавання роботи завантаж <b>.docx</b> і надішли вчителю погодженим способом.</p>
+    </section>
+  </aside>
+</main>
+<div class="note">Без реєстрації та серверного збирання робіт · Зміни зберігаються лише в браузері цього пристрою · Для роботи без інтернету можна зберегти HTML-сторінку.</div>
+<div class="toast" id="toast" role="status"></div>
+<input type="file" id="imageInput" accept="image/*" hidden>
+<input type="file" id="fileInput" accept=".html,.htm,.txt,.json,.word6.json,text/plain,text/html,application/json" hidden>
+<dialog id="galleryDialog"><h2>Оберіть малюнок для афіші</h2><p class="dialogtext">Малюнки створюються прямо в браузері й не потребують завантаження з Інтернету.</p>
+  <div class="gallery"><button data-picture="games"><span>🎲</span>Настільні ігри</button><button data-picture="movie"><span>🎬</span>Кінофестиваль</button><button data-picture="science"><span>🔬</span>День науки</button><button data-picture="books"><span>📚</span>Книжковий клуб</button></div>
+  <div class="dialogbuttons"><button class="tool" id="closeGallery">Скасувати</button></div>
+</dialog>
+<script>
+(function(){
+'use strict';
+var editor=document.getElementById('editor'),paper=document.getElementById('paper'),status=document.getElementById('status');
+var KEY='my-word-6-pr2-v1',selectedRange=null,selectedImage=null,selectedCell=null,saveTimer=null,toastTimer=null,filesWritten=false;
+var starter='<h1>ЗАПРОШЕННЯ НА ШКІЛЬНИЙ ЗАХІД</h1><p>Запрошуємо учнів 6-х класів на цікаву подію! Напишіть тут, що відбудеться, де і коли.</p><p><b>Програма заходу:</b></p><table><tbody><tr><th>Час</th><th>Подія</th></tr><tr><td>12:00</td><td>Відкриття</td></tr><tr><td>12:30</td><td>Головна частина</td></tr></tbody></table><p>Додайте до афіші тематичне зображення та відредагуйте власний текст.</p>';
+function $(s){return document.querySelector(s)}
+function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function safeName(s){return String(s||'document').replace(/[^a-zA-Z0-9а-яА-ЯіїєґІЇЄҐ_-]/g,'_').slice(0,60)}
+function nameFile(ext){return 'Pr2_'+safeName($('#grade').value)+'_'+safeName($('#studentCode').value||$('#title').value)+'.'+ext}
+function tip(message){clearTimeout(toastTimer);var el=$('#toast');el.textContent=message;el.classList.add('show');toastTimer=setTimeout(function(){el.classList.remove('show')},3300)}
+function setStatus(s){status.textContent=s}
+function isInEditor(node){return node && (node===editor||editor.contains(node))}
+function rememberSelection(){var s=window.getSelection();if(s && s.rangeCount && isInEditor(s.anchorNode)){selectedRange=s.getRangeAt(0).cloneRange()}}
+function restoreSelection(){editor.focus();if(selectedRange){try{var s=window.getSelection();s.removeAllRanges();s.addRange(selectedRange)}catch(e){}}}
+function change(){filesWritten=false;setStatus('Є зміни…');clearTimeout(saveTimer);saveTimer=setTimeout(saveNow,850);check(false)}
+function saveNow(){try{localStorage.setItem(KEY,JSON.stringify({html:editor.innerHTML,title:$('#title').value,grade:$('#grade').value,code:$('#studentCode').value,compact:paper.classList.contains('compact')}));setStatus('Збережено ✓')}catch(e){setStatus('Не збережено!');tip('Пам’ять пристрою заповнена. Завантажте документ через «Файл».')}}
+function setTab(tab){document.querySelectorAll('.tab').forEach(function(el){el.setAttribute('aria-selected',el.dataset.tab===tab?'true':'false')});document.querySelectorAll('.tools').forEach(function(el){el.classList.toggle('active',el.id==='tools-'+tab)})}
+document.querySelectorAll('.tab').forEach(function(el){el.addEventListener('click',function(){rememberSelection();setTab(el.dataset.tab)})});
+document.addEventListener('selectionchange',rememberSelection);
+editor.addEventListener('input',change);
+editor.addEventListener('click',function(e){
+ var t=e.target;
+ if(t.tagName==='IMG'){if(selectedImage)selectedImage.classList.remove('selected-media');selectedImage=t;t.classList.add('selected-media');selectedCell=null}
+ else if(t.closest('td,th')){selectedCell=t.closest('td,th');if(selectedImage)selectedImage.classList.remove('selected-media');selectedImage=null}
+ else{selectedCell=null}
+});
+document.querySelectorAll('[data-cmd]').forEach(function(btn){btn.addEventListener('mousedown',function(e){e.preventDefault()});btn.addEventListener('click',function(){restoreSelection();document.execCommand(btn.dataset.cmd,false,null);change()})});
+$('#para').addEventListener('change',function(){restoreSelection();document.execCommand('formatBlock',false,this.value);change()});
+$('#font').addEventListener('change',function(){restoreSelection();document.execCommand('fontName',false,this.value);change()});
+$('#fontSize').addEventListener('change',function(){restoreSelection();document.execCommand('fontSize',false,this.value);change()});
+$('#textColor').addEventListener('input',function(){restoreSelection();document.execCommand('foreColor',false,this.value);change()});
+$('#highlight').addEventListener('input',function(){restoreSelection();document.execCommand('hiliteColor',false,this.value);change()});
+$('#clearFormat').addEventListener('click',function(){restoreSelection();document.execCommand('removeFormat',false,null);change()});
+$('#insertRule').addEventListener('click',function(){restoreSelection();document.execCommand('insertHorizontalRule',false,null);change()});
+$('#insertSymbol').addEventListener('click',function(){restoreSelection();document.execCommand('insertText',false,'✓ ');change()});
+$('#insertLink').addEventListener('click',function(){var url=prompt('Введіть адресу посилання (https://...)');if(!url)return;if(!/^https:\/\//i.test(url)){tip('Використовуйте лише посилання https://');return}restoreSelection();document.execCommand('createLink',false,url);change()});
+function insertHtml(html){restoreSelection();if(!document.execCommand('insertHTML',false,html)){var s=window.getSelection();if(s.rangeCount){var r=s.getRangeAt(0);r.deleteContents();var x=document.createElement('div');x.innerHTML=html;var frag=document.createDocumentFragment();while(x.firstChild)frag.appendChild(x.firstChild);r.insertNode(frag)}}change()}
+$('#insertTable').addEventListener('click',function(){
+ var rows=Number(prompt('Скільки рядків? Від 2 до 10 (разом із заголовками)', '4'));if(!Number.isInteger(rows)||rows<2||rows>10){tip('Введіть ціле число від 2 до 10');return}
+ var cols=Number(prompt('Скільки стовпців? Від 2 до 6', '2'));if(!Number.isInteger(cols)||cols<2||cols>6){tip('Введіть ціле число від 2 до 6');return}
+ var out='<table><tbody>';for(var i=0;i<rows;i++){out+='<tr>';for(var j=0;j<cols;j++){var tag=i===0?'th':'td';out+='<'+tag+'>'+(i===0?'Заголовок '+(j+1):'&nbsp;')+'</'+tag+'>'}out+='</tr>'}insertHtml(out+'</tbody></table><p></p>');tip('Таблицю вставлено. Торкніться клітинки, щоб написати текст.');
+});
+function currentCell(){var s=window.getSelection(),node=s&&s.anchorNode,el=node&&node.nodeType===3?node.parentElement:node;return (el&&el.closest&&el.closest('#editor td,#editor th')) || (selectedCell&&isInEditor(selectedCell)?selectedCell:null)}
+function tableAction(kind){
+ var cell=currentCell();if(!cell){tip('Спочатку торкніться клітинки таблиці');return}
+ var row=cell.parentElement,table=cell.closest('table'),idx=Array.from(row.children).indexOf(cell),rows=Array.from(table.rows);
+ if(kind==='rowAbove'||kind==='rowBelow'){var nr=document.createElement('tr');for(var i=0;i<row.cells.length;i++){var td=document.createElement('td');td.innerHTML='&nbsp;';nr.appendChild(td)}if(kind==='rowAbove')row.before(nr);else row.after(nr);selectedCell=nr.cells[Math.min(idx,nr.cells.length-1)]}
+ else if(kind==='colBefore'||kind==='colAfter'){rows.forEach(function(r){var td=document.createElement('td');td.innerHTML='&nbsp;';var at=r.cells[idx];if(at){if(kind==='colBefore')at.before(td);else at.after(td)}else r.appendChild(td)});selectedCell=cell}
+ else if(kind==='header'){Array.from(rows[0].cells).forEach(function(c){var th=document.createElement('th');th.innerHTML=c.innerHTML;c.replaceWith(th)});selectedCell=rows[0].cells[0]}
+ else if(kind==='zebra'){table.classList.toggle('zebra')}
+ else if(kind==='delRow'){if(rows.length<=1)table.remove();else row.remove();selectedCell=null}
+ else if(kind==='delCol'){if(row.cells.length<=1){table.remove()}else rows.forEach(function(r){if(r.cells[idx])r.cells[idx].remove()});selectedCell=null}
+ else if(kind==='delTable'){if(!confirm('Видалити цю таблицю?'))return;table.remove();selectedCell=null}
+ change()
+}
+document.querySelectorAll('[data-table]').forEach(function(el){el.addEventListener('click',function(){tableAction(el.dataset.table)})});
+function resizeImage(percent){if(!selectedImage||!isInEditor(selectedImage)){tip('Спочатку торкніться малюнка');return}selectedImage.style.width=percent+'%';selectedImage.style.height='auto';change()}
+$('#imageSmall').onclick=function(){resizeImage(30)};$('#imageMedium').onclick=function(){resizeImage(60)};$('#imageLarge').onclick=function(){resizeImage(100)};
+function alignImage(alignment){if(!selectedImage||!isInEditor(selectedImage)){tip('Спочатку торкніться малюнка');return}selectedImage.style.display='block';selectedImage.style.marginLeft=alignment==='left'?'0':alignment==='right'?'auto':'auto';selectedImage.style.marginRight=alignment==='right'?'0':alignment==='left'?'auto':'auto';change()}
+$('#imageLeft').onclick=function(){alignImage('left')};$('#imageCenter').onclick=function(){alignImage('center')};$('#imageRight').onclick=function(){alignImage('right')};
+$('#imageDelete').onclick=function(){if(!selectedImage||!isInEditor(selectedImage)){tip('Спочатку торкніться малюнка');return}selectedImage.remove();selectedImage=null;change()};
+$('#marginToggle').onclick=function(){paper.classList.toggle('compact');this.textContent=paper.classList.contains('compact')?'↔ Поля: вузькі':'↔ Поля: звичайні';change()};
+$('#pickImage').onclick=function(){$('#imageInput').click()};
+function addImage(data,alt){insertHtml('<p><img src="'+data+'" alt="'+escapeHtml(alt||'Ілюстрація')+'" style="width:70%;height:auto"></p><p></p>');tip('Малюнок додано. Торкніться його для зміни розміру.')}
+function compressImage(file){
+ return new Promise(function(resolve,reject){
+ var img=new Image();var url=URL.createObjectURL(file);
+ img.onload=function(){URL.revokeObjectURL(url);var max=1000,scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));var canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(img.naturalWidth*scale));canvas.height=Math.max(1,Math.round(img.naturalHeight*scale));var ctx=canvas.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);resolve(canvas.toDataURL('image/jpeg',.78))};img.onerror=function(){URL.revokeObjectURL(url);reject(Error('Не вдалося прочитати зображення'))};img.src=url
+ })
+}
+$('#imageInput').addEventListener('change',async function(){var f=this.files&&this.files[0];if(!f)return;if(f.size>15*1024*1024){tip('Виберіть малюнок до 15 МБ');this.value='';return}try{var data=await compressImage(f);addImage(data,f.name)}catch(e){tip('Це зображення не підтримується')}this.value=''});
+$('#galleryButton').onclick=function(){$('#galleryDialog').showModal()};
+$('#closeGallery').onclick=function(){$('#galleryDialog').close()};
+function makePicture(kind){
+ var c=document.createElement('canvas');c.width=850;c.height=450;var g=c.getContext('2d');var colors={games:['#315bc1','#7ec5f3'],movie:['#302758','#a07cf1'],science:['#086e78','#8de4c2'],books:['#a44855','#f4c58d']},p=colors[kind];var gr=g.createLinearGradient(0,0,850,450);gr.addColorStop(0,p[0]);gr.addColorStop(1,p[1]);g.fillStyle=gr;g.fillRect(0,0,850,450);g.globalAlpha=.12;for(var i=0;i<19;i++){g.fillStyle='#ffffff';g.beginPath();g.arc((i*127)%850,(i*179)%450,22+i%4*13,0,7);g.fill()}g.globalAlpha=1;g.textAlign='center';g.textBaseline='middle';g.font='135px Arial';g.fillText(({games:'🎲',movie:'🎬',science:'🔬',books:'📚'})[kind],425,190);g.font='bold 50px Arial';g.fillStyle='white';g.fillText(({games:'НАСТІЛЬНІ ІГРИ',movie:'КІНОФЕСТИВАЛЬ',science:'ДЕНЬ НАУКИ',books:'КНИЖКОВИЙ КЛУБ'})[kind],425,340);return c.toDataURL('image/png')
+}
+document.querySelectorAll('[data-picture]').forEach(function(el){el.onclick=function(){$('#galleryDialog').close();addImage(makePicture(el.dataset.picture),el.textContent.trim())}});
+function check(showToast){
+ var hasTitle=!!editor.querySelector('h1,h2');var words=editor.innerText.replace(/\s+/g,' ').trim();var desc=words.length>=65;
+ var hasImage=!!editor.querySelector('img');var table=editor.querySelector('table');var hasTable=!!(table&&table.rows.length>=3&&table.rows[0].cells.length>=2);
+ var data=[['Заголовок оформлено',hasTitle],['Є текст запрошення',desc],['Вставлено зображення',hasImage],['Є таблиця щонайменше 3 × 2',hasTable],['Завантажено файл для вчителя',filesWritten]];
+ var wrap=$('#checks');wrap.replaceChildren();var ok=0;
+ data.forEach(function(d){if(d[1])ok++;var row=document.createElement('div');row.className='checkrow'+(d[1]?' ok':'');var box=document.createElement('span');box.textContent=d[1]?'✓':'○';var label=document.createElement('span');label.textContent=d[0];row.append(box,label);wrap.appendChild(row)});
+ $('#meterBar').style.width=(ok/data.length*100)+'%';$('#checkSummary').textContent=ok+' із '+data.length+' пунктів виконано.';
+ if(showToast)tip(ok===data.length?'Чудово! Усі пункти перевірки виконано.':'Виконано '+ok+' із '+data.length+'. Перегляньте, що залишилося.');
+}
+$('#checkButton').onclick=function(){check(true)};
+function download(blob,filename){var a=document.createElement('a'),url=URL.createObjectURL(blob);a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},3000);filesWritten=true;check(false);saveNow()}
+function stylesheetForExport(){return 'body{font-family:Arial,sans-serif;font-size:12pt;color:#182d49;line-height:1.45}h1{font-size:21pt}h2{font-size:17pt}table{width:100%;border-collapse:collapse}th,td{border:1px solid #70829d;padding:7px;vertical-align:top}th{background:#e7effc}img{max-width:100%;height:auto}table.zebra tr:nth-child(even){background:#eef5ff}'}
+function htmlExport(){return '<!doctype html><html lang="uk"><head><meta charset="utf-8"><title>'+escapeHtml($('#title').value)+'</title><style>'+stylesheetForExport()+'</style></head><body>'+editor.innerHTML+'</body></html>'}
+$('#exportHtml').onclick=function(){download(new Blob([htmlExport()],{type:'text/html;charset=utf-8'}),nameFile('html'));tip('HTML-файл збережено')};
+$('#exportProject').onclick=function(){var d={format:'word6',version:1,html:editor.innerHTML,title:$('#title').value,grade:$('#grade').value,code:$('#studentCode').value};download(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}),nameFile('word6.json'));tip('Чернетку збережено')};
+$('#printPdf').onclick=function(){window.print()};
+$('#forceSave').onclick=function(){saveNow();tip('Чернетку збережено на цьому пристрої')};
+$('#reset').onclick=function(){if(!confirm('Створити новий документ? Нинішній текст буде замінено.'))return;editor.innerHTML='<h1>Новий документ</h1><p>Напишіть текст тут.</p>';$('#title').value='Новий документ';selectedImage=null;selectedCell=null;change();saveNow()};
+function sanitize(html){
+ var doc=new DOMParser().parseFromString('<div>'+html+'</div>','text/html'),root=doc.body.firstElementChild;
+ var allowed=new Set(['H1','H2','P','DIV','SPAN','B','STRONG','I','EM','U','S','STRIKE','BR','UL','OL','LI','TABLE','TBODY','THEAD','TR','TD','TH','IMG','HR','A','FONT']);
+ function clean(node){Array.from(node.children).forEach(function(el){
+ if(!allowed.has(el.tagName)){if(['SCRIPT','STYLE','IFRAME','OBJECT','FORM','SVG','META','LINK'].includes(el.tagName)){el.remove();return}el.replaceWith(...Array.from(el.childNodes));return}
+ Array.from(el.attributes).forEach(function(a){var name=a.name.toLowerCase();if(!['src','href','alt','style','class','colspan','rowspan','color','face','size'].includes(name)){el.removeAttribute(a.name);return}
+ if(name==='src'&&!/^data:image\/(png|jpeg|webp);base64,/i.test(a.value)){el.remove();return}
+ if(name==='href'&&!/^https:\/\//i.test(a.value)){el.removeAttribute(a.name);return}
+ if(name==='style'&&(/url\s*\(|expression|@import|position\s*:|behavior\s*:/i.test(a.value))){el.removeAttribute(a.name)}
+ if(name==='class'&&a.value!=='zebra'){el.removeAttribute(a.name)}
+ });if(el.isConnected)clean(el)
+ })}
+ clean(root);return root.innerHTML
+}
+$('#importButton').onclick=function(){$('#fileInput').click()};
+$('#fileInput').addEventListener('change',async function(){
+ var f=this.files&&this.files[0];if(!f)return;
+ if(f.size>5*1024*1024){tip('Файл завеликий для імпорту (максимум 5 МБ)');this.value='';return}
+ try{var text=await f.text(),ext=f.name.toLowerCase();if(!confirm('Відкрити файл? Поточний документ буде замінено.'))return;
+ if(ext.endsWith('.json')){var d=JSON.parse(text);if(d.format!=='word6')throw Error('Це не чернетка «Мій Word»');editor.innerHTML=sanitize(d.html||'');$('#title').value=d.title||'Відновлений документ';$('#grade').value=d.grade||'6-А';$('#studentCode').value=d.code||''}
+ else if(ext.endsWith('.txt')){editor.innerHTML='<p>'+escapeHtml(text).replace(/\r?\n/g,'<br>')+'</p>';$('#title').value=f.name.replace(/\.[^.]+$/,'')}
+ else{var parsed=new DOMParser().parseFromString(text,'text/html');editor.innerHTML=sanitize(parsed.body.innerHTML);$('#title').value=f.name.replace(/\.[^.]+$/,'')}
+ change();saveNow();tip('Документ відкрито')}catch(e){tip('Не вдалося відкрити файл: '+e.message)}finally{this.value=''}
+});
+['title','grade','studentCode'].forEach(function(id){$('#'+id).addEventListener('input',change)});
+editor.addEventListener('paste',function(e){var dt=e.clipboardData;if(!dt)return;var file=Array.from(dt.files||[]).find(function(f){return f.type.startsWith('image/')});if(file){e.preventDefault();compressImage(file).then(function(data){addImage(data,'Зображення з буфера')});return}
+ var plain=dt.getData('text/plain');if(plain){e.preventDefault();document.execCommand('insertText',false,plain)}});
+// ---- DOCX: self-contained Office Open XML exporter (no CDNs) ----
+function xml(s){return escapeHtml(s).replace(/'/g,'&apos;')}
+function cssRGB(v){if(!v)return null;var c=String(v).trim();if(/^#[0-9a-f]{6}$/i.test(c))return c.substring(1).toUpperCase();if(/^#[0-9a-f]{3}$/i.test(c))return c.substring(1).split('').map(function(x){return x+x}).join('').toUpperCase();var m=c.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);if(m)return [m[1],m[2],m[3]].map(function(n){return Math.min(255,+n).toString(16).padStart(2,'0')}).join('').toUpperCase();return null}
+function txtRuns(text,style){
+ if(!text)return '';var pr='';
+ if(style.bold)pr+='<w:b/>';if(style.italic)pr+='<w:i/>';if(style.underline)pr+='<w:u w:val="single"/>';if(style.strike)pr+='<w:strike/>';
+ if(style.color)pr+='<w:color w:val="'+style.color+'"/>';if(style.sz)pr+='<w:sz w:val="'+style.sz+'"/>';
+ if(style.font)pr+='<w:rFonts w:ascii="'+xml(style.font)+'" w:hAnsi="'+xml(style.font)+'"/>';
+ return '<w:r>'+(pr?'<w:rPr>'+pr+'</w:rPr>':'')+'<w:t xml:space="preserve">'+xml(text)+'</w:t></w:r>'
+}
+function styleFromElement(el,base){
+ var st=Object.assign({},base),tag=el.tagName,cs=el.style;
+ if(tag==='B'||tag==='STRONG')st.bold=true;
+ if(tag==='I'||tag==='EM')st.italic=true;
+ if(tag==='U')st.underline=true;
+ if(tag==='S'||tag==='STRIKE')st.strike=true;
+ if(cs.fontWeight==='bold'||(+cs.fontWeight>=600))st.bold=true;
+ if(cs.fontStyle==='italic')st.italic=true;
+ if(cs.textDecoration.includes('underline'))st.underline=true;
+ if(cs.textDecoration.includes('line-through'))st.strike=true;
+ var col=cssRGB(cs.color||el.getAttribute('color'));if(col)st.color=col;
+ if(cs.fontFamily||el.getAttribute('face'))st.font=(cs.fontFamily||el.getAttribute('face')).split(',')[0].replace(/["']/g,'');
+ var size=cs.fontSize.match(/(\d+(?:\.\d+)?)(px|pt)/);if(size)st.sz=Math.max(14,Math.min(80,Math.round(parseFloat(size[1])*(size[2]==='px'?1.5:2))));
+ if(tag==='FONT'&&el.getAttribute('size'))st.sz=Math.max(16,Math.min(72,12+Number(el.getAttribute('size'))*4));
+ return st
+}
+function b64bytes(b64){var binary=atob(b64),out=new Uint8Array(binary.length);for(var i=0;i<binary.length;i++)out[i]=binary.charCodeAt(i);return out}
+function docxBlob(){
+ var media=[],imageCount=0;
+ function pictureRun(el){
+  var src=el.getAttribute('src')||'',m=src.match(/^data:image\/(png|jpeg|webp);base64,(.+)$/i);
+  if(!m)return txtRuns('[Зображення]',{});
+  // Canvas-created and uploaded pictures are PNG/JPEG.
+  if(m[1].toLowerCase()==='webp')return txtRuns('[Зображення WebP — збережіть його у PNG]',{});
+  var ext=m[1].toLowerCase()==='jpeg'?'jpeg':'png',id=++imageCount,bytes=b64bytes(m[2]),name='image'+id+'.'+ext;
+  media.push({name:name,bytes:bytes,id:id});
+  var naturalWidth=Number(el.naturalWidth)||850,naturalHeight=Number(el.naturalHeight)||450;
+  var w=Math.min(600,naturalWidth),percent=parseFloat(el.style.width)||70;
+  if(el.style.width.endsWith('%'))w=Math.min(w,Math.max(120,Math.round(600*percent/100)));
+  if(el.style.width.endsWith('px'))w=Math.min(600,parseFloat(el.style.width));
+  var h=Math.max(40,Math.round(w*naturalHeight/naturalWidth)),cx=Math.round(w*9525),cy=Math.round(h*9525);
+  return '<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="'+cx+'" cy="'+cy+'"/><wp:docPr id="'+id+'" name="Ілюстрація '+id+'"/><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic><pic:nvPicPr><pic:cNvPr id="0" name="'+xml(name)+'"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rId'+id+'"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="'+cx+'" cy="'+cy+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>'
+ }
+ function inline(node,style){
+  if(node.nodeType===3)return txtRuns(node.nodeValue,style);
+  if(node.nodeType!==1)return '';
+  if(node.tagName==='BR')return '<w:r><w:br/></w:r>';
+  if(node.tagName==='IMG')return pictureRun(node);
+  var st=styleFromElement(node,style),content='';
+  Array.from(node.childNodes).forEach(function(n){content+=inline(n,st)});
+  return content
+ }
+ function paragraph(el,prefix){
+  var heading=el.tagName==='H1'?1:el.tagName==='H2'?2:0;
+  var cs=el.style,al=(cs.textAlign||'').toLowerCase(),pp='<w:spacing w:after="'+(heading?140:100)+'"/>';
+  if(heading)pp+='<w:pStyle w:val="Heading'+heading+'"/>';
+  if(['center','right','both','justify'].includes(al))pp+='<w:jc w:val="'+(al==='justify'?'both':al)+'"/>';
+  if(prefix)pp+='<w:ind w:left="420"/>';
+  var st={font:'Arial',sz:heading===1?42:heading===2?32:24,bold:!!heading};
+  var content=prefix?txtRuns(prefix,st):'';
+  Array.from(el.childNodes).forEach(function(n){content+=inline(n,st)});
+  if(!content)content='<w:r><w:t></w:t></w:r>';
+  return '<w:p><w:pPr>'+pp+'</w:pPr>'+content+'</w:p>'
+ }
+ function tableXml(t){
+  var rowNodes=Array.from(t.rows),out='<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:tblBorders><w:top w:val="single" w:sz="6"/><w:left w:val="single" w:sz="6"/><w:bottom w:val="single" w:sz="6"/><w:right w:val="single" w:sz="6"/><w:insideH w:val="single" w:sz="5"/><w:insideV w:val="single" w:sz="5"/></w:tblBorders></w:tblPr>';
+  var cols=rowNodes[0]?rowNodes[0].cells.length:2;out+='<w:tblGrid>';for(var j=0;j<cols;j++)out+='<w:gridCol w:w="'+Math.round(9000/cols)+'"/>';out+='</w:tblGrid>';
+  rowNodes.forEach(function(tr,ri){out+='<w:tr>';Array.from(tr.cells).forEach(function(cell){
+   var head=cell.tagName==='TH',shading=head?'E7EFFC':t.classList.contains('zebra')&&ri%2?'EEF5FF':'';
+   out+='<w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/>'+(shading?'<w:shd w:fill="'+shading+'"/>':'')+'</w:tcPr>';
+   out+=paragraphCell(cell,head);out+='</w:tc>'
+  });out+='</w:tr>'});return out+'</w:tbl>'
+ }
+ function paragraphCell(el,head){var st={font:'Arial',sz:22,bold:head},runs='';Array.from(el.childNodes).forEach(function(n){runs+=inline(n,st)});return '<w:p><w:pPr><w:spacing w:after="0"/></w:pPr>'+(runs||txtRuns(' ',st))+'</w:p>'}
+ function nodesBlock(el){var out='',tag=el.tagName;if(tag==='TABLE')return tableXml(el);if(tag==='HR')return '<w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:sz="10"/></w:pBdr></w:pPr></w:p>';
+ if(tag==='UL'||tag==='OL'){Array.from(el.children).forEach(function(li,i){out+=paragraph(li,tag==='UL'?'• ':String(i+1)+'. ')});return out}
+ if(tag==='IMG')return paragraph(el);
+ if(['H1','H2','P','DIV','LI'].includes(tag)){var kids=Array.from(el.children).filter(function(c){return ['TABLE','UL','OL'].includes(c.tagName)});if(kids.length){Array.from(el.childNodes).forEach(function(c){if(c.nodeType===1 && ['TABLE','UL','OL'].includes(c.tagName))out+=nodesBlock(c);else if(c.nodeType===1)out+=nodesBlock(c);else if(c.nodeType===3&&c.textContent.trim())out+=paragraph({tagName:'P',style:{textAlign:''},childNodes:[c]},'')});return out}return paragraph(el)}
+ return paragraph(el)}
+ var body='';Array.from(editor.children).forEach(function(el){body+=nodesBlock(el)});
+ if(!body)body=paragraph({tagName:'P',style:{textAlign:''},childNodes:[document.createTextNode('')]});
+ var doc='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+ doc+='<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><w:body>'+body+'<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1020" w:right="1020" w:bottom="1020" w:left="1020" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr></w:body></w:document>';
+ var types='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>';
+ var rel='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>';
+ var imgRels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">';
+ media.forEach(function(m){imgRels+='<Relationship Id="rId'+m.id+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/'+m.name+'"/>'});
+ imgRels+='</Relationships>';
+ var entries=[{name:'[Content_Types].xml',data:types},{name:'_rels/.rels',data:rel},{name:'word/document.xml',data:doc},{name:'word/_rels/document.xml.rels',data:imgRels}];
+ media.forEach(function(m){entries.push({name:'word/media/'+m.name,data:m.bytes})});
+ return new Blob([makeZip(entries)],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})
+}
+function makeZip(entries){
+ var enc=new TextEncoder(),chunks=[],central=[],offset=0,table=[];
+ for(var z=0;z<256;z++){var k=z;for(var j=0;j<8;j++)k=(k&1)?(0xedb88320^(k>>>1)):(k>>>1);table[z]=k>>>0}
+ function crc(bytes){var c=0xffffffff;for(var i=0;i<bytes.length;i++)c=table[(c^bytes[i])&255]^(c>>>8);return(c^0xffffffff)>>>0}
+ function pack(len){return new Uint8Array(len)}
+ function u16(d,o,v){d[o]=v&255;d[o+1]=(v>>>8)&255}
+ function u32(d,o,v){u16(d,o,v);u16(d,o+2,v>>>16)}
+ entries.forEach(function(e){
+  var n=enc.encode(e.name),b=typeof e.data==='string'?enc.encode(e.data):e.data,c=crc(b),l=pack(30+n.length);
+  u32(l,0,0x04034b50);u16(l,4,20);u16(l,6,0x0800);u16(l,8,0);u32(l,14,c);u32(l,18,b.length);u32(l,22,b.length);u16(l,26,n.length);l.set(n,30);chunks.push(l,b);
+  var h=pack(46+n.length);u32(h,0,0x02014b50);u16(h,4,20);u16(h,6,20);u16(h,8,0x0800);u16(h,10,0);u32(h,16,c);u32(h,20,b.length);u32(h,24,b.length);u16(h,28,n.length);u32(h,42,offset);h.set(n,46);central.push(h);offset+=l.length+b.length
+ });
+ var centralLen=central.reduce(function(s,b){return s+b.length},0);var end=pack(22);u32(end,0,0x06054b50);u16(end,8,entries.length);u16(end,10,entries.length);u32(end,12,centralLen);u32(end,16,offset);
+ return new Blob(chunks.concat(central,[end]),{type:'application/zip'})
+}
+$('#exportDocx').onclick=function(){try{var docx=docxBlob();download(docx,nameFile('docx'));tip('Word-файл .docx збережено ✓')}catch(e){console.error(e);tip('Помилка експорту: '+e.message)}};
+function init(){
+ try{var stored=JSON.parse(localStorage.getItem(KEY)||'null');if(stored&&stored.html){editor.innerHTML=sanitize(stored.html);$('#title').value=stored.title||'Моя афіша';$('#grade').value=stored.grade||'6-А';$('#studentCode').value=stored.code||'';paper.classList.toggle('compact',!!stored.compact);$('#marginToggle').textContent=stored.compact?'↔ Поля: вузькі':'↔ Поля: звичайні';setStatus('Чернетку відновлено ✓')}else{editor.innerHTML=starter;setStatus('Зразок завдання')}}catch(e){editor.innerHTML=starter;setStatus('Готово')}
+ check(false)
+}
+init();
+})();
+</script>
+</body>
+</html>
