@@ -251,7 +251,9 @@ footer{font-size:12px}
  .workspace{padding-bottom:120px}
  .statusbar{bottom:88px}
  body:has(#editor:focus) .mobile-submit-wrap,
- body:has(#studentName:focus) .mobile-submit-wrap{display:none}
+ body:has(#studentName:focus) .mobile-submit-wrap,
+ body:has(#sendGrade:focus) .mobile-submit-wrap,
+ body:has(#title:focus) .mobile-submit-wrap{display:none}
 }
 @media print{.submission-panel,.mobile-submit-wrap{display:none!important}}
 
@@ -499,7 +501,7 @@ footer{font-size:12px}
         <li>Додай таблицю програми заходу (від 3 рядків, 2 стовпці).</li>
         <li>Коли завершиш — натисни велику кнопку <b>«ВІДПРАВИТИ РОБОТУ»</b> під документом.</li>
       </ol>
-      <p class="hint">Працюй самостійно. Не використовуй чужі зображення без дозволу та не пиши особисті дані.</p>
+      <p class="hint">Працюй самостійно. Не використовуй чужі зображення без дозволу. Не додавай у документ особисті адреси, номери телефонів чи паролі.</p>
     </section>
     <section class="panel">
       <h2>Самоперевірка</h2>
@@ -639,7 +641,7 @@ document.querySelectorAll('[data-picture]').forEach(function(el){el.onclick=func
 function check(showToast){
  var hasTitle=!!editor.querySelector('h1,h2');var words=editor.innerText.replace(/\s+/g,' ').trim();var desc=words.length>=65;
  var hasImage=!!editor.querySelector('img');var table=editor.querySelector('table');var hasTable=!!(table&&table.rows.length>=3&&table.rows[0].cells.length>=2);
- var data=[['Заголовок оформлено',hasTitle],['Є текст запрошення',desc],['Вставлено зображення',hasImage],['Є таблиця щонайменше 3 × 2',hasTable],['Завантажено файл для вчителя',filesWritten]];
+ var data=[['Заголовок оформлено',hasTitle],['Є текст запрошення',desc],['Вставлено зображення',hasImage],['Є таблиця щонайменше 3 × 2',hasTable],['Вказано прізвище та ім’я',($('#studentName').value.trim().split(/\s+/).length>=2 && $('#studentName').value.trim().length>=5)]];
  var wrap=$('#checks');wrap.replaceChildren();var ok=0;
  data.forEach(function(d){if(d[1])ok++;var row=document.createElement('div');row.className='checkrow'+(d[1]?' ok':'');var box=document.createElement('span');box.textContent=d[1]?'✓':'○';var label=document.createElement('span');label.textContent=d[0];row.append(box,label);wrap.appendChild(row)});
  $('#meterBar').style.width=(ok/data.length*100)+'%';$('#checkSummary').textContent=ok+' із '+data.length+' пунктів виконано.';
