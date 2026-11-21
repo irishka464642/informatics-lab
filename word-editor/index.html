@@ -154,7 +154,7 @@ footer{font-size:12px}
       <button class="tool" id="exportHtml">⬇ HTML</button><button class="tool" id="exportProject">⬇ Чернетка (.json)</button>
       <button class="tool" id="printPdf">🖨 Друк / PDF</button>
       <button class="tool" id="importButton">📂 Відкрити чернетку / HTML / TXT</button>
-      <button class="tool" id="forceSave">💾 Зберегти в браузері</button>
+      <button class="tool" id="forceSave">💾 Зберегти в браузері</button><button class="tool" id="useTemplate">📝 Шаблон афіші</button>
       <button class="tool danger" id="reset">Новий документ</button>
     </div>
   </div>
@@ -296,12 +296,13 @@ $('#exportHtml').onclick=function(){download(new Blob([htmlExport()],{type:'text
 $('#exportProject').onclick=function(){var d={format:'word6',version:1,html:editor.innerHTML,title:$('#title').value,grade:$('#grade').value,code:$('#studentCode').value};download(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}),nameFile('word6.json'));tip('Чернетку збережено')};
 $('#printPdf').onclick=function(){window.print()};
 $('#forceSave').onclick=function(){saveNow();tip('Чернетку збережено на цьому пристрої')};
-$('#reset').onclick=function(){if(!confirm('Створити новий документ? Нинішній текст буде замінено.'))return;editor.innerHTML='<h1>Новий документ</h1><p>Напишіть текст тут.</p>';$('#title').value='Новий документ';selectedImage=null;selectedCell=null;change();saveNow()};
+$('#reset').onclick=function(){if(!confirm('Створити новий документ? Нинішній текст буде замінено.'))return;editor.innerHTML='';$('#title').value='Новий документ';selectedImage=null;selectedCell=null;change();saveNow()};
+$('#useTemplate').onclick=function(){if(!confirm('Вставити навчальний шаблон? Поточний документ буде замінено.'))return;editor.innerHTML=starter;change();saveNow();tip('Шаблон додано. Замініть приклад власним текстом.')};
 function sanitize(html){
  var doc=new DOMParser().parseFromString('<div>'+html+'</div>','text/html'),root=doc.body.firstElementChild;
  var allowed=new Set(['H1','H2','P','DIV','SPAN','B','STRONG','I','EM','U','S','STRIKE','BR','UL','OL','LI','TABLE','TBODY','THEAD','TR','TD','TH','IMG','HR','A','FONT']);
  function clean(node){Array.from(node.children).forEach(function(el){
- if(!allowed.has(el.tagName)){if(['SCRIPT','STYLE','IFRAME','OBJECT','FORM','SVG','META','LINK'].includes(el.tagName)){el.remove();return}el.replaceWith(...Array.from(el.childNodes));return}
+ if(!allowed.has(el.tagName)){if(['SCRIPT','STYLE','IFRAME','OBJECT','FORM','SVG','META','LINK'].includes(el.tagName)){el.remove();return}clean(el);el.replaceWith(...Array.from(el.childNodes));return}
  Array.from(el.attributes).forEach(function(a){var name=a.name.toLowerCase();if(!['src','href','alt','style','class','colspan','rowspan','color','face','size'].includes(name)){el.removeAttribute(a.name);return}
  if(name==='src'&&!/^data:image\/(png|jpeg|webp);base64,/i.test(a.value)){el.remove();return}
  if(name==='href'&&!/^https:\/\//i.test(a.value)){el.removeAttribute(a.name);return}
@@ -433,7 +434,7 @@ function makeZip(entries){
 }
 $('#exportDocx').onclick=function(){try{var docx=docxBlob();download(docx,nameFile('docx'));tip('Word-файл .docx збережено ✓')}catch(e){console.error(e);tip('Помилка експорту: '+e.message)}};
 function init(){
- try{var stored=JSON.parse(localStorage.getItem(KEY)||'null');if(stored&&stored.html){editor.innerHTML=sanitize(stored.html);$('#title').value=stored.title||'Моя афіша';$('#grade').value=stored.grade||'6-А';$('#studentCode').value=stored.code||'';paper.classList.toggle('compact',!!stored.compact);$('#marginToggle').textContent=stored.compact?'↔ Поля: вузькі':'↔ Поля: звичайні';setStatus('Чернетку відновлено ✓')}else{editor.innerHTML=starter;setStatus('Зразок завдання')}}catch(e){editor.innerHTML=starter;setStatus('Готово')}
+ try{var stored=JSON.parse(localStorage.getItem(KEY)||'null');if(stored&&stored.html){editor.innerHTML=sanitize(stored.html);$('#title').value=stored.title||'Моя афіша';$('#grade').value=stored.grade||'6-А';$('#studentCode').value=stored.code||'';paper.classList.toggle('compact',!!stored.compact);$('#marginToggle').textContent=stored.compact?'↔ Поля: вузькі':'↔ Поля: звичайні';setStatus('Чернетку відновлено ✓')}else{editor.innerHTML='';setStatus('Новий документ')}}catch(e){editor.innerHTML='';setStatus('Готово')}
  check(false)
 }
 init();
