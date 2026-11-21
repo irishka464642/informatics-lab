@@ -205,6 +205,18 @@ footer{font-size:12px}
 .sidebar[hidden]{display:none!important}
 .workspace.focused{grid-template-columns:minmax(0,1fr)}
 @media(max-width:560px){.paper{zoom:var(--paper-zoom)!important}}
+
+.send-choices{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.send-option{background:#f5f8fe;border:1px solid #dce5f2;padding:12px;border-radius:9px;display:flex;flex-direction:column;gap:8px}
+.send-option b{font-size:14px;color:#1f467d}
+.send-option p{margin:0}
+.send-label{font-size:12px;color:#334762;font-weight:650}
+.send-option input{width:100%;max-width:none;border:1px solid #a5b9d3;border-radius:6px;padding:11px;background:white;min-height:42px}
+.send-action{margin-top:auto;white-space:normal!important;min-height:45px!important;padding:9px!important}
+.send-option .tool[disabled]{opacity:.5;cursor:not-allowed}
+#emailDialog{width:min(710px,97vw);max-height:90vh;overflow-y:auto}
+#emailPrepStatus{padding:8px 3px}
+@media(max-width:600px){.send-choices{grid-template-columns:1fr}.send-option{padding:12px}#emailDialog{padding:14px}.send-action{width:100%}}
 </style>
 </head>
 <body>
@@ -213,6 +225,7 @@ footer{font-size:12px}
     <div class="brand"><span class="brandicon">W</span><div>Мій Word <div class="subtitle">Навчальний текстовий редактор · Практична робота № 2</div></div></div>
     <div class="quick-access" aria-label="Панель швидкого доступу">
       <button id="quickSave" title="Зберегти">▣</button>
+      <button id="quickSend" title="Надіслати Word на пошту">✉</button>
       <button id="quickUndo" title="Скасувати">↶</button>
       <button id="quickRedo" title="Повторити">↷</button>
     </div>
@@ -408,6 +421,7 @@ footer{font-size:12px}
       <section class="ribbon-group"><div class="group-inner">
         <button class="tool cmd-big" id="forceSave"><span class="cmdico">▣</span><span>Зберегти<br>чернетку</span></button>
         <button class="tool cmd-big primary" id="exportDocx"><span class="cmdico">W</span><span>Завантажити<br>Word (.docx)</span></button>
+        <button class="tool cmd-big primary" id="openEmailDialog"><span class="cmdico">✉</span><span>Надіслати<br>Word на пошту</span></button>
         <button class="tool cmd-big" id="exportProject"><span class="cmdico">↓</span><span>Резервна<br>копія</span></button>
       </div><div class="group-label">Зберегти як</div></section>
       <section class="ribbon-group"><div class="group-inner">
@@ -432,7 +446,7 @@ footer{font-size:12px}
         <li>Напиши запрошення (2–3 речення).</li>
         <li>Встав малюнок із телефона або готовий малюнок.</li>
         <li>Додай таблицю програми заходу (від 3 рядків, 2 стовпці).</li>
-        <li>Зміни оформлення. Перевір текст, збережи документ Word.</li>
+        <li>Зміни оформлення, перевір текст і вибери <b>Файл → Надіслати Word на пошту</b> або завантаж .docx.</li>
       </ol>
       <p class="hint">Працюй самостійно. Не використовуй чужі зображення без дозволу та не пиши особисті дані.</p>
     </section>
@@ -448,7 +462,7 @@ footer{font-size:12px}
       <p><b>На телефоні:</b> виділи слово довгим дотиком, тоді натисни <b>Ж</b> або <b>К</b>.</p>
       <p><b>Таблиця:</b> після вставлення торкнися клітинки й введи текст. Вкладка «Таблиця» дозволяє додати рядки.</p>
       <p><b>Фото:</b> зменшуй великі зображення на вкладці «Макет».</p>
-      <p><b>Збереження:</b> редактор автоматично зберігає чернетку лише на цьому пристрої. Для здавання роботи завантаж <b>.docx</b> і надішли вчителю погодженим способом.</p>
+      <p><b>Здавання роботи:</b> натисни ✉ угорі або <b>Файл → Надіслати Word на пошту</b>. Можна прикріпити Word-файл у поштовому застосунку телефона або скористатися прямим надсиланням, якщо його ввімкнув учитель.</p><p><b>Збереження:</b> чернетка зберігається тільки на цьому пристрої. Рекомендуємо також завантажити резервну копію.</p>
     </section>
   </aside>
 </main>
@@ -460,10 +474,44 @@ footer{font-size:12px}
 <div class="toast" id="toast" role="status"></div>
 <input type="file" id="imageInput" accept="image/*" hidden>
 <input type="file" id="fileInput" accept=".html,.htm,.txt,.json,.word6.json,text/plain,text/html,application/json" hidden>
+<dialog id="emailDialog" aria-labelledby="emailDialogTitle">
+  <h2 id="emailDialogTitle">✉ Надіслати документ Word</h2>
+  <p class="dialogtext">Редактор підготує файл <b>.docx</b> з текстом, таблицею та зображенням. Оберіть спосіб здавання роботи.</p>
+  <div class="send-choices">
+    <section class="send-option">
+      <b>1. Через Gmail або іншу пошту на телефоні</b>
+      <p class="dialogtext">Відкриється системне меню «Поділитися». Виберіть Gmail або пошту, введіть адресу вчителя й перевірте, чи прикріплено файл Word, перед надсиланням.</p>
+      <button class="tool primary send-action" id="sendViaPhone">✉ Відкрити поштовий застосунок із DOCX</button>
+      <p class="hint">Цей спосіб залежить від підтримки спільного доступу до файлів браузером і телефоном.</p>
+    </section>
+    <section class="send-option">
+      <b>2. Надіслати вчителю безпосередньо</b>
+      <p class="dialogtext" id="emailGatewayStatus">Перевірка налаштувань поштового сервісу…</p>
+      <label class="send-label" for="sendAccessKey">Код доступу до надсилання (дає вчитель)</label>
+      <input type="password" id="sendAccessKey" maxlength="64" autocomplete="off" placeholder="Код уроку">
+      <button class="tool primary send-action" id="sendViaGateway" disabled>✉ Надіслати .docx вчителю</button>
+      <p class="hint">Підтвердження або повідомлення про помилку відкриється в новій вкладці. Робота не зберігається на GitHub.</p>
+    </section>
+  </div>
+  <div id="emailPrepStatus" role="status" class="dialogtext">Готуємо файл Word…</div>
+  <div class="dialogbuttons">
+    <button class="tool" id="downloadForEmail">⬇ Зберегти DOCX для ручного прикріплення</button>
+    <button class="tool" id="closeEmailDialog">Закрити</button>
+  </div>
+</dialog>
+<form id="mailForm" method="post" action="" target="_blank" hidden>
+  <input type="hidden" name="payload" id="mailPayload">
+  <input type="hidden" name="document_name" id="mailDocumentName">
+  <input type="hidden" name="student_code" id="mailStudentCode">
+  <input type="hidden" name="class_name" id="mailClassName">
+  <input type="hidden" name="access_key" id="mailAccessKey">
+  <input type="hidden" name="website" value="">
+</form>
 <dialog id="galleryDialog"><h2>Оберіть малюнок для афіші</h2><p class="dialogtext">Малюнки створюються прямо в браузері й не потребують завантаження з Інтернету.</p>
   <div class="gallery"><button data-picture="games"><span>🎲</span>Настільні ігри</button><button data-picture="movie"><span>🎬</span>Кінофестиваль</button><button data-picture="science"><span>🔬</span>День науки</button><button data-picture="books"><span>📚</span>Книжковий клуб</button></div>
   <div class="dialogbuttons"><button class="tool" id="closeGallery">Скасувати</button></div>
 </dialog>
+<script src="email-config.js"></script>
 <script>
 (function(){
 'use strict';
@@ -703,6 +751,114 @@ function makeZip(entries){
  return new Blob(chunks.concat(central,[end]),{type:'application/zip'})
 }
 $('#exportDocx').onclick=function(){try{var docx=docxBlob();download(docx,nameFile('docx'));tip('Word-файл .docx збережено ✓')}catch(e){console.error(e);tip('Помилка експорту: '+e.message)}};
+
+
+// ---- Надсилання роботи в DOCX через поштові застосунки або окремий сервер учителя ----
+const DOCX_TYPE='application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+const GATEWAY_MAX_BYTES=2*1024*1024;
+var preparedEmailDocx=null, preparedEmailBase64='', emailPreparationSerial=0;
+function emailEndpoint(){
+ var value=window.WORD6_MAIL&&window.WORD6_MAIL.endpoint||'';
+ return /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(String(value))?String(value):'';
+}
+function prepareEmailDocument(){
+ var serial=++emailPreparationSerial;
+ preparedEmailDocx=null;preparedEmailBase64='';
+ $('#sendViaGateway').disabled=true;
+ $('#sendViaPhone').disabled=true;
+ $('#emailPrepStatus').textContent='Готуємо документ Word…';
+ var endpoint=emailEndpoint();
+ $('#emailGatewayStatus').textContent=endpoint
+  ? 'Сервіс учителя підключено. Для надсилання введіть навчальний код учня зверху сторінки та код доступу до уроку.'
+  : 'Пряме надсилання ще не ввімкнено вчителем. Наразі використовуйте поштовий застосунок телефона або завантажте DOCX.';
+ try{
+  var blob=docxBlob(),name=nameFile('docx');
+  preparedEmailDocx={blob:blob,name:name};
+  $('#sendViaPhone').disabled=false;
+  $('#emailPrepStatus').textContent='Word-файл '+name+' готовий ('+Math.round(blob.size/1024)+' КБ).';
+  if(endpoint){
+   if(blob.size>GATEWAY_MAX_BYTES){
+     $('#emailGatewayStatus').textContent='Файл більший за 2 МБ. Спробуйте зменшити зображення або скористайтеся поштовим застосунком телефона.';
+     return;
+   }
+   var reader=new FileReader();
+   reader.onload=function(){
+     if(serial!==emailPreparationSerial)return;
+     preparedEmailBase64=String(reader.result||'').split(',')[1]||'';
+     $('#mailPayload').value=preparedEmailBase64;
+     $('#sendViaGateway').disabled=!preparedEmailBase64;
+     if(preparedEmailBase64)$('#emailPrepStatus').textContent='DOCX готовий для обох способів надсилання.';
+   };
+   reader.onerror=function(){if(serial!==emailPreparationSerial)return;$('#emailPrepStatus').textContent='Не вдалося підготувати пряме надсилання. Доступний інший спосіб.'};
+   reader.readAsDataURL(blob);
+  }
+ }catch(err){
+  $('#emailPrepStatus').textContent='Помилка створення Word-файлу. Перевірте зображення та спробуйте ще раз.';
+  console.error(err);
+ }
+}
+function showEmailDialog(){
+ $('#sendAccessKey').value='';
+ $('#emailDialog').showModal();
+ prepareEmailDocument();
+}
+$('#openEmailDialog').onclick=showEmailDialog;
+$('#quickSend').onclick=showEmailDialog;
+$('#closeEmailDialog').onclick=function(){$('#emailDialog').close()};
+$('#emailDialog').addEventListener('close',function(){
+ ++emailPreparationSerial;
+ preparedEmailDocx=null;preparedEmailBase64='';
+ $('#mailPayload').value='';
+ $('#sendAccessKey').value='';
+});
+$('#sendViaPhone').onclick=async function(){
+ if(!preparedEmailDocx){tip('Файл Word ще не готовий');return}
+ var file=new File([preparedEmailDocx.blob],preparedEmailDocx.name,{type:DOCX_TYPE});
+ if(typeof navigator.share!=='function'||(typeof navigator.canShare==='function'&&!navigator.canShare({files:[file]}))){
+  $('#emailPrepStatus').textContent='Цей браузер не підтримує передавання вкладення у пошту. Натисніть «Зберегти DOCX», а потім прикріпіть файл у своєму поштовому застосунку.';
+  return;
+ }
+ try{
+  await navigator.share({
+   files:[file],
+   title:'Практична робота № 2 · '+$('#grade').value,
+   text:'Інформатика, практична робота № 2. Клас: '+$('#grade').value+'. Навчальний код: '+($('#studentCode').value.trim()||'не вказано')+'. Документ Word прикріплено.'
+  });
+  filesWritten=true;check(false);
+  $('#emailPrepStatus').textContent='Файл передано до вибраного застосунку. Перевірте, що лист справді надіслано й у ньому є вкладення.';
+ }catch(err){
+  if(err&&err.name==='AbortError'){$('#emailPrepStatus').textContent='Поширення скасовано. Файл залишився в редакторі.';return}
+  console.warn('Web Share failed',err);
+  $('#emailPrepStatus').textContent='Не вдалося відкрити пошту з вкладенням. Завантажте DOCX і прикріпіть його до листа вручну.';
+ }
+};
+$('#downloadForEmail').onclick=function(){
+ if(!preparedEmailDocx){tip('Документ Word ще не готовий');return}
+ download(preparedEmailDocx.blob,preparedEmailDocx.name);
+ $('#emailPrepStatus').textContent='Файл завантажено. Відкрийте свою пошту, створіть лист учителю й додайте цей .docx як вкладення.';
+};
+$('#sendViaGateway').onclick=function(){
+ var endpoint=emailEndpoint(),key=$('#sendAccessKey').value,code=$('#studentCode').value.trim();
+ if(!endpoint){tip('Учитель ще не підключив поштовий сервіс');return}
+ if(!preparedEmailDocx||!preparedEmailBase64){tip('DOCX ще готується');return}
+ if(preparedEmailDocx.blob.size>GATEWAY_MAX_BYTES){tip('Word-файл завеликий для прямого надсилання (до 2 МБ)');return}
+ if(!/^[a-zA-Z0-9А-Яа-яІЇЄҐіїєґ_-]{2,24}$/.test(code)){
+  tip('Спочатку введіть навчальний код (2–24 символи) у верхній панелі');return
+ }
+ if(key.length<8){tip('Введіть код доступу до надсилання, який дав учитель');return}
+ if(!confirm('Надіслати файл '+preparedEmailDocx.name+' на пошту вчителя?'))return;
+ var form=$('#mailForm');
+ form.action=endpoint;
+ $('#mailPayload').value=preparedEmailBase64;
+ $('#mailDocumentName').value=preparedEmailDocx.name;
+ $('#mailClassName').value=$('#grade').value;
+ $('#mailStudentCode').value=code;
+ $('#mailAccessKey').value=key;
+ form.submit();
+ $('#mailAccessKey').value='';
+ $('#sendAccessKey').value='';
+ $('#emailPrepStatus').textContent='Відкрито сторінку результату надсилання. Перейдіть на нову вкладку й перевірте повідомлення від сервера. Без підтвердження не вважайте роботу доставленою.';
+};
 
 function updateStats(){
  var txt=editor.innerText.replace(/\u00a0/g,' ').trim(),words=txt?txt.split(/\s+/).filter(Boolean).length:0;
