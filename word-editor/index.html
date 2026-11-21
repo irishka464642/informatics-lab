@@ -653,7 +653,7 @@ function docxBlob(){
   if(heading)pp+='<w:pStyle w:val="Heading'+heading+'"/>';
   if(['center','right','both','justify'].includes(al))pp+='<w:jc w:val="'+(al==='justify'?'both':al)+'"/>';
   if(prefix)pp+='<w:ind w:left="420"/>';
-  var st={font:'Arial',sz:heading===1?42:heading===2?32:24,bold:!!heading};
+  var st=styleFromElement(el,{font:'Arial',sz:heading===1?42:heading===2?32:24,bold:!!heading});
   var content=prefix?txtRuns(prefix,st):'';
   Array.from(el.childNodes).forEach(function(n){content+=inline(n,st)});
   if(!content)content='<w:r><w:t></w:t></w:r>';
@@ -663,7 +663,7 @@ function docxBlob(){
   var rowNodes=Array.from(t.rows),out='<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:tblBorders><w:top w:val="single" w:sz="6"/><w:left w:val="single" w:sz="6"/><w:bottom w:val="single" w:sz="6"/><w:right w:val="single" w:sz="6"/><w:insideH w:val="single" w:sz="5"/><w:insideV w:val="single" w:sz="5"/></w:tblBorders></w:tblPr>';
   var cols=rowNodes[0]?rowNodes[0].cells.length:2;out+='<w:tblGrid>';for(var j=0;j<cols;j++)out+='<w:gridCol w:w="'+Math.round(9000/cols)+'"/>';out+='</w:tblGrid>';
   rowNodes.forEach(function(tr,ri){out+='<w:tr>';Array.from(tr.cells).forEach(function(cell){
-   var head=cell.tagName==='TH',shading=head?'E7EFFC':t.classList.contains('zebra')&&ri%2?'EEF5FF':'';
+   var head=cell.tagName==='TH',shading=cssRGB(cell.style.backgroundColor)||(head?'E7EFFC':t.classList.contains('zebra')&&ri%2?'EEF5FF':'');
    out+='<w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/>'+(shading?'<w:shd w:fill="'+shading+'"/>':'')+'</w:tcPr>';
    out+=paragraphCell(cell,head);out+='</w:tc>'
   });out+='</w:tr>'});return out+'</w:tbl>'
