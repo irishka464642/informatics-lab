@@ -86,12 +86,133 @@ footer{font-size:12px}
 @media(max-width:870px){.workspace{grid-template-columns:1fr}.sidebar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.paper{padding:38px 28px;min-height:570px}#editor{min-height:500px}}
 @media(max-width:560px){.brand{font-size:17px}.doc-meta{width:100%}.doc-meta #title{flex:1;max-width:none;width:auto}.doc-meta input,.doc-meta select{max-width:95px}.workspace{padding:0;margin:8px auto}.paper{padding:23px 15px;min-height:60vh}.paper.compact{padding:16px 12px}#editor{min-height:57vh;font-size:16px}.sidebar{grid-template-columns:1fr}.actionbar{position:sticky;top:0}.tab{padding:9px 11px}.tool{min-height:42px}.panel{padding:13px}.tools{max-height:165px;overflow-y:auto}}
 @media print{@page{size:A4;margin:17mm}body{background:white}.top,.actionbar,.sidebar,.note,.toast,dialog{display:none!important}.workspace{display:block;margin:0;padding:0}.paper,.paper.compact{box-shadow:none;max-width:none;padding:0;margin:0;min-height:0;border-radius:0}#editor{min-height:0}#editor table{page-break-inside:avoid}#editor img{max-width:100%}}
+
+/* Classic Office-style ribbon */
+:root{--office-blue:#185abd;--ribbon-line:#d3d9e4;--paper-zoom:1}
+.top{background:#185abd;padding:7px 13px;box-shadow:none}
+.topline{max-width:none;gap:10px;min-height:42px}
+.brand{font-size:17px;gap:12px;white-space:nowrap}
+.brandicon{background:#103f88;color:white;border:1px solid #7799d1;border-radius:2px;font-family:Georgia,serif;font-size:22px;font-weight:900;display:grid;place-items:center;width:34px;height:34px;padding:0;box-shadow:inset -5px 0 0 #316dc1}
+.subtitle{font-size:11px;opacity:.88}
+.quick-access{display:flex;gap:2px;align-items:center;border-left:1px solid #ffffff55;padding-left:12px}
+.quick-access button{color:white;background:transparent;border:1px solid transparent;border-radius:3px;font-size:19px;min-width:30px;height:32px}
+.quick-access button:hover{background:#ffffff23;border-color:#ffffff30}
+.doc-meta input,.doc-meta select{background:#f6f9ff;border-radius:3px;height:32px}
+.doc-meta #title{width:19vw}
+.top .status{font-size:12px}
+.actionbar{background:#f9fbfd;box-shadow:0 2px 4px #1a315c19;position:sticky;top:0}
+.actions{max-width:none;padding:0}
+.tabs{background:#fff;gap:0;padding:0 10px;align-items:stretch;border-bottom:1px solid var(--ribbon-line);height:39px}
+.tab{font-size:13px;font-weight:500;color:#2a364b;padding:9px 15px 8px;border-bottom:2px solid transparent;border-radius:0;background:transparent}
+.tab:hover{background:#f2f5fa}
+.tab[aria-selected=true]{background:#f9fbfd;color:#15519a;border-bottom:2px solid #185abd;font-weight:650}
+.tab.filetab{background:#185abd;color:white;margin-right:7px;padding-left:20px;padding-right:20px}
+.tab.filetab[aria-selected=true]{background:#114a9d;border-bottom-color:#114a9d;color:white}
+.tab.tabletab.present,.tab.picturetab.present{display:block}
+.tab.tabletab{display:none;color:#637427;border-top:3px solid #bad46e;padding-top:6px}
+.tab.picturetab{display:none;color:#7c508f;border-top:3px solid #b99bc8;padding-top:6px}
+.ribbon-toggle{margin-left:auto;border:0;background:transparent;color:#4e607b;min-width:38px;font-size:19px;cursor:pointer}
+.ribbon-toggle:hover{background:#eaf2ff}
+.ribbon-viewport{overflow:hidden}
+.ribbon-viewport.collapsed{display:none}
+.tools{display:none;align-items:stretch;gap:0;min-height:106px;max-height:none;overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap;padding:6px 6px 4px;scrollbar-width:thin}
+.tools.active{display:flex}
+.ribbon-group{flex:none;display:flex;flex-direction:column;justify-content:space-between;gap:3px;padding:1px 10px 0;border-right:1px solid var(--ribbon-line)}
+.ribbon-group:last-child{border-right:0}
+.group-inner{display:flex;align-items:center;gap:5px;min-height:74px}
+.group-inner.column{flex-direction:column;align-items:stretch;justify-content:center;gap:4px}
+.group-label{text-align:center;font-size:10.5px;line-height:16px;color:#6b7587;white-space:nowrap}
+.strip{display:flex;align-items:center;gap:4px;white-space:nowrap}
+.stack{display:flex;flex-direction:column;align-items:stretch;gap:3px}
+.tool{border:1px solid transparent;background:transparent;color:#25334b;border-radius:3px;padding:5px 7px;min-height:28px;min-width:28px;font-size:12px;font-weight:500;line-height:1.25;white-space:nowrap}
+.tool:hover,.tool:active{border-color:#d0ddef;background:#eaf2ff}
+.tool.icon{font-size:16px;padding:4px 7px;min-height:28px}
+.tool.primary{background:#e6f0ff;border:1px solid #c4d8f6;color:#104c9d}
+.tool.primary:hover{background:#cfdef9;color:#103d7e}
+.tool.danger{color:#aa3840}
+.tool.cmd-big{border:1px solid transparent;min-width:59px;min-height:70px;padding:6px 7px;display:flex;align-items:center;justify-content:flex-start;flex-direction:column;gap:5px;text-align:center;white-space:normal;font-size:11px}
+.tool.cmd-big:hover{border-color:#ccdaf0}
+.cmdico{height:29px;display:flex;justify-content:center;align-items:center;font-size:25px;font-weight:550;color:#255ca1;letter-spacing:-1px}
+.tool.primary .cmdico{color:#134e9d}
+.small-icon{display:inline-block;width:18px;font-size:16px;color:#195caa}
+.tool#font{min-width:152px;max-width:178px;background:#fff;border:1px solid #bdc9d8}
+.tool#fontSize{min-width:61px;background:#fff;border:1px solid #bdc9d8}
+.tool#para{font-size:11px;min-width:66px;max-width:74px;border:1px solid #cfd8e6;height:45px}
+.colorlabel{background:transparent;border:1px solid transparent;padding:0 4px;border-radius:3px;gap:2px;height:29px;min-height:29px;font-weight:700;font-size:15px}
+.colorlabel:hover{background:#eaf2ff;border-color:#d0ddef}
+.colorlabel input{width:21px;height:20px}
+.style-tile{min-width:98px;max-width:116px;border:1px solid #d1dcea;background:#fff;border-radius:3px;height:60px;padding:6px;text-align:center;color:#29384a}
+.style-tile:hover{background:#eaf2ff;border-color:#88afe0}
+.style-tile span{display:block;font-family:Georgia,serif;font-size:18px;color:#25334b}
+.style-tile .styleblue{color:#1f5ca8;font-size:15px;font-weight:600}
+.style-tile .styleblue.second{font-size:13px}
+.style-tile small{font-size:10px}
+.theme-chip{background:#fff;border:1px solid #d2dce8;border-radius:3px;height:65px;min-width:84px;padding:5px;font-size:11px;color:#2d3e58;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.theme-chip:hover,.theme-chip.chosen{background:#ecf4ff;border-color:#85acdf}
+.theme-swatch{display:block;height:21px;width:49px;border-left:14px solid var(--shade);background:linear-gradient(180deg,#f6f8ff 45%,var(--shade) 45% 58%,#f6f8ff 58%);border-bottom:2px solid #cbd3e0}
+.workspace{max-width:1350px;margin-top:16px;grid-template-columns:minmax(0,1fr) 286px}
+.paper{zoom:var(--paper-zoom);border:1px solid #d7dce6;border-radius:1px;box-shadow:0 4px 22px #23355026}
+.paper.landscape{max-width:1122px;min-height:620px}
+.paper.borderpage{outline:4px double #2b5688;outline-offset:-24px}
+.paper[data-theme="blue"] #editor h1,.paper[data-theme="blue"] #editor h2{color:#167dba}
+.paper[data-theme="green"] #editor h1,.paper[data-theme="green"] #editor h2{color:#25826b}
+.paper[data-theme="purple"] #editor h1,.paper[data-theme="purple"] #editor h2{color:#8258a4}
+.paper[data-theme="gray"] #editor h1,.paper[data-theme="gray"] #editor h2{color:#566170}
+.paper[data-theme="blue"] #editor th{background:#e3f5ff}
+.paper[data-theme="green"] #editor th{background:#e1f7ef}
+.paper[data-theme="purple"] #editor th{background:#f1e5fa}
+.paper[data-theme="gray"] #editor th{background:#eef0f2}
+.statusbar{background:#fff;display:flex;align-items:center;gap:13px;justify-content:space-between;border-top:1px solid #d1d7e1;position:sticky;bottom:0;padding:5px 18px;color:#5b6677;font-size:12px;z-index:8}
+.statusbar .right{display:flex;align-items:center;gap:8px}
+.statusbar button{border:0;background:transparent;min-width:27px;font-size:16px;color:#365678}
+.statusbar input[type=range]{width:90px;accent-color:#185abd}
+.statusbar .left{display:flex;align-items:center;gap:15px;flex-wrap:wrap}
+#editor{background:#fff}
+.panel{border-radius:5px}
+@media(max-width:870px){.workspace{grid-template-columns:1fr}.sidebar{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){
+ .top{padding:7px 9px}
+ .topline{gap:6px}
+ .brand{font-size:15px;gap:7px}
+ .brandicon{width:28px;height:29px;font-size:17px}
+ .subtitle{font-size:10px}
+ .quick-access{padding-left:5px;gap:0}
+ .quick-access button{min-width:27px;height:29px;font-size:16px}
+ .doc-meta{width:100%}
+ .doc-meta #title{max-width:none;min-width:110px;width:auto;flex:1}
+ .doc-meta input,.doc-meta select{height:32px;font-size:12px}
+ .doc-meta #studentCode{width:82px}
+ .tabs{padding:0 4px;height:39px}
+ .tab{padding:10px 12px;font-size:12px}
+ .ribbon-toggle{position:sticky;right:0;min-width:34px;background:#fff}
+ .tools{height:118px;min-height:118px;max-height:none;overflow-x:auto;overflow-y:hidden;padding:6px 2px 3px}
+ .ribbon-group{padding:0 6px}
+ .group-inner{min-height:85px}
+ .group-label{font-size:10px}
+ .tool.cmd-big{min-height:78px;min-width:58px}
+ .style-tile{min-width:83px}
+ .paper{zoom:1!important}
+ .statusbar{font-size:11px;padding:5px 9px;gap:6px}
+ .statusbar .left{gap:6px}
+ .statusbar input[type=range]{width:65px}
+}
+@media print{
+ .statusbar{display:none!important}
+ .paper{zoom:1!important}
+ .paper.landscape{max-width:none}
+ .paper.borderpage{outline:none}
+}
 </style>
 </head>
 <body>
 <header class="top">
   <div class="topline">
-    <div class="brand"><span class="brandicon">W</span><div>Мій Word <div class="subtitle">Інформатика · 6 клас · Практична робота № 2</div></div></div>
+    <div class="brand"><span class="brandicon">W</span><div>Мій Word <div class="subtitle">Навчальний текстовий редактор · Практична робота № 2</div></div></div>
+    <div class="quick-access" aria-label="Панель швидкого доступу">
+      <button id="quickSave" title="Зберегти">▣</button>
+      <button id="quickUndo" title="Скасувати">↶</button>
+      <button id="quickRedo" title="Повторити">↷</button>
+    </div>
     <div class="doc-meta">
       <input id="title" aria-label="Назва документа" value="Моя афіша" maxlength="70">
       <select id="grade" aria-label="Клас"><option>6-А</option><option>6-Б</option><option>6-В</option></select>
@@ -101,63 +222,198 @@ footer{font-size:12px}
   </div>
 </header>
 <div class="actionbar">
-  <div class="actions">
-    <nav class="tabs" aria-label="Вкладки редактора">
-      <button class="tab" data-tab="text" aria-selected="true">Головна</button>
-      <button class="tab" data-tab="insert" aria-selected="false">Вставка</button>
-      <button class="tab" data-tab="table" aria-selected="false">Таблиця</button>
-      <button class="tab" data-tab="layout" aria-selected="false">Макет</button>
-      <button class="tab" data-tab="file" aria-selected="false">Файл</button>
-    </nav>
+<div class="actions">
+  <nav class="tabs" aria-label="Вкладки стрічки Word">
+    <button class="tab filetab" data-tab="file" aria-selected="false">Файл</button>
+    <button class="tab" data-tab="text" aria-selected="true">Основне</button>
+    <button class="tab" data-tab="insert" aria-selected="false">Вставлення</button>
+    <button class="tab" data-tab="design" aria-selected="false">Конструктор</button>
+    <button class="tab" data-tab="layout" aria-selected="false">Макет</button>
+    <button class="tab" data-tab="references" aria-selected="false">Посилання</button>
+    <button class="tab" data-tab="review" aria-selected="false">Рецензування</button>
+    <button class="tab" data-tab="view" aria-selected="false">Вигляд</button>
+    <button class="tab tabletab" data-tab="table" aria-selected="false">Конструктор таблиць</button>
+    <button class="tab picturetab" data-tab="picture" aria-selected="false">Формат зображення</button>
+    <button class="ribbon-toggle" id="toggleRibbon" title="Згорнути або розгорнути стрічку" aria-expanded="true">⌃</button>
+  </nav>
+  <div class="ribbon-viewport" id="ribbonViewport">
     <div class="tools active" id="tools-text">
-      <button class="tool icon" data-cmd="undo" title="Скасувати">↶</button><button class="tool icon" data-cmd="redo" title="Повторити">↷</button>
-      <span class="sep"></span>
-      <select class="tool" id="para" aria-label="Стиль абзацу"><option value="P">Звичайний</option><option value="H1">Заголовок 1</option><option value="H2">Заголовок 2</option></select>
-      <select class="tool" id="font" aria-label="Шрифт"><option>Arial</option><option>Georgia</option><option>Times New Roman</option><option>Verdana</option><option>Courier New</option></select>
-      <select class="tool" id="fontSize" aria-label="Розмір шрифту"><option value="2">10</option><option value="3" selected>12</option><option value="4">14</option><option value="5">18</option><option value="6">24</option><option value="7">32</option></select>
-      <span class="sep"></span>
-      <button class="tool icon" data-cmd="bold" title="Жирний"><b>Ж</b></button><button class="tool icon" data-cmd="italic" title="Курсив"><i>К</i></button>
-      <button class="tool icon" data-cmd="underline" title="Підкреслений"><u>П</u></button><button class="tool icon" data-cmd="strikeThrough" title="Закреслений"><s>З</s></button>
-      <label class="colorlabel" title="Колір тексту">А <input id="textColor" aria-label="Колір тексту" type="color" value="#1b2d48"></label>
-      <label class="colorlabel" title="Колір виділення">🖌 <input id="highlight" aria-label="Колір виділення" type="color" value="#fff1a5"></label>
-      <span class="sep"></span>
-      <button class="tool icon" data-cmd="justifyLeft" title="Ліворуч">☷</button><button class="tool icon" data-cmd="justifyCenter" title="По центру">≡</button>
-      <button class="tool icon" data-cmd="justifyRight" title="Праворуч">☰</button>
-      <button class="tool" data-cmd="insertUnorderedList">• Список</button><button class="tool" data-cmd="insertOrderedList">1. Список</button>
-      <button class="tool icon" data-cmd="outdent" title="Зменшити відступ">⇤</button><button class="tool icon" data-cmd="indent" title="Збільшити відступ">⇥</button>
-      <button class="tool" id="clearFormat">Очистити формат</button>
+      <section class="ribbon-group">
+        <div class="group-inner">
+          <button class="tool cmd-big" id="pasteButton" title="Вставити текст з буфера"><span class="cmdico">📋</span><span>Вставити</span></button>
+          <div class="stack"><button class="tool" id="copyButton" title="Копіювати виділене"><span class="small-icon">▣</span> Копіювати</button><button class="tool" id="cutButton" title="Вирізати виділене"><span class="small-icon">✂</span> Вирізати</button></div>
+        </div><div class="group-label">Буфер обміну</div>
+      </section>
+      <section class="ribbon-group fontgroup">
+        <div class="group-inner column">
+          <div class="strip">
+            <select class="tool" id="font" aria-label="Шрифт" title="Шрифт"><option>Arial</option><option>Georgia</option><option>Times New Roman</option><option>Verdana</option><option>Courier New</option></select>
+            <select class="tool" id="fontSize" aria-label="Розмір шрифту"><option value="2">10</option><option value="3" selected>12</option><option value="4">14</option><option value="5">18</option><option value="6">24</option><option value="7">32</option></select>
+          </div>
+          <div class="strip">
+            <button class="tool icon" data-cmd="bold" title="Напівжирний"><b>Ж</b></button>
+            <button class="tool icon" data-cmd="italic" title="Курсив"><i>К</i></button>
+            <button class="tool icon" data-cmd="underline" title="Підкреслення"><u>П</u></button>
+            <button class="tool icon" data-cmd="strikeThrough" title="Закреслений"><s>abc</s></button>
+            <label class="colorlabel" title="Колір виділення">🖊<input id="highlight" aria-label="Колір виділення" type="color" value="#fff1a5"></label>
+            <label class="colorlabel" title="Колір шрифту">A<input id="textColor" aria-label="Колір шрифту" type="color" value="#1b2d48"></label>
+            <button class="tool icon" id="clearFormat" title="Очистити форматування">A⌫</button>
+          </div>
+        </div><div class="group-label">Шрифт</div>
+      </section>
+      <section class="ribbon-group">
+        <div class="group-inner column">
+          <div class="strip">
+            <button class="tool icon" data-cmd="insertUnorderedList" title="Маркери">• ≡</button>
+            <button class="tool icon" data-cmd="insertOrderedList" title="Нумерація">1.≡</button>
+            <button class="tool icon" data-cmd="outdent" title="Зменшити відступ">⇤</button>
+            <button class="tool icon" data-cmd="indent" title="Збільшити відступ">⇥</button>
+          </div>
+          <div class="strip">
+            <button class="tool icon" data-cmd="justifyLeft" title="Вирівняти за лівим краєм">☷</button>
+            <button class="tool icon" data-cmd="justifyCenter" title="По центру">≡</button>
+            <button class="tool icon" data-cmd="justifyRight" title="За правим краєм">☰</button>
+            <button class="tool icon" data-cmd="justifyFull" title="За шириною">▤</button>
+            <button class="tool icon" id="insertRule" title="Горизонтальна лінія">―</button>
+          </div>
+        </div><div class="group-label">Абзац</div>
+      </section>
+      <section class="ribbon-group">
+        <div class="group-inner">
+          <button class="style-tile" data-style="P"><span>Аа</span><small>Звичайний</small></button>
+          <button class="style-tile" data-style="H1"><span class="styleblue">Заголовок</span><small>Заголовок 1</small></button>
+          <button class="style-tile" data-style="H2"><span class="styleblue second">Заголовок</span><small>Заголовок 2</small></button>
+          <select class="tool" id="para" aria-label="Усі стилі абзаців"><option value="P">Стилі ▾</option><option value="H1">Заголовок 1</option><option value="H2">Заголовок 2</option></select>
+        </div><div class="group-label">Стилі</div>
+      </section>
+      <section class="ribbon-group">
+        <div class="group-inner">
+          <div class="stack">
+            <button class="tool" id="findButton">⌕ Знайти</button>
+            <button class="tool" id="replaceButton">⟲ Замінити</button>
+            <button class="tool" id="selectAllButton">▧ Виділити все</button>
+          </div>
+        </div><div class="group-label">Редагування</div>
+      </section>
     </div>
     <div class="tools" id="tools-insert">
-      <button class="tool primary" id="pickImage">🖼 Зображення з телефона</button>
-      <button class="tool" id="galleryButton">🎨 Готові малюнки</button>
-      <button class="tool" id="insertTable">▦ Вставити таблицю</button>
-      <button class="tool" id="insertLink">🔗 Посилання</button>
-      <button class="tool" id="insertRule">― Роздільник</button>
-      <button class="tool" id="insertSymbol">✓ Символ</button>
+      <section class="ribbon-group"><div class="group-inner">
+        <button class="tool cmd-big" id="insertTable"><span class="cmdico">▦</span><span>Таблиця</span></button>
+      </div><div class="group-label">Таблиці</div></section>
+      <section class="ribbon-group"><div class="group-inner">
+        <button class="tool cmd-big" id="pickImage"><span class="cmdico">▧</span><span>Рисунки<br>з телефона</span></button>
+        <button class="tool cmd-big" id="galleryButton"><span class="cmdico">🖼</span><span>Готові<br>рисунки</span></button>
+      </div><div class="group-label">Зображення</div></section>
+      <section class="ribbon-group"><div class="group-inner">
+        <button class="tool cmd-big" id="insertLink"><span class="cmdico">🔗</span><span>Посилання</span></button>
+      </div><div class="group-label">Посилання</div></section>
+      <section class="ribbon-group"><div class="group-inner">
+        <button class="tool cmd-big" id="insertSymbol"><span class="cmdico">Ω</span><span>Символ</span></button>
+        <button class="tool cmd-big" id="insertDate"><span class="cmdico">▣</span><span>Дата</span></button>
+      </div><div class="group-label">Символи</div></section>
     </div>
-    <div class="tools" id="tools-table">
-      <span class="hint">Торкніться клітинки таблиці, потім використайте кнопки:</span>
-      <button class="tool" data-table="rowAbove">+ Рядок ↑</button><button class="tool" data-table="rowBelow">+ Рядок ↓</button>
-      <button class="tool" data-table="colBefore">+ Стовпець ←</button><button class="tool" data-table="colAfter">+ Стовпець →</button>
-      <button class="tool" data-table="header">Заголовки</button><button class="tool" data-table="zebra">Смугасті рядки</button>
-      <button class="tool danger" data-table="delRow">− Рядок</button><button class="tool danger" data-table="delCol">− Стовпець</button>
-      <button class="tool danger" data-table="delTable">Видалити таблицю</button>
+    <div class="tools" id="tools-design">
+      <section class="ribbon-group"><div class="group-inner">
+        <button class="theme-chip chosen" data-theme="classic"><span class="theme-swatch" style="--shade:#2056a1"></span>Класична</button>
+        <button class="theme-chip" data-theme="blue"><span class="theme-swatch" style="--shade:#167dba"></span>Блакитна</button>
+        <button class="theme-chip" data-theme="green"><span class="theme-swatch" style="--shade:#25826b"></span>Зелена</button>
+        <button class="theme-chip" data-theme="purple"><span class="theme-swatch" style="--shade:#8258a4"></span>Фіолетова</button>
+        <button class="theme-chip" data-theme="gray"><span class="theme-swatch" style="--shade:#566170"></span>Стримана</button>
+      </div><div class="group-label">Теми документа</div></section>
+      <section class="ribbon-group"><div class="group-inner">
+        <button class="tool cmd-big" id="addPageBorder"><span class="cmdico">▣</span><span>Рамка<br>сторінки</span></button>
+        <button class="tool cmd-big" id="resetDesign"><span class="cmdico">↺</span><span>Скинути<br>оформлення</span></button>
+      </div><div class="group-label">Тло сторінки</div></section>
     </div>
     <div class="tools" id="tools-layout">
-      <button class="tool" id="marginToggle">↔ Поля: звичайні</button><button class="tool" id="imageSmall">Зображення 30%</button><button class="tool" id="imageMedium">Зображення 60%</button>
-      <button class="tool" id="imageLarge">Зображення 100%</button>
-      <button class="tool" id="imageLeft">Малюнок ліворуч</button><button class="tool" id="imageCenter">По центру</button><button class="tool" id="imageRight">Праворуч</button>
-      <button class="tool danger" id="imageDelete">Видалити малюнок</button>
+      <section class="ribbon-group"><div class="group-inner">
+        <button class="tool cmd-big" id="marginToggle"><span class="cmdico">↔</span><span>Поля:<br>звичайні</span></button>
+        <button class="tool cmd-big" id="orientationToggle"><span class="cmdico">▯</span><span>Орієнтація:<br>книжкова</span></button>
+      </div><div class="group-label">Параметри сторінки</div></section>
+      <section class="ribbon-group"><div class="group-inner">
+        <button class="tool cmd-big" data-cmd="outdent"><span class="cmdico">⇤</span><span>Зменшити<br>відступ</span></button>
+        <button class="tool cmd-big" data-cmd="indent"><span class="cmdico">⇥</span><span>Збільшити<br>відступ</span></button>
+      </div><div class="group-label">Абзац</div></section>
+    </div>
+    <div class="tools" id="tools-references">
+      <section class="ribbon-group"><div class="group-inner">
+        <button class="tool cmd-big" id="insertLinkRef"><span class="cmdico">🔗</span><span>Додати<br>посилання</span></button>
+        <button class="tool cmd-big" id="removeLink"><span class="cmdico">⊘</span><span>Прибрати<br>посилання</span></button>
+      </div><div class="group-label">Посилання</div></section>
+      <section class="ribbon-group"><div class="group-inner">
+        <button class="tool cmd-big" id="insertSource"><span class="cmdico">📚</span><span>Указати<br>джерело</span></button>
+      </div><div class="group-label">Джерела інформації</div></section>
+    </div>
+    <div class="tools" id="tools-review">
+      <section class="ribbon-group"><div class="group-inner">
+        <button class="tool cmd-big" id="spellButton"><span class="cmdico">А✓</span><span>Правопис:<br>увімкнено</span></button>
+        <button class="tool cmd-big" id="wordCountButton"><span class="cmdico">123</span><span>Статистика<br>документа</span></button>
+      </div><div class="group-label">Правопис</div></section>
+      <section class="ribbon-group"><div class="group-inner">
+        <button class="tool cmd-big" id="findReview"><span class="cmdico">⌕</span><span>Знайти<br>текст</span></button>
+        <button class="tool cmd-big" id="replaceReview"><span class="cmdico">⟲</span><span>Замінити<br>текст</span></button>
+        <button class="tool cmd-big" id="checkReview"><span class="cmdico">☑</span><span>Перевірка<br>роботи</span></button>
+      </div><div class="group-label">Перевірка</div></section>
+    </div>
+    <div class="tools" id="tools-view">
+      <section class="ribbon-group"><div class="group-inner">
+        <button class="tool cmd-big" id="zoomMinus"><span class="cmdico">−</span><span>Менше</span></button>
+        <button class="tool cmd-big" id="zoomReset"><span class="cmdico">100%</span><span>Масштаб</span></button>
+        <button class="tool cmd-big" id="zoomPlus"><span class="cmdico">+</span><span>Більше</span></button>
+      </div><div class="group-label">Масштаб</div></section>
+      <section class="ribbon-group"><div class="group-inner">
+        <button class="tool cmd-big" id="hideHelp"><span class="cmdico">▤</span><span>Показати /<br>сховати поради</span></button>
+        <button class="tool cmd-big" id="viewPrint"><span class="cmdico">▯</span><span>Попередній<br>перегляд</span></button>
+      </div><div class="group-label">Відображення</div></section>
+    </div>
+    <div class="tools" id="tools-table">
+      <section class="ribbon-group"><div class="group-inner">
+        <button class="tool cmd-big" data-table="rowAbove"><span class="cmdico">▤↑</span><span>Рядок<br>вище</span></button>
+        <button class="tool cmd-big" data-table="rowBelow"><span class="cmdico">▤↓</span><span>Рядок<br>нижче</span></button>
+        <button class="tool cmd-big" data-table="colBefore"><span class="cmdico">⇤▤</span><span>Стовпець<br>ліворуч</span></button>
+        <button class="tool cmd-big" data-table="colAfter"><span class="cmdico">▤⇥</span><span>Стовпець<br>праворуч</span></button>
+      </div><div class="group-label">Рядки й стовпці</div></section>
+      <section class="ribbon-group"><div class="group-inner">
+        <button class="tool cmd-big" data-table="header"><span class="cmdico">▦</span><span>Рядок<br>заголовків</span></button>
+        <button class="tool cmd-big" data-table="zebra"><span class="cmdico">▤</span><span>Смугасті<br>рядки</span></button>
+      </div><div class="group-label">Стилі таблиці</div></section>
+      <section class="ribbon-group"><div class="group-inner">
+        <button class="tool cmd-big danger" data-table="delRow"><span class="cmdico">−</span><span>Видалити<br>рядок</span></button>
+        <button class="tool cmd-big danger" data-table="delCol"><span class="cmdico">−</span><span>Видалити<br>стовпець</span></button>
+        <button class="tool cmd-big danger" data-table="delTable"><span class="cmdico">×</span><span>Видалити<br>таблицю</span></button>
+      </div><div class="group-label">Видалення</div></section>
+    </div>
+    <div class="tools" id="tools-picture">
+      <section class="ribbon-group"><div class="group-inner">
+        <button class="tool cmd-big" id="imageSmall"><span class="cmdico">▧</span><span>Малий<br>30%</span></button>
+        <button class="tool cmd-big" id="imageMedium"><span class="cmdico">▧</span><span>Середній<br>60%</span></button>
+        <button class="tool cmd-big" id="imageLarge"><span class="cmdico">▧</span><span>Великий<br>100%</span></button>
+      </div><div class="group-label">Розмір</div></section>
+      <section class="ribbon-group"><div class="group-inner">
+        <button class="tool cmd-big" id="imageLeft"><span class="cmdico">⇤</span><span>Ліворуч</span></button>
+        <button class="tool cmd-big" id="imageCenter"><span class="cmdico">⇔</span><span>По центру</span></button>
+        <button class="tool cmd-big" id="imageRight"><span class="cmdico">⇥</span><span>Праворуч</span></button>
+        <button class="tool cmd-big danger" id="imageDelete"><span class="cmdico">×</span><span>Видалити</span></button>
+      </div><div class="group-label">Розташування</div></section>
     </div>
     <div class="tools" id="tools-file">
-      <button class="tool primary" id="exportDocx">⬇ Word (.docx)</button>
-      <button class="tool" id="exportHtml">⬇ HTML</button><button class="tool" id="exportProject">⬇ Чернетка (.json)</button>
-      <button class="tool" id="printPdf">🖨 Друк / PDF</button>
-      <button class="tool" id="importButton">📂 Відкрити чернетку / HTML / TXT</button>
-      <button class="tool" id="forceSave">💾 Зберегти в браузері</button><button class="tool" id="useTemplate">📝 Шаблон афіші</button>
-      <button class="tool danger" id="reset">Новий документ</button>
+      <section class="ribbon-group"><div class="group-inner">
+        <button class="tool cmd-big" id="reset"><span class="cmdico">▯</span><span>Створити</span></button>
+        <button class="tool cmd-big" id="importButton"><span class="cmdico">📂</span><span>Відкрити<br>чернетку</span></button>
+        <button class="tool cmd-big" id="useTemplate"><span class="cmdico">📝</span><span>Шаблон<br>афіші</span></button>
+      </div><div class="group-label">Документ</div></section>
+      <section class="ribbon-group"><div class="group-inner">
+        <button class="tool cmd-big" id="forceSave"><span class="cmdico">▣</span><span>Зберегти<br>чернетку</span></button>
+        <button class="tool cmd-big primary" id="exportDocx"><span class="cmdico">W</span><span>Завантажити<br>Word (.docx)</span></button>
+        <button class="tool cmd-big" id="exportProject"><span class="cmdico">↓</span><span>Резервна<br>копія</span></button>
+      </div><div class="group-label">Зберегти як</div></section>
+      <section class="ribbon-group"><div class="group-inner">
+        <button class="tool cmd-big" id="exportHtml"><span class="cmdico">⌘</span><span>HTML</span></button>
+        <button class="tool cmd-big" id="printPdf"><span class="cmdico">▤</span><span>Друк / PDF</span></button>
+      </div><div class="group-label">Експорт</div></section>
     </div>
   </div>
+</div>
 </div>
 <main class="workspace">
   <section class="paperwrap" aria-label="Документ">
@@ -193,6 +449,10 @@ footer{font-size:12px}
     </section>
   </aside>
 </main>
+<div class="statusbar" aria-live="polite">
+<div class="left"><span id="wordStatus">Слів: 0</span><span id="charStatus">Символів: 0</span><span>Українська</span></div>
+<div class="right"><button id="statusZoomOut" title="Зменшити масштаб">−</button><input id="zoomRange" type="range" min="70" max="130" step="10" value="100" aria-label="Масштаб сторінки"><button id="statusZoomIn" title="Збільшити масштаб">+</button><span id="zoomText">100%</span></div>
+</div>
 <div class="note">Без реєстрації та серверного збирання робіт · Зміни зберігаються лише в браузері цього пристрою · Для роботи без інтернету можна зберегти HTML-сторінку.</div>
 <div class="toast" id="toast" role="status"></div>
 <input type="file" id="imageInput" accept="image/*" hidden>
