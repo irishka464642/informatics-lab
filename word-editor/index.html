@@ -181,7 +181,6 @@ footer{font-size:12px}
  .doc-meta{width:100%}
  .doc-meta #title{max-width:none;min-width:110px;width:auto;flex:1}
  .doc-meta input,.doc-meta select{height:32px;font-size:12px}
- .doc-meta #studentCode{width:82px}
  .tabs{padding:0 4px;height:39px}
  .tab{padding:10px 12px;font-size:12px}
  .ribbon-toggle{position:sticky;right:0;min-width:34px;background:#fff}
@@ -217,6 +216,45 @@ footer{font-size:12px}
 #emailDialog{width:min(710px,97vw);max-height:90vh;overflow-y:auto}
 #emailPrepStatus{padding:8px 3px}
 @media(max-width:600px){.send-choices{grid-template-columns:1fr}.send-option{padding:12px}#emailDialog{padding:14px}.send-action{width:100%}}
+
+/* Дитяча проста здача роботи: великий підписаний заклик до дії */
+.submission-panel{margin:19px auto 0;max-width:794px;background:#fff;border:3px solid #1e61b4;border-radius:13px;padding:21px;box-shadow:0 4px 18px #173c7722}
+.submission-header{display:flex;gap:12px;align-items:center;margin-bottom:15px}
+.submission-mail-icon{display:grid;place-items:center;flex:0 0 52px;height:52px;background:#e6f0ff;color:#124990;border-radius:12px;font-size:28px}
+.submission-header h2{font-size:21px;color:#194683;margin:0 0 5px}
+.submission-header p{font-size:14px;color:#4b617c;margin:0;line-height:1.45}
+.submission-fields{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;margin-bottom:15px}
+.submission-fields label{font-size:14px;font-weight:750;color:#253956}
+.submission-fields input,.submission-fields select{display:block;width:100%;padding:12px 13px;border:1.5px solid #a9bad2;border-radius:8px;background:#fff;color:#172c47;font:inherit;font-size:16px;margin-top:6px;min-height:49px}
+.submission-fields input:focus,.submission-fields select:focus{border-color:#185abd}
+.submit-big{width:100%;border:0;background:#146b45;color:white;border-radius:11px;font-weight:900;font-size:clamp(18px,2.1vw,25px);padding:17px 15px;min-height:66px;box-shadow:0 4px 0 #084b30;display:flex;justify-content:center;align-items:center;gap:12px;letter-spacing:.01em}
+.submit-big span{font-size:28px}
+.submit-big:hover{background:#0d5938}
+.submit-big:active{box-shadow:0 1px 0 #084b30;transform:translateY(2px)}
+.submit-big:disabled{opacity:.6;cursor:wait}
+.submit-help{font-size:12px;line-height:1.45;color:#56677d;margin:14px 0 3px}
+.submit-status{font-size:14px;line-height:1.5;color:#126341;font-weight:650;margin:7px 0 0}
+.submit-status.error{color:#b52d3a}
+.submit-status:empty{display:none}
+.mobile-submit-wrap{display:none}
+@media(max-width:600px){
+ .submission-panel{margin:13px 0 5px;padding:14px;border-width:2px;border-radius:9px}
+ .submission-header{gap:9px}
+ .submission-header h2{font-size:18px}
+ .submission-mail-icon{flex-basis:41px;height:41px;font-size:22px}
+ .submission-header p{font-size:12px}
+ .submission-fields{grid-template-columns:1fr;gap:10px}
+ .submission-fields label{font-size:14px}
+ .submit-big{font-size:19px;min-height:64px;padding:13px 8px}
+ .mobile-submit-wrap{position:fixed;display:block;bottom:0;left:0;right:0;z-index:17;background:#ffffffed;padding:9px 12px max(10px,env(safe-area-inset-bottom));border-top:1px solid #b9cde7;box-shadow:0 -4px 15px #213f7040}
+ .mobile-submit-wrap .submit-big{max-width:650px;margin:auto}
+ .workspace{padding-bottom:120px}
+ .statusbar{bottom:88px}
+ body:has(#editor:focus) .mobile-submit-wrap,
+ body:has(#studentName:focus) .mobile-submit-wrap{display:none}
+}
+@media print{.submission-panel,.mobile-submit-wrap{display:none!important}}
+
 </style>
 </head>
 <body>
@@ -232,7 +270,6 @@ footer{font-size:12px}
     <div class="doc-meta">
       <input id="title" aria-label="Назва документа" value="Моя афіша" maxlength="70">
       <select id="grade" aria-label="Клас"><option>6-А</option><option>6-Б</option><option>6-В</option></select>
-      <input id="studentCode" aria-label="Навчальний код учня" placeholder="Код учня" maxlength="24">
       <span class="status" id="status" aria-live="polite">Готово</span>
     </div>
   </div>
@@ -435,6 +472,20 @@ footer{font-size:12px}
 <main class="workspace">
   <section class="paperwrap" aria-label="Документ">
     <div class="paper" id="paper"><div id="editor" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true" aria-label="Редактор текстового документа"></div></div>
+    <section class="submission-panel" id="submissionPanel" aria-labelledby="submissionHeading">
+      <div class="submission-header"><span class="submission-mail-icon" aria-hidden="true">✉</span><div><h2 id="submissionHeading">Здати практичну роботу № 2</h2><p>Заповни два поля та натисни велику кнопку. Документ Word додасться до листа автоматично.</p></div></div>
+      <div class="submission-fields">
+        <label for="sendGrade">Твій клас
+          <select id="sendGrade" required><option value="6-А">6-А</option><option value="6-Б">6-Б</option><option value="6-В">6-В</option></select>
+        </label>
+        <label for="studentName">Прізвище та ім’я
+          <input id="studentName" type="text" autocomplete="name" maxlength="70" required placeholder="Наприклад: Коваль Марія">
+        </label>
+      </div>
+      <button type="button" class="submit-big" id="submitBig"><span aria-hidden="true">✉</span> ВІДПРАВИТИ РОБОТУ</button>
+      <p class="submit-help">Файл <b>.docx</b> піде на пошту вчителя через FormSubmit. На сторінці сервісу може знадобитися підтвердження. <b>Перевір, що відправлення завершено!</b></p>
+      <p class="submit-status" id="handInStatus" role="status" aria-live="polite"></p>
+    </section>
   </section>
   <aside class="sidebar">
     <section class="panel">
@@ -446,7 +497,7 @@ footer{font-size:12px}
         <li>Напиши запрошення (2–3 речення).</li>
         <li>Встав малюнок із телефона або готовий малюнок.</li>
         <li>Додай таблицю програми заходу (від 3 рядків, 2 стовпці).</li>
-        <li>Зміни оформлення, перевір текст і вибери <b>Файл → Надіслати Word на пошту</b> або завантаж .docx.</li>
+        <li>Коли завершиш — натисни велику кнопку <b>«ВІДПРАВИТИ РОБОТУ»</b> під документом.</li>
       </ol>
       <p class="hint">Працюй самостійно. Не використовуй чужі зображення без дозволу та не пиши особисті дані.</p>
     </section>
@@ -462,10 +513,11 @@ footer{font-size:12px}
       <p><b>На телефоні:</b> виділи слово довгим дотиком, тоді натисни <b>Ж</b> або <b>К</b>.</p>
       <p><b>Таблиця:</b> після вставлення торкнися клітинки й введи текст. Вкладка «Таблиця» дозволяє додати рядки.</p>
       <p><b>Фото:</b> зменшуй великі зображення на вкладці «Макет».</p>
-      <p><b>Здавання роботи:</b> натисни ✉ угорі або <b>Файл → Надіслати Word на пошту</b>. Можна прикріпити Word-файл у поштовому застосунку телефона або скористатися прямим надсиланням, якщо його ввімкнув учитель.</p><p><b>Збереження:</b> чернетка зберігається тільки на цьому пристрої. Рекомендуємо також завантажити резервну копію.</p>
+      <p><b>Здавання роботи:</b> після завершення напиши прізвище, ім’я, вибери клас і натисни велику кнопку <b>«ВІДПРАВИТИ РОБОТУ»</b>. Не потрібно шукати значок пошти. Пошта вчителя вже вказана.</p><p><b>Збереження:</b> чернетка зберігається тільки на цьому пристрої. Рекомендуємо також завантажити резервну копію.</p>
     </section>
   </aside>
 </main>
+<div class="mobile-submit-wrap" id="mobileSubmitWrap"><button type="button" class="submit-big" id="mobileSubmit"><span aria-hidden="true">✉</span> ВІДПРАВИТИ РОБОТУ</button></div>
 <div class="statusbar" aria-live="polite">
 <div class="left"><span id="wordStatus">Слів: 0</span><span id="charStatus">Символів: 0</span><span>Українська</span></div>
 <div class="right"><button id="statusZoomOut" title="Зменшити масштаб">−</button><input id="zoomRange" type="range" min="70" max="130" step="10" value="100" aria-label="Масштаб сторінки"><button id="statusZoomIn" title="Збільшити масштаб">+</button><span id="zoomText">100%</span></div>
@@ -475,28 +527,21 @@ footer{font-size:12px}
 <input type="file" id="imageInput" accept="image/*" hidden>
 <input type="file" id="fileInput" accept=".html,.htm,.txt,.json,.word6.json,text/plain,text/html,application/json" hidden>
 <dialog id="emailDialog" aria-labelledby="emailDialogTitle">
- <h2 id="emailDialogTitle">✉ Надіслати Word на пошту вчителя</h2>
- <p class="dialogtext">Редактор прикріпить документ <b>Word (.docx)</b> з текстом, таблицею і малюнками до листа через FormSubmit.</p>
- <section class="send-option">
-  <b>Одержувач: work.inform@chern12.ukr.education</b>
-  <label class="send-label" for="sendStudentCode">Навчальний код учня</label>
-  <input id="sendStudentCode" type="text" maxlength="24" autocomplete="off" placeholder="Наприклад, A01">
-  <p class="hint">Клас зазначено у верхній панелі. Не вводьте особистих даних.</p>
-  <button class="tool primary send-action" id="sendViaFormsubmit">✉ Надіслати Word-файл учителю</button>
-  <p class="hint">На новій вкладці відкриється FormSubmit. За потреби пройдіть перевірку і дочекайтеся підтвердження від сервісу. Кнопка не підтверджує доставлення листа.</p>
- </section>
- <p id="emailPrepStatus" class="dialogtext" role="status">Готуємо Word-файл…</p>
- <div class="dialogbuttons">
-  <button class="tool" id="sendViaPhone">📱 Поділитися через телефон</button>
-  <button class="tool" id="downloadForEmail">⬇ Завантажити DOCX</button>
-  <button class="tool" id="closeEmailDialog">Закрити</button>
- </div>
+  <h2 id="emailDialogTitle">Надіслати роботу</h2>
+  <p class="dialogtext">Використай велику кнопку «ВІДПРАВИТИ РОБОТУ» під документом. Якщо пошта недоступна, тут можна завантажити Word-файл або поділитися ним з телефона.</p>
+  <p id="emailPrepStatus" class="dialogtext" role="status"></p>
+  <div class="dialogbuttons">
+    <button class="tool primary" id="goToSubmit">Перейти до відправлення</button>
+    <button class="tool" id="sendViaPhone">Поділитися файлом</button>
+    <button class="tool" id="downloadForEmail">Завантажити DOCX</button>
+    <button class="tool" id="closeEmailDialog">Закрити</button>
+  </div>
 </dialog>
 <form id="mailForm" method="POST" action="https://formsubmit.co/work.inform@chern12.ukr.education" enctype="multipart/form-data" target="_blank" hidden>
  <input name="_subject" id="formSubject" type="hidden">
  <input name="_template" value="table" type="hidden">
  <input name="class" id="formClass" type="hidden">
- <input name="student_code" id="formStudentCode" type="hidden">
+ <input name="student" id="formStudentName" type="hidden">
  <input name="description" id="formDescription" type="hidden">
  <input name="_honey" value="" type="text" autocomplete="off" tabindex="-1">
  <input name="attachment" id="wordAttachment" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
@@ -515,14 +560,14 @@ var starter='<h1>ЗАПРОШЕННЯ НА ШКІЛЬНИЙ ЗАХІД</h1><p>З
 function $(s){return document.querySelector(s)}
 function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function safeName(s){return String(s||'document').replace(/[^a-zA-Z0-9а-яА-ЯіїєґІЇЄҐ_-]/g,'_').slice(0,60)}
-function nameFile(ext){return 'Pr2_'+safeName($('#grade').value)+'_'+safeName($('#studentCode').value||$('#title').value)+'.'+ext}
+function nameFile(ext){return 'Pr2_'+safeName($('#grade').value)+'_'+safeName($('#studentName').value.trim()||$('#title').value)+'.'+ext}
 function tip(message){clearTimeout(toastTimer);var el=$('#toast');el.textContent=message;el.classList.add('show');toastTimer=setTimeout(function(){el.classList.remove('show')},3300)}
 function setStatus(s){status.textContent=s}
 function isInEditor(node){return node && (node===editor||editor.contains(node))}
 function rememberSelection(){var s=window.getSelection();if(s && s.rangeCount && isInEditor(s.anchorNode)){selectedRange=s.getRangeAt(0).cloneRange()}}
 function restoreSelection(){editor.focus();if(selectedRange){try{var s=window.getSelection();s.removeAllRanges();s.addRange(selectedRange)}catch(e){}}}
 function change(){filesWritten=false;setStatus('Є зміни…');clearTimeout(saveTimer);saveTimer=setTimeout(saveNow,850);check(false);updateStats()}
-function saveNow(){try{localStorage.setItem(KEY,JSON.stringify({html:editor.innerHTML,title:$('#title').value,grade:$('#grade').value,code:$('#studentCode').value,compact:paper.classList.contains('compact'),theme:paper.dataset.theme||'classic',landscape:paper.classList.contains('landscape'),borderpage:paper.classList.contains('borderpage'),spellcheck:editor.spellcheck,zoom:Number($('#zoomRange').value)}));setStatus('Збережено ✓')}catch(e){setStatus('Не збережено!');tip('Пам’ять пристрою заповнена. Завантажте документ через «Файл».')}}
+function saveNow(){try{localStorage.setItem(KEY,JSON.stringify({html:editor.innerHTML,title:$('#title').value,grade:$('#grade').value,name:$('#studentName').value,compact:paper.classList.contains('compact'),theme:paper.dataset.theme||'classic',landscape:paper.classList.contains('landscape'),borderpage:paper.classList.contains('borderpage'),spellcheck:editor.spellcheck,zoom:Number($('#zoomRange').value)}));setStatus('Збережено ✓')}catch(e){setStatus('Не збережено!');tip('Пам’ять пристрою заповнена. Завантажте документ через «Файл».')}}
 function setTab(tab){document.querySelectorAll('.tab').forEach(function(el){el.setAttribute('aria-selected',el.dataset.tab===tab?'true':'false')});document.querySelectorAll('.tools').forEach(function(el){el.classList.toggle('active',el.id==='tools-'+tab)});if($('#ribbonViewport').classList.contains('collapsed')){toggleRibbon(true)}}
 function toggleRibbon(open){$('#ribbonViewport').classList.toggle('collapsed',!open);$('#toggleRibbon').setAttribute('aria-expanded',open?'true':'false');$('#toggleRibbon').textContent=open?'⌃':'⌄'}
 $('#toggleRibbon').onclick=function(){toggleRibbon($('#ribbonViewport').classList.contains('collapsed'))};
@@ -605,7 +650,7 @@ function download(blob,filename){var a=document.createElement('a'),url=URL.creat
 function stylesheetForExport(){return 'body{font-family:Arial,sans-serif;font-size:12pt;color:#182d49;line-height:1.45}h1{font-size:21pt}h2{font-size:17pt}table{width:100%;border-collapse:collapse}th,td{border:1px solid #70829d;padding:7px;vertical-align:top}th{background:#e7effc}img{max-width:100%;height:auto}table.zebra tr:nth-child(even){background:#eef5ff}'}
 function htmlExport(){return '<!doctype html><html lang="uk"><head><meta charset="utf-8"><title>'+escapeHtml($('#title').value)+'</title><style>'+stylesheetForExport()+'</style></head><body>'+editor.innerHTML+'</body></html>'}
 $('#exportHtml').onclick=function(){download(new Blob([htmlExport()],{type:'text/html;charset=utf-8'}),nameFile('html'));tip('HTML-файл збережено')};
-$('#exportProject').onclick=function(){var d={format:'word6',version:1,html:editor.innerHTML,title:$('#title').value,grade:$('#grade').value,code:$('#studentCode').value};download(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}),nameFile('word6.json'));tip('Чернетку збережено')};
+$('#exportProject').onclick=function(){var d={format:'word6',version:1,html:editor.innerHTML,title:$('#title').value,grade:$('#grade').value,name:$('#studentName').value};download(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}),nameFile('word6.json'));tip('Чернетку збережено')};
 $('#printPdf').onclick=function(){window.print()};
 $('#forceSave').onclick=function(){saveNow();tip('Чернетку збережено на цьому пристрої')};
 $('#reset').onclick=function(){if(!confirm('Створити новий документ? Нинішній текст буде замінено.'))return;editor.innerHTML='';$('#title').value='Новий документ';selectedImage=null;selectedCell=null;change();saveNow()};
@@ -629,12 +674,14 @@ $('#fileInput').addEventListener('change',async function(){
  var f=this.files&&this.files[0];if(!f)return;
  if(f.size>5*1024*1024){tip('Файл завеликий для імпорту (максимум 5 МБ)');this.value='';return}
  try{var text=await f.text(),ext=f.name.toLowerCase();if(!confirm('Відкрити файл? Поточний документ буде замінено.'))return;
- if(ext.endsWith('.json')){var d=JSON.parse(text);if(d.format!=='word6')throw Error('Це не чернетка «Мій Word»');editor.innerHTML=sanitize(d.html||'');$('#title').value=d.title||'Відновлений документ';$('#grade').value=d.grade||'6-А';$('#studentCode').value=d.code||''}
+ if(ext.endsWith('.json')){var d=JSON.parse(text);if(d.format!=='word6')throw Error('Це не чернетка «Мій Word»');editor.innerHTML=sanitize(d.html||'');$('#title').value=d.title||'Відновлений документ';$('#grade').value=d.grade||'6-А';$('#studentName').value=d.name||''}
  else if(ext.endsWith('.txt')){editor.innerHTML='<p>'+escapeHtml(text).replace(/\r?\n/g,'<br>')+'</p>';$('#title').value=f.name.replace(/\.[^.]+$/,'')}
  else{var parsed=new DOMParser().parseFromString(text,'text/html');editor.innerHTML=sanitize(parsed.body.innerHTML);$('#title').value=f.name.replace(/\.[^.]+$/,'')}
  change();saveNow();tip('Документ відкрито')}catch(e){tip('Не вдалося відкрити файл: '+e.message)}finally{this.value=''}
 });
-['title','grade','studentCode'].forEach(function(id){$('#'+id).addEventListener('input',change)});
+['title','grade','studentName'].forEach(function(id){$('#'+id).addEventListener('input',change)});
+$('#grade').addEventListener('change',function(){$('#sendGrade').value=this.value});
+$('#sendGrade').addEventListener('change',function(){$('#grade').value=this.value;change()});
 editor.addEventListener('paste',function(e){var dt=e.clipboardData;if(!dt)return;var file=Array.from(dt.files||[]).find(function(f){return f.type.startsWith('image/')});if(file){e.preventDefault();compressImage(file).then(function(data){addImage(data,'Зображення з буфера')});return}
  var plain=dt.getData('text/plain');if(plain){e.preventDefault();document.execCommand('insertText',false,plain)}});
 // ---- DOCX: self-contained Office Open XML exporter (no CDNs) ----
@@ -747,75 +794,100 @@ function makeZip(entries){
 $('#exportDocx').onclick=function(){try{var docx=docxBlob();download(docx,nameFile('docx'));tip('Word-файл .docx збережено ✓')}catch(e){console.error(e);tip('Помилка експорту: '+e.message)}};
 
 
-// Надсилання Word-файлу через FormSubmit (як у застосунку 9 класу).
+// Проста здача практичної роботи з великої кнопки: клас + прізвище та ім'я.
 const DOCX_TYPE='application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 const TEACHER_MAIL='work.inform@chern12.ukr.education';
 const MAIL_MAX_BYTES=9*1024*1024;
 var preparedEmailDocx=null,wordSending=false;
 function showEmailDialog(){
- $('#sendStudentCode').value=$('#studentCode').value.trim();
  $('#emailDialog').showModal();
  try{
   var blob=docxBlob();
   preparedEmailDocx={blob:blob,name:nameFile('docx')};
-  $('#emailPrepStatus').textContent='Документ '+preparedEmailDocx.name+' готовий ('+Math.ceil(blob.size/1024)+' КБ).';
-  $('#sendViaFormsubmit').disabled=blob.size>MAIL_MAX_BYTES;
-  if(blob.size>MAIL_MAX_BYTES)$('#emailPrepStatus').textContent='Файл завеликий (понад 9 МБ). Спробуйте зменшити зображення.';
- }catch(err){
-  console.error(err);preparedEmailDocx=null;$('#sendViaFormsubmit').disabled=true;
-  $('#emailPrepStatus').textContent='Не вдалося створити DOCX. Перевірте зображення.'
+  $('#emailPrepStatus').textContent='Файл Word готовий для збереження або поширення.';
+ }catch(e){
+  preparedEmailDocx=null;$('#emailPrepStatus').textContent='Помилка підготовки Word-файлу.'
  }
 }
-$('#openEmailDialog').onclick=showEmailDialog;
-$('#quickSend').onclick=showEmailDialog;
-$('#closeEmailDialog').onclick=function(){$('#emailDialog').close()};
-$('#emailDialog').addEventListener('close',function(){
- preparedEmailDocx=null;$('#submitReady').value='false';$('#wordAttachment').value=''
-});
-$('#mailForm').addEventListener('submit',function(e){
- if($('#submitReady').value!=='true'||!$('#wordAttachment').files||!$('#wordAttachment').files.length){
-  e.preventDefault();$('#emailPrepStatus').textContent='DOCX-файл ще не прикріплено.'
+function setHandInStatus(message,isError){
+ var el=$('#handInStatus');el.textContent=message;el.classList.toggle('error',!!isError);
+}
+function focusHandIn(){
+ var p=$('#submissionPanel');p.scrollIntoView({block:'center',behavior:'smooth'});
+ $('#studentName').focus({preventScroll:true});
+}
+function sendWork(){
+ if(wordSending)return;
+ var student=$('#studentName').value.trim().replace(/\s+/g,' ');
+ var klass=$('#sendGrade').value;
+ if(student.length<5||student.length>70||student.split(' ').length<2){
+  setHandInStatus('Впиши прізвище та ім’я у поле вище (наприклад: Коваль Марія).',true);
+  focusHandIn();return
  }
-});
-$('#sendViaFormsubmit').onclick=function(){
- if(wordSending||!preparedEmailDocx)return;
- var code=$('#sendStudentCode').value.trim();
- if(!/^[a-zA-Z0-9А-Яа-яІЇЄҐіїєґ_-]{2,24}$/.test(code)){
-  $('#emailPrepStatus').textContent='Введіть навчальний код (2–24 символи, літери або цифри).';$('#sendStudentCode').focus();return
+ if(!['6-А','6-Б','6-В'].includes(klass)){
+  setHandInStatus('Оберіть свій клас.',true);$('#sendGrade').focus();return
  }
- if(preparedEmailDocx.blob.size>MAIL_MAX_BYTES){tip('Файл завеликий для FormSubmit');return}
- if(!confirm('Надіслати '+preparedEmailDocx.name+' на '+TEACHER_MAIL+'?'))return;
- wordSending=true;$('#sendViaFormsubmit').disabled=true;
+ if(!editor.innerText.trim()){
+  setHandInStatus('Документ порожній. Спочатку створи свою роботу.',true);
+  editor.focus();return
+ }
+ // Клас у шапці та у формі здавання завжди узгоджені.
+ $('#grade').value=klass;
+ $('#studentName').value=student;
+ let blob;
+ try{blob=docxBlob()}catch(e){
+  console.error(e);setHandInStatus('Не вдалося створити Word-файл. Спробуй зменшити зображення та повторити.',true);return
+ }
+ if(blob.size>MAIL_MAX_BYTES){
+  setHandInStatus('Файл завеликий для FormSubmit (понад 9 МБ). Зменши фотографії.',true);return
+ }
+ // Явна дія користувача — кнопка «Відправити роботу».
+ var filename=nameFile('docx');
+ wordSending=true;$('#submitBig').disabled=true;$('#mobileSubmit').disabled=true;
  try{
-  var file=new File([preparedEmailDocx.blob],preparedEmailDocx.name,{type:DOCX_TYPE});
+  var file=new File([blob],filename,{type:DOCX_TYPE});
   var dt=new DataTransfer();dt.items.add(file);$('#wordAttachment').files=dt.files;
-  if(!$('#wordAttachment').files||$('#wordAttachment').files.length!==1)throw Error('Браузер не підтримує автоматичне вкладення');
-  $('#studentCode').value=code;saveNow();
-  $('#formClass').value=$('#grade').value;$('#formStudentCode').value=code;
-  $('#formSubject').value='Інформатика · 6 клас · Практична №2 · '+$('#grade').value+' · '+code;
-  $('#formDescription').value='Клас: '+$('#grade').value+'; навчальний код: '+code+'; вкладення: '+preparedEmailDocx.name;
+  if(!$('#wordAttachment').files||$('#wordAttachment').files.length!==1)throw Error('Не вдалося прикріпити файл');
+  saveNow();
+  $('#formClass').value=klass;$('#formStudentName').value=student;
+  $('#formSubject').value='Інформатика · 6 клас · Практична №2 · '+klass+' · '+student;
+  $('#formDescription').value='Практична робота № 2. Клас: '+klass+'; учень: '+student+'; вкладення: '+filename+'.';
   $('#submitReady').value='true';
   $('#mailForm').requestSubmit();
-  $('#emailPrepStatus').textContent='Відкрито FormSubmit. Перевірте нову вкладку: за потреби пройдіть перевірку сервісу і дочекайтеся підтвердження.';
- }catch(err){
-  console.error(err);$('#emailPrepStatus').textContent='Не вдалося автоматично додати Word-файл. Скористайтеся завантаженням .docx або поштою телефона.'
- }finally{wordSending=false;$('#sendViaFormsubmit').disabled=false}
-};
+  setHandInStatus('Відкрито сторінку FormSubmit. Перейди на нову вкладку та заверши відправлення. Переконайся, що з’явилося підтвердження.',false);
+ }catch(e){
+  console.error(e);setHandInStatus('Браузер не зміг прикріпити файл. Натисни «Файл → Завантажити Word» та надішли його через пошту.',true)
+ }finally{
+  wordSending=false;$('#submitBig').disabled=false;$('#mobileSubmit').disabled=false;$('#submitReady').value='false'
+ }
+}
+$('#submitBig').onclick=sendWork;
+$('#mobileSubmit').onclick=sendWork;
+$('#openEmailDialog').onclick=focusHandIn;
+$('#quickSend').onclick=focusHandIn;
+$('#goToSubmit').onclick=function(){$('#emailDialog').close();focusHandIn()};
+$('#closeEmailDialog').onclick=function(){$('#emailDialog').close()};
+$('#emailDialog').addEventListener('close',function(){preparedEmailDocx=null});
+$('#mailForm').addEventListener('submit',function(e){
+ if($('#submitReady').value!=='true'||!$('#wordAttachment').files||!$('#wordAttachment').files.length){
+  e.preventDefault();setHandInStatus('Не вдалося прикріпити Word-файл.',true)
+ }
+});
 $('#sendViaPhone').onclick=async function(){
- if(!preparedEmailDocx){tip('DOCX ще не готовий');return}
+ if(!preparedEmailDocx){tip('Word-файл ще не готовий');return}
  var file=new File([preparedEmailDocx.blob],preparedEmailDocx.name,{type:DOCX_TYPE});
  if(!navigator.share||(navigator.canShare&&!navigator.canShare({files:[file]}))){
-  $('#emailPrepStatus').textContent='Цей браузер не підтримує надсилання вкладення. Завантажте DOCX і прикріпіть його вручну.';return
+  $('#emailPrepStatus').textContent='Браузер не підтримує вкладення. Завантаж DOCX та прикріпи його вручну.';return
  }
  try{
-  await navigator.share({files:[file],title:'Практична робота №2 · '+$('#grade').value,text:'Клас: '+$('#grade').value+'. Навчальний код: '+($('#studentCode').value||'не вказано')+'.'});
-  $('#emailPrepStatus').textContent='Файл передано поштовому застосунку. Перевірте факт надсилання листа.'
- }catch(err){$('#emailPrepStatus').textContent='Надсилання скасовано або поштовий застосунок недоступний.'}
+  await navigator.share({files:[file],title:'Практична робота №2 · '+$('#grade').value,text:'Клас: '+$('#grade').value+'; учень: '+($('#studentName').value||'Не вказано')+'.'});
+  $('#emailPrepStatus').textContent='Файл передано вибраному застосунку. Перевір, чи справді надіслано лист.'
+ }catch(e){$('#emailPrepStatus').textContent='Поширення скасовано або недоступне.'}
 };
 $('#downloadForEmail').onclick=function(){
- if(!preparedEmailDocx){tip('DOCX ще не готовий');return}
+ if(!preparedEmailDocx){tip('Word-файл ще не готовий');return}
  download(preparedEmailDocx.blob,preparedEmailDocx.name);
- $('#emailPrepStatus').textContent='Файл збережено. Його можна додати до листа вручну.'
+ $('#emailPrepStatus').textContent='DOCX завантажено на пристрій.'
 };
 
 function updateStats(){
@@ -898,8 +970,8 @@ $('#hideHelp').onclick=function(){
 $('#viewPrint').onclick=function(){window.print()};
 
 function init(){
- try{var stored=JSON.parse(localStorage.getItem(KEY)||'null');if(stored&&stored.html){editor.innerHTML=sanitize(stored.html);$('#title').value=stored.title||'Моя афіша';$('#grade').value=stored.grade||'6-А';$('#studentCode').value=stored.code||'';paper.classList.toggle('compact',!!stored.compact);paper.classList.toggle('landscape',!!stored.landscape);paper.classList.toggle('borderpage',!!stored.borderpage);paper.dataset.theme=stored.theme||'classic';editor.spellcheck=stored.spellcheck!==false;$('#zoomRange').value=stored.zoom||100;applyZoom(false);updateMarginButton();updateOrientationButton();updateThemeButtons();updateSpellButton();setStatus('Чернетку відновлено ✓')}else{editor.innerHTML='';setStatus('Новий документ')}}catch(e){editor.innerHTML='';setStatus('Готово')}
- check(false);updateStats()
+ try{var stored=JSON.parse(localStorage.getItem(KEY)||'null');if(stored&&stored.html){editor.innerHTML=sanitize(stored.html);$('#title').value=stored.title||'Моя афіша';$('#grade').value=stored.grade||'6-А';$('#studentName').value=stored.name||'';paper.classList.toggle('compact',!!stored.compact);paper.classList.toggle('landscape',!!stored.landscape);paper.classList.toggle('borderpage',!!stored.borderpage);paper.dataset.theme=stored.theme||'classic';editor.spellcheck=stored.spellcheck!==false;$('#zoomRange').value=stored.zoom||100;applyZoom(false);updateMarginButton();updateOrientationButton();updateThemeButtons();updateSpellButton();setStatus('Чернетку відновлено ✓')}else{editor.innerHTML='';setStatus('Новий документ')}}catch(e){editor.innerHTML='';setStatus('Готово')}
+ check(false);updateStats();$('#sendGrade').value=$('#grade').value
 }
 init();
 })();
