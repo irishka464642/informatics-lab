@@ -202,6 +202,9 @@ footer{font-size:12px}
  .paper.landscape{max-width:none}
  .paper.borderpage{outline:none}
 }
+.sidebar[hidden]{display:none!important}
+.workspace.focused{grid-template-columns:minmax(0,1fr)}
+@media(max-width:560px){.paper{zoom:var(--paper-zoom)!important}}
 </style>
 </head>
 <body>
@@ -476,9 +479,12 @@ function setStatus(s){status.textContent=s}
 function isInEditor(node){return node && (node===editor||editor.contains(node))}
 function rememberSelection(){var s=window.getSelection();if(s && s.rangeCount && isInEditor(s.anchorNode)){selectedRange=s.getRangeAt(0).cloneRange()}}
 function restoreSelection(){editor.focus();if(selectedRange){try{var s=window.getSelection();s.removeAllRanges();s.addRange(selectedRange)}catch(e){}}}
-function change(){filesWritten=false;setStatus('Є зміни…');clearTimeout(saveTimer);saveTimer=setTimeout(saveNow,850);check(false)}
-function saveNow(){try{localStorage.setItem(KEY,JSON.stringify({html:editor.innerHTML,title:$('#title').value,grade:$('#grade').value,code:$('#studentCode').value,compact:paper.classList.contains('compact')}));setStatus('Збережено ✓')}catch(e){setStatus('Не збережено!');tip('Пам’ять пристрою заповнена. Завантажте документ через «Файл».')}}
-function setTab(tab){document.querySelectorAll('.tab').forEach(function(el){el.setAttribute('aria-selected',el.dataset.tab===tab?'true':'false')});document.querySelectorAll('.tools').forEach(function(el){el.classList.toggle('active',el.id==='tools-'+tab)})}
+function change(){filesWritten=false;setStatus('Є зміни…');clearTimeout(saveTimer);saveTimer=setTimeout(saveNow,850);check(false);updateStats()}
+function saveNow(){try{localStorage.setItem(KEY,JSON.stringify({html:editor.innerHTML,title:$('#title').value,grade:$('#grade').value,code:$('#studentCode').value,compact:paper.classList.contains('compact'),theme:paper.dataset.theme||'classic',landscape:paper.classList.contains('landscape'),borderpage:paper.classList.contains('borderpage'),spellcheck:editor.spellcheck,zoom:Number($('#zoomRange').value)}));setStatus('Збережено ✓')}catch(e){setStatus('Не збережено!');tip('Пам’ять пристрою заповнена. Завантажте документ через «Файл».')}}
+function setTab(tab){document.querySelectorAll('.tab').forEach(function(el){el.setAttribute('aria-selected',el.dataset.tab===tab?'true':'false')});document.querySelectorAll('.tools').forEach(function(el){el.classList.toggle('active',el.id==='tools-'+tab)});if($('#ribbonViewport').classList.contains('collapsed')){toggleRibbon(true)}}
+function toggleRibbon(open){$('#ribbonViewport').classList.toggle('collapsed',!open);$('#toggleRibbon').setAttribute('aria-expanded',open?'true':'false');$('#toggleRibbon').textContent=open?'⌃':'⌄'}
+$('#toggleRibbon').onclick=function(){toggleRibbon($('#ribbonViewport').classList.contains('collapsed'))};
+function contextTabs(){var t=$('.tab.tabletab'),p=$('.tab.picturetab');t.classList.toggle('present',!!(selectedCell&&isInEditor(selectedCell)));p.classList.toggle('present',!!(selectedImage&&isInEditor(selectedImage)));var tab=$('.tab[aria-selected="true"]');if(tab&&((tab.dataset.tab==='table'&&!t.classList.contains('present'))||(tab.dataset.tab==='picture'&&!p.classList.contains('present'))))setTab('text')}
 document.querySelectorAll('.tab').forEach(function(el){el.addEventListener('click',function(){rememberSelection();setTab(el.dataset.tab)})});
 document.addEventListener('selectionchange',rememberSelection);
 editor.addEventListener('input',change);
@@ -486,7 +492,8 @@ editor.addEventListener('click',function(e){
  var t=e.target;
  if(t.tagName==='IMG'){if(selectedImage)selectedImage.classList.remove('selected-media');selectedImage=t;t.classList.add('selected-media');selectedCell=null}
  else if(t.closest('td,th')){selectedCell=t.closest('td,th');if(selectedImage)selectedImage.classList.remove('selected-media');selectedImage=null}
- else{selectedCell=null}
+ else{selectedCell=null;if(selectedImage)selectedImage.classList.remove('selected-media');selectedImage=null}
+ contextTabs();
 });
 document.querySelectorAll('[data-cmd]').forEach(function(btn){btn.addEventListener('mousedown',function(e){e.preventDefault()});btn.addEventListener('click',function(){restoreSelection();document.execCommand(btn.dataset.cmd,false,null);change()})});
 $('#para').addEventListener('change',function(){restoreSelection();document.execCommand('formatBlock',false,this.value);change()});
@@ -515,7 +522,7 @@ function tableAction(kind){
  else if(kind==='delRow'){if(rows.length<=1)table.remove();else row.remove();selectedCell=null}
  else if(kind==='delCol'){if(row.cells.length<=1){table.remove()}else rows.forEach(function(r){if(r.cells[idx])r.cells[idx].remove()});selectedCell=null}
  else if(kind==='delTable'){if(!confirm('Видалити цю таблицю?'))return;table.remove();selectedCell=null}
- change()
+ change();contextTabs()
 }
 document.querySelectorAll('[data-table]').forEach(function(el){el.addEventListener('click',function(){tableAction(el.dataset.table)})});
 function resizeImage(percent){if(!selectedImage||!isInEditor(selectedImage)){tip('Спочатку торкніться малюнка');return}selectedImage.style.width=percent+'%';selectedImage.style.height='auto';change()}
@@ -523,7 +530,10 @@ $('#imageSmall').onclick=function(){resizeImage(30)};$('#imageMedium').onclick=f
 function alignImage(alignment){if(!selectedImage||!isInEditor(selectedImage)){tip('Спочатку торкніться малюнка');return}selectedImage.style.display='block';selectedImage.style.marginLeft=alignment==='left'?'0':alignment==='right'?'auto':'auto';selectedImage.style.marginRight=alignment==='right'?'0':alignment==='left'?'auto':'auto';change()}
 $('#imageLeft').onclick=function(){alignImage('left')};$('#imageCenter').onclick=function(){alignImage('center')};$('#imageRight').onclick=function(){alignImage('right')};
 $('#imageDelete').onclick=function(){if(!selectedImage||!isInEditor(selectedImage)){tip('Спочатку торкніться малюнка');return}selectedImage.remove();selectedImage=null;change()};
-$('#marginToggle').onclick=function(){paper.classList.toggle('compact');this.textContent=paper.classList.contains('compact')?'↔ Поля: вузькі':'↔ Поля: звичайні';change()};
+$('#marginToggle').onclick=function(){paper.classList.toggle('compact');updateMarginButton();change()};
+function updateMarginButton(){$('#marginToggle').querySelector('span:last-child').innerHTML=paper.classList.contains('compact')?'Поля:<br>вузькі':'Поля:<br>звичайні'}
+function updateOrientationButton(){$('#orientationToggle').querySelector('span:last-child').innerHTML=paper.classList.contains('landscape')?'Орієнтація:<br>альбомна':'Орієнтація:<br>книжкова'}
+$('#orientationToggle').onclick=function(){paper.classList.toggle('landscape');updateOrientationButton();change()};
 $('#pickImage').onclick=function(){$('#imageInput').click()};
 function addImage(data,alt){insertHtml('<p><img src="'+data+'" alt="'+escapeHtml(alt||'Ілюстрація')+'" style="width:70%;height:auto"></p><p></p>');tip('Малюнок додано. Торкніться його для зміни розміру.')}
 function compressImage(file){
@@ -667,7 +677,7 @@ function docxBlob(){
  var body='';Array.from(editor.children).forEach(function(el){body+=nodesBlock(el)});
  if(!body)body=paragraph({tagName:'P',style:{textAlign:''},childNodes:[document.createTextNode('')]});
  var doc='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
- doc+='<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><w:body>'+body+'<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1020" w:right="1020" w:bottom="1020" w:left="1020" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr></w:body></w:document>';
+ doc+='<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><w:body>'+body+'<w:sectPr><w:pgSz w:w="'+(paper.classList.contains('landscape')?'16838':'11906')+'" w:h="'+(paper.classList.contains('landscape')?'11906':'16838')+'"/><w:pgMar w:top="1020" w:right="1020" w:bottom="1020" w:left="1020" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr></w:body></w:document>';
  var types='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>';
  var rel='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>';
  var imgRels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">';
@@ -693,9 +703,89 @@ function makeZip(entries){
  return new Blob(chunks.concat(central,[end]),{type:'application/zip'})
 }
 $('#exportDocx').onclick=function(){try{var docx=docxBlob();download(docx,nameFile('docx'));tip('Word-файл .docx збережено ✓')}catch(e){console.error(e);tip('Помилка експорту: '+e.message)}};
+
+function updateStats(){
+ var txt=editor.innerText.replace(/\u00a0/g,' ').trim(),words=txt?txt.split(/\s+/).filter(Boolean).length:0;
+ $('#wordStatus').textContent='Слів: '+words;$('#charStatus').textContent='Символів: '+txt.length;
+}
+function command(name){restoreSelection();var ok=document.execCommand(name,false,null);if(ok)change();else tip('Команда недоступна в цьому браузері')}
+$('#quickSave').onclick=function(){saveNow();tip('Чернетку збережено')};
+$('#quickUndo').onclick=function(){command('undo')};$('#quickRedo').onclick=function(){command('redo')};
+$('#copyButton').onclick=function(){command('copy');tip('Копіювання: у деяких браузерах потрібен довгий дотик до тексту')};
+$('#cutButton').onclick=function(){command('cut')};
+$('#pasteButton').onclick=async function(){
+ try{
+  if(!navigator.clipboard||!navigator.clipboard.readText)throw Error('unsupported');
+  var text=await navigator.clipboard.readText();if(!text){tip('Буфер обміну порожній');return}
+  restoreSelection();document.execCommand('insertText',false,text);change()
+ }catch(e){tip('Для вставлення торкніться документа довго і оберіть «Вставити»')}
+};
+document.querySelectorAll('[data-style]').forEach(function(button){button.onclick=function(){
+ restoreSelection();document.execCommand('formatBlock',false,button.dataset.style);change()
+}});
+function findInDocument(value){
+ if(!value)return false;var current=window.getSelection(),range=current.rangeCount&&isInEditor(current.anchorNode)?current.getRangeAt(0):selectedRange;
+ var walker=document.createTreeWalker(editor,NodeFilter.SHOW_TEXT),nodes=[],node;
+ while((node=walker.nextNode())){if(node.textContent)nodes.push(node)}
+ var candidates=[];nodes.forEach(function(n){var hay=n.textContent.toLocaleLowerCase('uk-UA'),needle=value.toLocaleLowerCase('uk-UA'),pos=0;while((pos=hay.indexOf(needle,pos))>=0){candidates.push({node:n,pos:pos});pos+=needle.length}});
+ if(!candidates.length)return false;
+ var start=0;if(range){start=candidates.findIndex(function(c){if(c.node===range.endContainer)return c.pos>=range.endOffset;return (range.endContainer.compareDocumentPosition(c.node)&Node.DOCUMENT_POSITION_FOLLOWING)!==0})}
+ if(start<0)start=0;
+ var hit=candidates[start],r=document.createRange();r.setStart(hit.node,hit.pos);r.setEnd(hit.node,hit.pos+value.length);
+ var selection=window.getSelection();selection.removeAllRanges();selection.addRange(r);selectedRange=r.cloneRange();
+ try{hit.node.parentElement.scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}
+ return true
+}
+var lastFind='';
+$('#findButton').onclick=function(){var t=prompt('Знайти в документі:',lastFind||'');if(t===null)return;lastFind=t;if(!findInDocument(t))tip('У документі не знайдено «'+t+'»')};
+$('#replaceButton').onclick=function(){var t=prompt('Який текст знайти?',lastFind||'');if(!t)return;lastFind=t;var replacement=prompt('Замінити на:',t);if(replacement===null)return;if(!findInDocument(t)){tip('Тексту не знайдено');return}restoreSelection();document.execCommand('insertText',false,replacement);change();tip('Один збіг замінено. Повторіть для наступного.')};
+$('#selectAllButton').onclick=function(){editor.focus();var r=document.createRange();r.selectNodeContents(editor);var sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);rememberSelection()};
+$('#insertDate').onclick=function(){restoreSelection();document.execCommand('insertText',false,new Date().toLocaleDateString('uk-UA'));change()};
+const themeColors={classic:'#2056a1',blue:'#167dba',green:'#25826b',purple:'#8258a4',gray:'#566170'};
+function updateThemeButtons(){document.querySelectorAll('[data-theme]').forEach(function(b){b.classList.toggle('chosen',b.dataset.theme===(paper.dataset.theme||'classic'))})}
+document.querySelectorAll('[data-theme]').forEach(function(b){b.onclick=function(){
+ paper.dataset.theme=b.dataset.theme;
+ var color=themeColors[b.dataset.theme];
+ editor.querySelectorAll('h1,h2').forEach(function(h){h.style.color=color});
+ editor.querySelectorAll('th').forEach(function(th){th.style.backgroundColor=({classic:'#e7effc',blue:'#e3f5ff',green:'#e1f7ef',purple:'#f1e5fa',gray:'#eef0f2'})[b.dataset.theme]});
+ updateThemeButtons();change()
+}});
+$('#addPageBorder').onclick=function(){paper.classList.toggle('borderpage');change();tip(paper.classList.contains('borderpage')?'Рамку показано на аркуші':'Рамку прибрано')};
+$('#resetDesign').onclick=function(){paper.dataset.theme='classic';paper.classList.remove('borderpage');editor.querySelectorAll('h1,h2').forEach(function(h){h.style.color=''});editor.querySelectorAll('th').forEach(function(h){h.style.backgroundColor=''});updateThemeButtons();change()};
+$('#insertLinkRef').onclick=function(){$('#insertLink').click()};
+$('#removeLink').onclick=function(){restoreSelection();document.execCommand('unlink',false,null);change()};
+$('#insertSource').onclick=function(){
+ var title=prompt('Назва джерела (сайт, автор або книга):');if(!title)return;
+ var url=prompt('Адреса сторінки https:// (необов’язково):','');
+ var html='<p><b>Джерело:</b> '+escapeHtml(title);
+ if(url&&/^https:\/\/[^\s<>"]+$/i.test(url)){html+=' — <a href="'+escapeHtml(url)+'">'+escapeHtml(url)+'</a>'}
+ html+='</p>';insertHtml(html)
+};
+function updateSpellButton(){$('#spellButton').querySelector('span:last-child').innerHTML='Правопис:<br>'+(editor.spellcheck?'увімкнено':'вимкнено')}
+$('#spellButton').onclick=function(){editor.spellcheck=!editor.spellcheck;updateSpellButton();change();tip('Перевірка правопису залежить від браузера й клавіатури')};
+$('#wordCountButton').onclick=function(){updateStats();tip($('#wordStatus').textContent+' · '+$('#charStatus').textContent)};
+$('#findReview').onclick=function(){$('#findButton').click()};
+$('#replaceReview').onclick=function(){$('#replaceButton').click()};
+$('#checkReview').onclick=function(){check(true);$('#checks').scrollIntoView({behavior:'smooth',block:'center'})};
+function applyZoom(shouldSave){
+ var val=Number($('#zoomRange').value)||100;
+ document.documentElement.style.setProperty('--paper-zoom',String(val/100));$('#zoomText').textContent=val+'%';
+ if(shouldSave)change()
+}
+$('#zoomRange').oninput=function(){applyZoom(true)};
+$('#zoomMinus').onclick=function(){$('#zoomRange').value=Math.max(70,Number($('#zoomRange').value)-10);applyZoom(true)};
+$('#zoomPlus').onclick=function(){$('#zoomRange').value=Math.min(130,Number($('#zoomRange').value)+10);applyZoom(true)};
+$('#zoomReset').onclick=function(){$('#zoomRange').value=100;applyZoom(true)};
+$('#statusZoomOut').onclick=function(){$('#zoomMinus').click()};$('#statusZoomIn').onclick=function(){$('#zoomPlus').click()};
+$('#hideHelp').onclick=function(){
+ var help=$('.sidebar'),hidden=!help.hidden;help.hidden=hidden;$('.workspace').classList.toggle('focused',hidden);
+ this.querySelector('span:last-child').innerHTML=hidden?'Показати<br>поради':'Сховати<br>поради';
+};
+$('#viewPrint').onclick=function(){window.print()};
+
 function init(){
- try{var stored=JSON.parse(localStorage.getItem(KEY)||'null');if(stored&&stored.html){editor.innerHTML=sanitize(stored.html);$('#title').value=stored.title||'Моя афіша';$('#grade').value=stored.grade||'6-А';$('#studentCode').value=stored.code||'';paper.classList.toggle('compact',!!stored.compact);$('#marginToggle').textContent=stored.compact?'↔ Поля: вузькі':'↔ Поля: звичайні';setStatus('Чернетку відновлено ✓')}else{editor.innerHTML='';setStatus('Новий документ')}}catch(e){editor.innerHTML='';setStatus('Готово')}
- check(false)
+ try{var stored=JSON.parse(localStorage.getItem(KEY)||'null');if(stored&&stored.html){editor.innerHTML=sanitize(stored.html);$('#title').value=stored.title||'Моя афіша';$('#grade').value=stored.grade||'6-А';$('#studentCode').value=stored.code||'';paper.classList.toggle('compact',!!stored.compact);paper.classList.toggle('landscape',!!stored.landscape);paper.classList.toggle('borderpage',!!stored.borderpage);paper.dataset.theme=stored.theme||'classic';editor.spellcheck=stored.spellcheck!==false;$('#zoomRange').value=stored.zoom||100;applyZoom(false);updateMarginButton();updateOrientationButton();updateThemeButtons();updateSpellButton();setStatus('Чернетку відновлено ✓')}else{editor.innerHTML='';setStatus('Новий документ')}}catch(e){editor.innerHTML='';setStatus('Готово')}
+ check(false);updateStats()
 }
 init();
 })();
