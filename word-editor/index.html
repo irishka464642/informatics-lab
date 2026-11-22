@@ -372,6 +372,50 @@ footer{font-size:12px}
  #page-editor .actionbar{top:118px}
 }
 @media print{.lesson-submit-top{display:none!important}}
+
+/* Mobile-first: compact identity strip and 4 equal navigation actions. */
+.lesson-send-tab{
+ border:0;border-radius:9px;background:#16734c;color:#fff;font-weight:850;font-size:15px;
+ min-height:49px;padding:10px 16px;white-space:nowrap;box-shadow:0 2px 0 #0b5336;
+}
+.lesson-send-tab:hover{background:#0b613d}
+.lesson-send-tab:active{transform:translateY(1px);box-shadow:0 1px 0 #0b5336}
+.lesson-send-tab:focus-visible{outline:3px solid #f5b444;outline-offset:2px}
+.lesson-send-tab:disabled{opacity:.6;cursor:wait}
+.lesson-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));max-width:none;gap:8px}
+.lesson-tab{min-width:0}
+.doc-meta label{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:750;white-space:nowrap}
+.doc-meta #studentName{width:clamp(130px,24vw,260px);max-width:none}
+.doc-meta #grade{width:75px;max-width:75px}
+.file-doc-title label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:750;color:#334663}
+.file-doc-title input{height:36px;min-width:150px;width:min(210px,70vw);border:1px solid #b4c8e2;border-radius:6px;padding:7px 10px}
+.task-progress{margin-top:24px;scroll-margin-top:85px}
+.progress-head{margin-top:25px}
+@media(max-width:850px){
+ .lesson-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;flex-wrap:nowrap}
+ .lesson-send-tab{grid-column:auto;min-width:0;min-height:51px;width:auto;padding:7px 3px;font-size:12px}
+ .lesson-tab{font-size:12px;min-width:0;padding:7px 4px;min-height:51px}
+ #page-editor .actionbar{top:64px}
+}
+@media(max-width:600px){
+ .top{padding:4px 6px}
+ .topline{display:flex;flex-wrap:nowrap;justify-content:flex-start;align-items:center;gap:6px;min-height:40px;width:100%}
+ .brand{display:flex;flex:none;min-width:auto;gap:0}
+ .brandicon{width:29px;height:29px;flex:none;font-size:20px}
+ .doc-meta{order:1;flex:1;min-width:0;width:auto;flex-wrap:nowrap;gap:6px;align-items:center}
+ .doc-meta label{display:block;min-width:0;font-size:0}
+ .doc-meta .header-grade{flex:0 0 65px}
+ .doc-meta .header-student{flex:1;min-width:0}
+ .doc-meta #grade{min-width:0;width:100%;max-width:none;height:36px;padding:3px;font-size:14px}
+ .doc-meta #studentName{width:100%;min-width:0;max-width:none;height:36px;padding:6px 8px;font-size:14px}
+ .quick-access,.status{display:none!important}
+ .lesson-nav{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:5px 5px}
+ .lesson-tab,.lesson-send-tab{font-size:11px;line-height:1.15;padding:6px 2px;min-height:49px;white-space:normal;overflow-wrap:anywhere}
+ .lesson-send-tab{font-size:12px;box-shadow:none}
+ #page-editor .actionbar{top:59px}
+ .task-progress{scroll-margin-top:65px}
+}
+@media print{.lesson-send-tab{display:none!important}}
 </style>
 </head>
 <body>
@@ -397,7 +441,7 @@ footer{font-size:12px}
 </header>
 
 <nav class="lesson-nav" aria-label="Розділи заняття">
- <button type="button" class="lesson-tab active" role="tab" data-page="tasks" aria-controls="page-tasks" aria-selected="true">📋 Завдання і прогрес</button>
+ <button type="button" class="lesson-tab active" role="tab" data-page="tasks" aria-controls="page-tasks" aria-selected="true">📋 Завдання</button>
  <button type="button" class="lesson-tab" role="tab" data-page="editor" aria-controls="page-editor" aria-selected="false">📝 Редактор</button>
  <button type="button" class="lesson-tab" role="tab" data-page="hints" aria-controls="page-hints" aria-selected="false">💡 Підказки</button>
  <button type="button" class="lesson-send-tab" id="topSubmit" title="Надіслати Word-файл учителю">✉ Надіслати</button>
@@ -840,8 +884,7 @@ $('#fileInput').addEventListener('change',async function(){
  change();saveNow();tip('Документ відкрито')}catch(e){tip('Не вдалося відкрити файл: '+e.message)}finally{this.value=''}
 });
 ['title','grade','studentName'].forEach(function(id){$('#'+id).addEventListener('input',change)});
-$('#grade').addEventListener('change',function(){$('#sendGrade').value=this.value});
-$('#sendGrade').addEventListener('change',function(){$('#grade').value=this.value;change()});
+$('#grade').addEventListener('change',function(){change()});
 editor.addEventListener('paste',function(e){var dt=e.clipboardData;if(!dt)return;var file=Array.from(dt.files||[]).find(function(f){return f.type.startsWith('image/')});if(file){e.preventDefault();compressImage(file).then(function(data){addImage(data,'Зображення з буфера')});return}
  var plain=dt.getData('text/plain');if(plain){e.preventDefault();document.execCommand('insertText',false,plain)}});
 // ---- DOCX: self-contained Office Open XML exporter (no CDNs) ----
@@ -972,26 +1015,17 @@ function showEmailDialog(){
 function setHandInStatus(message,isError){
  ['#handInStatus','#progressSubmitStatus'].forEach(function(id){var el=$(id);el.textContent=message;el.classList.toggle('error',!!isError)});
 }
-function focusHandIn(){
- if($('#page-progress').hidden){
-  showPage('editor');
-  $('#submissionPanel').scrollIntoView({block:'center',behavior:'smooth'});
-  $('#studentName').focus({preventScroll:true});
- }else{
-  $('#progressStudent').focus();
- }
-}
-function sendWork(source){
+function focusHandIn(){window.scrollTo({top:0,behavior:'smooth'});$('#studentName').focus({preventScroll:true})}
+function sendWork(){
  if(wordSending)return;
- var inProgress=source==='progress'||(!$('#page-progress').hidden&&source!=='editor');
- var student=(inProgress?$('#progressStudent'):$('#studentName')).value.trim().replace(/\s+/g,' ');
- var klass=(inProgress?$('#progressGrade'):$('#sendGrade')).value;
+ var student=$('#studentName').value.trim().replace(/\s+/g,' ');
+ var klass=$('#grade').value;
  if(student.length<5||student.length>70||student.split(' ').length<2){
   setHandInStatus('Впиши прізвище та ім’я у поле вище (наприклад: Коваль Марія).',true);
   focusHandIn();return
  }
  if(!['6-А','6-Б','6-В'].includes(klass)){
-  setHandInStatus('Оберіть свій клас.',true);(inProgress?$('#progressGrade'):$('#sendGrade')).focus();return
+  setHandInStatus('Оберіть свій клас.',true);$('#grade').focus();return
  }
  if(!editor.textContent.trim()){
   setHandInStatus('Документ порожній. Спочатку створи свою роботу.',true);
@@ -999,10 +1033,7 @@ function sendWork(source){
  }
  // Клас у шапці та у формі здавання завжди узгоджені.
  $('#grade').value=klass;
- $('#sendGrade').value=klass;
- $('#progressGrade').value=klass;
  $('#studentName').value=student;
- $('#progressStudent').value=student;
  let blob;
  try{blob=docxBlob()}catch(e){
   console.error(e);setHandInStatus('Не вдалося створити Word-файл. Спробуй зменшити зображення та повторити.',true);return
@@ -1030,9 +1061,9 @@ function sendWork(source){
   wordSending=false;$('#submitBig').disabled=false;$('#submitProgress').disabled=false;$('#topSubmit').disabled=false;$('#submitReady').value='false'
  }
 }
-$('#submitBig').onclick=function(){sendWork('editor')};
-$('#submitProgress').onclick=function(){sendWork('progress')};
-$('#topSubmit').onclick=function(){showPage('progress');sendWork('progress')};
+$('#submitBig').onclick=sendWork;
+$('#submitProgress').onclick=sendWork;
+$('#topSubmit').onclick=sendWork;
 $('#openEmailDialog').onclick=focusHandIn;
 $('#quickSend').onclick=focusHandIn;
 $('#goToSubmit').onclick=function(){$('#emailDialog').close();focusHandIn()};
@@ -1122,7 +1153,7 @@ $('#spellButton').onclick=function(){editor.spellcheck=!editor.spellcheck;update
 $('#wordCountButton').onclick=function(){updateStats();tip($('#wordStatus').textContent+' · '+$('#charStatus').textContent)};
 $('#findReview').onclick=function(){$('#findButton').click()};
 $('#replaceReview').onclick=function(){$('#replaceButton').click()};
-$('#checkReview').onclick=function(){showPage('progress');check(true)};
+$('#checkReview').onclick=function(){showPage('tasks');check(true);$('#taskProgress').scrollIntoView({block:'start',behavior:'smooth'})};
 function applyZoom(shouldSave){
  var val=Number($('#zoomRange').value)||100;
  document.documentElement.style.setProperty('--paper-zoom',String(val/100));$('#zoomText').textContent=val+'%';
@@ -1137,52 +1168,31 @@ $('#hideHelp').onclick=function(){showPage('hints')};
 $('#viewPrint').onclick=function(){window.print()};
 
 
-// Top-level pages. The first open view is always Tasks, including after restoring a draft.
+// Three content views; the fourth navigation button sends the Word document.
 var currentPage='tasks';
 function showPage(page){
- var allowed=['tasks','editor','hints','progress'];
+ var allowed=['tasks','editor','hints'];
  if(!allowed.includes(page))page='tasks';
  currentPage=page;
- allowed.forEach(function(name){
-  $('#page-'+name).hidden=name!==page
- });
+ allowed.forEach(function(name){$('#page-'+name).hidden=name!==page});
  document.querySelectorAll('.lesson-tab').forEach(function(tab){
   var selected=tab.dataset.page===page;
-  tab.classList.toggle('active',selected);tab.setAttribute('aria-selected',selected?'true':'false');
-  tab.tabIndex=selected?0:-1
+  tab.classList.toggle('active',selected);
+  tab.setAttribute('aria-selected',selected?'true':'false');
+  tab.tabIndex=selected?0:-1;
  });
- if(page==='progress'){
-  $('#progressGrade').value=$('#sendGrade').value;
-  $('#progressStudent').value=$('#studentName').value;
-  check(false);
- }
+ if(page==='tasks')check(false);
  if(page==='editor')requestAnimationFrame(syncRibbonScrollbar);
- window.scrollTo(0,0)
+ window.scrollTo(0,0);
 }
 document.querySelectorAll('.lesson-tab').forEach(function(tab){
- tab.addEventListener('click',function(){showPage(tab.dataset.page)})
+ tab.addEventListener('click',function(){showPage(tab.dataset.page)});
 });
 $('#tasksStart').onclick=function(){showPage('editor')};
 $('#tasksNext').onclick=function(){showPage('editor')};
 $('#tasksTemplate').onclick=function(){showPage('editor');$('#useTemplate').click()};
 $('#hintsBack').onclick=function(){showPage('editor')};
-$('#progressBack').onclick=function(){showPage('editor')};
-// Keep both identical submission forms synchronized.
-$('#progressStudent').addEventListener('input',function(){
- $('#studentName').value=this.value;change()
-});
-$('#studentName').addEventListener('input',function(){
- $('#progressStudent').value=this.value;check(false)
-});
-$('#progressGrade').addEventListener('change',function(){
- $('#sendGrade').value=this.value;$('#grade').value=this.value;change()
-});
-$('#sendGrade').addEventListener('change',function(){
- $('#progressGrade').value=this.value
-});
-$('#grade').addEventListener('change',function(){
- $('#progressGrade').value=this.value
-});
+$('#studentName').addEventListener('input',function(){check(false)});
 // A visible scrollbar ABOVE the Word commands, including on touch devices.
 function activeRibbon(){
  return document.querySelector('#page-editor .tools.active')
@@ -1218,7 +1228,7 @@ ribbonTabs.addEventListener('scroll',syncRibbonScrollbar,{passive:true});
 
 function init(){
  try{var stored=JSON.parse(localStorage.getItem(KEY)||'null');if(stored&&stored.html){editor.innerHTML=sanitize(stored.html);$('#title').value=stored.title||'Моя афіша';$('#grade').value=stored.grade||'6-А';$('#studentName').value=stored.name||'';paper.classList.toggle('compact',!!stored.compact);paper.classList.toggle('landscape',!!stored.landscape);paper.classList.toggle('borderpage',!!stored.borderpage);paper.dataset.theme=stored.theme||'classic';editor.spellcheck=stored.spellcheck!==false;$('#zoomRange').value=stored.zoom||100;applyZoom(false);updateMarginButton();updateOrientationButton();updateThemeButtons();updateSpellButton();setStatus('Чернетку відновлено ✓')}else{editor.innerHTML='';setStatus('Новий документ')}}catch(e){editor.innerHTML='';setStatus('Готово')}
- check(false);updateStats();$('#sendGrade').value=$('#grade').value;$('#progressGrade').value=$('#grade').value;$('#progressStudent').value=$('#studentName').value
+ check(false);updateStats()
 }
 init();
 showPage('tasks');
