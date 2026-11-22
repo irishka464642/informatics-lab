@@ -366,9 +366,10 @@ footer{font-size:12px}
  #page-editor .actionbar{top:118px}
 }
 @media(max-width:850px) and (min-width:601px){
- .lesson-nav{flex-wrap:wrap}
- .lesson-submit-top{flex:1;min-width:225px}
- #page-editor .actionbar{top:67px}
+ .lesson-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+ .lesson-tab{min-width:0;padding:9px 7px;font-size:13px}
+ .lesson-submit-top{grid-column:1 / -1;width:100%;min-height:47px}
+ #page-editor .actionbar{top:118px}
 }
 @media print{.lesson-submit-top{display:none!important}}
 </style>
