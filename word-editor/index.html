@@ -699,7 +699,7 @@ function rememberSelection(){var s=window.getSelection();if(s && s.rangeCount &&
 function restoreSelection(){editor.focus();if(selectedRange){try{var s=window.getSelection();s.removeAllRanges();s.addRange(selectedRange)}catch(e){}}}
 function change(){filesWritten=false;setStatus('Є зміни…');clearTimeout(saveTimer);saveTimer=setTimeout(saveNow,850);check(false);updateStats()}
 function saveNow(){try{localStorage.setItem(KEY,JSON.stringify({html:editor.innerHTML,title:$('#title').value,grade:$('#grade').value,name:$('#studentName').value,compact:paper.classList.contains('compact'),theme:paper.dataset.theme||'classic',landscape:paper.classList.contains('landscape'),borderpage:paper.classList.contains('borderpage'),spellcheck:editor.spellcheck,zoom:Number($('#zoomRange').value)}));setStatus('Збережено ✓')}catch(e){setStatus('Не збережено!');tip('Пам’ять пристрою заповнена. Завантажте документ через «Файл».')}}
-function setTab(tab){document.querySelectorAll('.tab').forEach(function(el){el.setAttribute('aria-selected',el.dataset.tab===tab?'true':'false')});document.querySelectorAll('.tools').forEach(function(el){el.classList.toggle('active',el.id==='tools-'+tab)});if($('#ribbonViewport').classList.contains('collapsed')){toggleRibbon(true)}}
+function setTab(tab){document.querySelectorAll('.tab').forEach(function(el){el.setAttribute('aria-selected',el.dataset.tab===tab?'true':'false')});document.querySelectorAll('.tools').forEach(function(el){el.classList.toggle('active',el.id==='tools-'+tab)});if($('#ribbonViewport').classList.contains('collapsed')){toggleRibbon(true)}requestAnimationFrame(syncRibbonScrollbar)}
 function toggleRibbon(open){$('#ribbonViewport').classList.toggle('collapsed',!open);$('#toggleRibbon').setAttribute('aria-expanded',open?'true':'false');$('#toggleRibbon').textContent=open?'⌃':'⌄'}
 $('#toggleRibbon').onclick=function(){toggleRibbon($('#ribbonViewport').classList.contains('collapsed'))};
 function contextTabs(){var t=$('.tab.tabletab'),p=$('.tab.picturetab');t.classList.toggle('present',!!(selectedCell&&isInEditor(selectedCell)));p.classList.toggle('present',!!(selectedImage&&isInEditor(selectedImage)));var tab=$('.tab[aria-selected="true"]');if(tab&&((tab.dataset.tab==='table'&&!t.classList.contains('present'))||(tab.dataset.tab==='picture'&&!p.classList.contains('present'))))setTab('text')}
@@ -768,12 +768,12 @@ function makePicture(kind){
 }
 document.querySelectorAll('[data-picture]').forEach(function(el){el.onclick=function(){$('#galleryDialog').close();addImage(makePicture(el.dataset.picture),el.textContent.trim())}});
 function check(showToast){
- var hasTitle=!!editor.querySelector('h1,h2');var words=editor.innerText.replace(/\s+/g,' ').trim();var desc=words.length>=65;
+ var hasTitle=!!editor.querySelector('h1,h2');var words=editor.textContent.replace(/\s+/g,' ').trim();var desc=words.length>=65;
  var hasImage=!!editor.querySelector('img');var table=editor.querySelector('table');var hasTable=!!(table&&table.rows.length>=3&&table.rows[0].cells.length>=2);
  var data=[['Заголовок оформлено',hasTitle],['Є текст запрошення',desc],['Вставлено зображення',hasImage],['Є таблиця щонайменше 3 × 2',hasTable],['Вказано прізвище та ім’я',($('#studentName').value.trim().split(/\s+/).length>=2 && $('#studentName').value.trim().length>=5)]];
  var wrap=$('#checks');wrap.replaceChildren();var ok=0;
  data.forEach(function(d){if(d[1])ok++;var row=document.createElement('div');row.className='checkrow'+(d[1]?' ok':'');var box=document.createElement('span');box.textContent=d[1]?'✓':'○';var label=document.createElement('span');label.textContent=d[0];row.append(box,label);wrap.appendChild(row)});
- $('#meterBar').style.width=(ok/data.length*100)+'%';$('#checkSummary').textContent=ok+' із '+data.length+' пунктів виконано.';
+ $('#meterBar').style.width=(ok/data.length*100)+'%';$('#progressPercent').textContent=Math.round(ok/data.length*100)+'%';$('#checkSummary').textContent=ok+' із '+data.length+' пунктів виконано.';
  if(showToast)tip(ok===data.length?'Чудово! Усі пункти перевірки виконано.':'Виконано '+ok+' із '+data.length+'. Перегляньте, що залишилося.');
 }
 $('#checkButton').onclick=function(){check(true)};
@@ -941,30 +941,39 @@ function showEmailDialog(){
  }
 }
 function setHandInStatus(message,isError){
- var el=$('#handInStatus');el.textContent=message;el.classList.toggle('error',!!isError);
+ ['#handInStatus','#progressSubmitStatus'].forEach(function(id){var el=$(id);el.textContent=message;el.classList.toggle('error',!!isError)});
 }
 function focusHandIn(){
- var p=$('#submissionPanel');p.scrollIntoView({block:'center',behavior:'smooth'});
- $('#studentName').focus({preventScroll:true});
+ if($('#page-progress').hidden){
+  showPage('editor');
+  $('#submissionPanel').scrollIntoView({block:'center',behavior:'smooth'});
+  $('#studentName').focus({preventScroll:true});
+ }else{
+  $('#progressStudent').focus();
+ }
 }
-function sendWork(){
+function sendWork(source){
  if(wordSending)return;
- var student=$('#studentName').value.trim().replace(/\s+/g,' ');
- var klass=$('#sendGrade').value;
+ var inProgress=source==='progress'||(!$('#page-progress').hidden&&source!=='editor');
+ var student=(inProgress?$('#progressStudent'):$('#studentName')).value.trim().replace(/\s+/g,' ');
+ var klass=(inProgress?$('#progressGrade'):$('#sendGrade')).value;
  if(student.length<5||student.length>70||student.split(' ').length<2){
   setHandInStatus('Впиши прізвище та ім’я у поле вище (наприклад: Коваль Марія).',true);
   focusHandIn();return
  }
  if(!['6-А','6-Б','6-В'].includes(klass)){
-  setHandInStatus('Оберіть свій клас.',true);$('#sendGrade').focus();return
+  setHandInStatus('Оберіть свій клас.',true);(inProgress?$('#progressGrade'):$('#sendGrade')).focus();return
  }
- if(!editor.innerText.trim()){
+ if(!editor.textContent.trim()){
   setHandInStatus('Документ порожній. Спочатку створи свою роботу.',true);
-  editor.focus();return
+  showPage('editor');editor.focus();return
  }
  // Клас у шапці та у формі здавання завжди узгоджені.
  $('#grade').value=klass;
+ $('#sendGrade').value=klass;
+ $('#progressGrade').value=klass;
  $('#studentName').value=student;
+ $('#progressStudent').value=student;
  let blob;
  try{blob=docxBlob()}catch(e){
   console.error(e);setHandInStatus('Не вдалося створити Word-файл. Спробуй зменшити зображення та повторити.',true);return
@@ -974,7 +983,7 @@ function sendWork(){
  }
  // Явна дія користувача — кнопка «Відправити роботу».
  var filename=nameFile('docx');
- wordSending=true;$('#submitBig').disabled=true;$('#mobileSubmit').disabled=true;
+ wordSending=true;$('#submitBig').disabled=true;$('#submitProgress').disabled=true;
  try{
   var file=new File([blob],filename,{type:DOCX_TYPE});
   var dt=new DataTransfer();dt.items.add(file);$('#wordAttachment').files=dt.files;
@@ -989,11 +998,11 @@ function sendWork(){
  }catch(e){
   console.error(e);setHandInStatus('Браузер не зміг прикріпити файл. Натисни «Файл → Завантажити Word» та надішли його через пошту.',true)
  }finally{
-  wordSending=false;$('#submitBig').disabled=false;$('#mobileSubmit').disabled=false;$('#submitReady').value='false'
+  wordSending=false;$('#submitBig').disabled=false;$('#submitProgress').disabled=false;$('#submitReady').value='false'
  }
 }
-$('#submitBig').onclick=sendWork;
-$('#mobileSubmit').onclick=sendWork;
+$('#submitBig').onclick=function(){sendWork('editor')};
+$('#submitProgress').onclick=function(){sendWork('progress')};
 $('#openEmailDialog').onclick=focusHandIn;
 $('#quickSend').onclick=focusHandIn;
 $('#goToSubmit').onclick=function(){$('#emailDialog').close();focusHandIn()};
@@ -1022,7 +1031,7 @@ $('#downloadForEmail').onclick=function(){
 };
 
 function updateStats(){
- var txt=editor.innerText.replace(/\u00a0/g,' ').trim(),words=txt?txt.split(/\s+/).filter(Boolean).length:0;
+ var txt=editor.textContent.replace(/\u00a0/g,' ').trim(),words=txt?txt.split(/\s+/).filter(Boolean).length:0;
  $('#wordStatus').textContent='Слів: '+words;$('#charStatus').textContent='Символів: '+txt.length;
 }
 function command(name){restoreSelection();var ok=document.execCommand(name,false,null);if(ok)change();else tip('Команда недоступна в цьому браузері')}
@@ -1083,7 +1092,7 @@ $('#spellButton').onclick=function(){editor.spellcheck=!editor.spellcheck;update
 $('#wordCountButton').onclick=function(){updateStats();tip($('#wordStatus').textContent+' · '+$('#charStatus').textContent)};
 $('#findReview').onclick=function(){$('#findButton').click()};
 $('#replaceReview').onclick=function(){$('#replaceButton').click()};
-$('#checkReview').onclick=function(){check(true);$('#checks').scrollIntoView({behavior:'smooth',block:'center'})};
+$('#checkReview').onclick=function(){showPage('progress');check(true)};
 function applyZoom(shouldSave){
  var val=Number($('#zoomRange').value)||100;
  document.documentElement.style.setProperty('--paper-zoom',String(val/100));$('#zoomText').textContent=val+'%';
@@ -1094,17 +1103,95 @@ $('#zoomMinus').onclick=function(){$('#zoomRange').value=Math.max(70,Number($('#
 $('#zoomPlus').onclick=function(){$('#zoomRange').value=Math.min(130,Number($('#zoomRange').value)+10);applyZoom(true)};
 $('#zoomReset').onclick=function(){$('#zoomRange').value=100;applyZoom(true)};
 $('#statusZoomOut').onclick=function(){$('#zoomMinus').click()};$('#statusZoomIn').onclick=function(){$('#zoomPlus').click()};
-$('#hideHelp').onclick=function(){
- var help=$('.sidebar'),hidden=!help.hidden;help.hidden=hidden;$('.workspace').classList.toggle('focused',hidden);
- this.querySelector('span:last-child').innerHTML=hidden?'Показати<br>поради':'Сховати<br>поради';
-};
+$('#hideHelp').onclick=function(){showPage('hints')};
 $('#viewPrint').onclick=function(){window.print()};
+
+
+// Top-level pages. The first open view is always Tasks, including after restoring a draft.
+var currentPage='tasks';
+function showPage(page){
+ var allowed=['tasks','editor','hints','progress'];
+ if(!allowed.includes(page))page='tasks';
+ currentPage=page;
+ allowed.forEach(function(name){
+  $('#page-'+name).hidden=name!==page
+ });
+ document.querySelectorAll('.lesson-tab').forEach(function(tab){
+  var selected=tab.dataset.page===page;
+  tab.classList.toggle('active',selected);tab.setAttribute('aria-selected',selected?'true':'false');
+  tab.tabIndex=selected?0:-1
+ });
+ if(page==='progress'){
+  $('#progressGrade').value=$('#sendGrade').value;
+  $('#progressStudent').value=$('#studentName').value;
+  check(false);
+ }
+ if(page==='editor')requestAnimationFrame(syncRibbonScrollbar);
+ window.scrollTo(0,0)
+}
+document.querySelectorAll('.lesson-tab').forEach(function(tab){
+ tab.addEventListener('click',function(){showPage(tab.dataset.page)})
+});
+$('#tasksStart').onclick=function(){showPage('editor')};
+$('#tasksNext').onclick=function(){showPage('editor')};
+$('#tasksTemplate').onclick=function(){showPage('editor');$('#useTemplate').click()};
+$('#hintsBack').onclick=function(){showPage('editor')};
+$('#progressBack').onclick=function(){showPage('editor')};
+// Keep both identical submission forms synchronized.
+$('#progressStudent').addEventListener('input',function(){
+ $('#studentName').value=this.value;change()
+});
+$('#studentName').addEventListener('input',function(){
+ $('#progressStudent').value=this.value;check(false)
+});
+$('#progressGrade').addEventListener('change',function(){
+ $('#sendGrade').value=this.value;$('#grade').value=this.value;change()
+});
+$('#sendGrade').addEventListener('change',function(){
+ $('#progressGrade').value=this.value
+});
+$('#grade').addEventListener('change',function(){
+ $('#progressGrade').value=this.value
+});
+// A visible scrollbar ABOVE the Word commands, including on touch devices.
+function activeRibbon(){
+ return document.querySelector('#page-editor .tools.active')
+}
+function syncRibbonScrollbar(){
+ var bar=activeRibbon(),range=$('#scrollRibbonRange');
+ if(!bar)return;
+ var maximum=Math.max(0,bar.scrollWidth-bar.clientWidth);
+ var scrollable=maximum>1;
+ range.disabled=!scrollable;
+ range.value=scrollable?Math.round(100*bar.scrollLeft/maximum):0;
+ $('#scrollRibbonLeft').disabled=!scrollable||bar.scrollLeft<=1;
+ $('#scrollRibbonRight').disabled=!scrollable||bar.scrollLeft>=maximum-1;
+}
+$('#scrollRibbonRange').addEventListener('input',function(){
+ var el=activeRibbon();if(!el)return;
+ var max=Math.max(0,el.scrollWidth-el.clientWidth);
+ el.scrollLeft=max*Number(this.value)/100;
+ syncRibbonScrollbar()
+});
+$('#scrollRibbonLeft').onclick=function(){
+ var el=activeRibbon();if(!el)return;el.scrollBy({left:-Math.max(180,el.clientWidth*.5),behavior:'smooth'})
+};
+$('#scrollRibbonRight').onclick=function(){
+ var el=activeRibbon();if(!el)return;el.scrollBy({left:Math.max(180,el.clientWidth*.5),behavior:'smooth'})
+};
+document.querySelectorAll('#page-editor .tools').forEach(function(tool){
+ tool.addEventListener('scroll',syncRibbonScrollbar,{passive:true})
+});
+window.addEventListener('resize',syncRibbonScrollbar);
+const ribbonTabs=$('.tabs');
+ribbonTabs.addEventListener('scroll',syncRibbonScrollbar,{passive:true});
 
 function init(){
  try{var stored=JSON.parse(localStorage.getItem(KEY)||'null');if(stored&&stored.html){editor.innerHTML=sanitize(stored.html);$('#title').value=stored.title||'Моя афіша';$('#grade').value=stored.grade||'6-А';$('#studentName').value=stored.name||'';paper.classList.toggle('compact',!!stored.compact);paper.classList.toggle('landscape',!!stored.landscape);paper.classList.toggle('borderpage',!!stored.borderpage);paper.dataset.theme=stored.theme||'classic';editor.spellcheck=stored.spellcheck!==false;$('#zoomRange').value=stored.zoom||100;applyZoom(false);updateMarginButton();updateOrientationButton();updateThemeButtons();updateSpellButton();setStatus('Чернетку відновлено ✓')}else{editor.innerHTML='';setStatus('Новий документ')}}catch(e){editor.innerHTML='';setStatus('Готово')}
- check(false);updateStats();$('#sendGrade').value=$('#grade').value
+ check(false);updateStats();$('#sendGrade').value=$('#grade').value;$('#progressGrade').value=$('#grade').value;$('#progressStudent').value=$('#studentName').value
 }
 init();
+showPage('tasks');
 })();
 </script>
 </body>
