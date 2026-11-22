@@ -647,6 +647,57 @@ footer{font-size:12px}
  .task-example-inner button{width:100%}
  .task-submit{margin-top:13px}
 }
+
+/* Undo/Redo remain visible beside Word's horizontally scrollable tabs, on one row. */
+#page-editor .word-tabs-row{
+ display:flex;
+ align-items:stretch;
+ background:#fff;
+ min-width:0;
+ border-bottom:1px solid #d3d9e4;
+}
+#page-editor .word-tabs-row .tabs{
+ flex:1 1 auto;
+ min-width:0;
+ border-bottom:0;
+}
+#page-editor .history-actions{
+ display:flex;
+ flex:0 0 auto;
+ align-items:stretch;
+ padding:2px 4px;
+ gap:3px;
+ border-left:1px solid #d8e1ed;
+ background:#f1f6ff;
+}
+#page-editor .history-action{
+ flex:0 0 auto;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ gap:5px;
+ padding:2px 9px;
+ min-height:33px;
+ border:1px solid #c4d4ec;
+ background:#fff;
+ border-radius:6px;
+ color:#1856a6;
+ font-size:13px;
+ font-weight:750;
+ line-height:1;
+}
+#page-editor .history-action span:first-child{font-size:22px;line-height:1}
+#page-editor .history-action:hover{background:#e5f0ff}
+#page-editor .history-action:active{background:#d2e3fd}
+@media(max-width:650px){
+ #page-editor .history-actions{padding:2px 3px;gap:3px}
+ #page-editor .history-action{min-width:37px;width:37px;padding:2px 3px}
+ #page-editor .history-label{display:none}
+}
+@media(max-width:360px){
+ #page-editor .history-action{min-width:33px;width:33px}
+}
+@media print{#page-editor .history-actions{display:none!important}}
 </style>
 </head>
 <body>
@@ -731,6 +782,7 @@ footer{font-size:12px}
 <div class="actionbar">
 <div class="actions">
 
+  <div class="word-tabs-row">
   <nav class="tabs" aria-label="Вкладки стрічки Word">
     <button class="tab filetab" data-tab="file" aria-selected="false">Файл</button>
     <button class="tab" data-tab="text" aria-selected="true">Основне</button>
@@ -744,6 +796,11 @@ footer{font-size:12px}
     <button class="tab picturetab" data-tab="picture" aria-selected="false">Формат зображення</button>
     <button class="ribbon-toggle" id="toggleRibbon" title="Згорнути або розгорнути стрічку" aria-expanded="true">⌃</button>
   </nav>
+    <div class="history-actions" role="group" aria-label="Скасувати або повторити дію">
+      <button type="button" class="history-action" id="undoToolbar" aria-label="Назад — скасувати останню дію" title="Назад — скасувати дію"><span aria-hidden="true">↶</span><span class="history-label">Назад</span></button>
+      <button type="button" class="history-action" id="redoToolbar" aria-label="Вперед — повторити скасовану дію" title="Вперед — повторити дію"><span aria-hidden="true">↷</span><span class="history-label">Вперед</span></button>
+    </div>
+  </div>
   <div class="persistent-scrollbar" id="tabsScrollBar" role="group" aria-label="Прокрутка вкладок Word">
    <span aria-hidden="true">◀</span>
    <input id="tabsScrollRange" type="range" min="0" max="100" step="1" value="0" aria-label="Гортай вкладки Word ліворуч і праворуч">
@@ -1439,6 +1496,8 @@ function updateStats(){
 function command(name){restoreSelection();var ok=document.execCommand(name,false,null);if(ok)change();else tip('Команда недоступна в цьому браузері')}
 $('#quickSave').onclick=function(){saveNow();tip('Чернетку збережено')};
 $('#quickUndo').onclick=function(){command('undo')};$('#quickRedo').onclick=function(){command('redo')};
+$('#undoToolbar').onclick=function(){$('#quickUndo').click()};
+$('#redoToolbar').onclick=function(){$('#quickRedo').click()};
 $('#copyButton').onclick=function(){command('copy');tip('Копіювання: у деяких браузерах потрібен довгий дотик до тексту')};
 $('#cutButton').onclick=function(){command('cut')};
 $('#pasteButton').onclick=async function(){
