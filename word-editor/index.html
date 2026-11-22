@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1e448d">
-<meta name="description" content="Мобільний редактор документів для практичної роботи № 2 з інформатики, 6 клас.">
-<title>Мій Word — Практична робота № 2</title>
+<meta name="description" content="Мобільний редактор текстових документів з інформатики для 6 класу.">
+<title>Мій Word — Текстовий документ</title>
 <style>
 :root{font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#19263a;background:#edf2f9;font-size:15px}
 *{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer;touch-action:manipulation}
@@ -262,7 +262,7 @@ footer{font-size:12px}
 <body>
 <header class="top">
   <div class="topline">
-    <div class="brand"><span class="brandicon">W</span><div>Мій Word <div class="subtitle">Навчальний текстовий редактор · Практична робота № 2</div></div></div>
+    <div class="brand"><span class="brandicon">W</span><div>Мій Word <div class="subtitle">Навчальний текстовий редактор · 6 клас</div></div></div>
     <div class="quick-access" aria-label="Панель швидкого доступу">
       <button id="quickSave" title="Зберегти">▣</button>
       <button id="quickSend" title="Надіслати Word на пошту">✉</button>
@@ -276,8 +276,46 @@ footer{font-size:12px}
     </div>
   </div>
 </header>
+
+<nav class="lesson-nav" role="tablist" aria-label="Розділи заняття">
+ <button type="button" class="lesson-tab active" role="tab" data-page="tasks" aria-controls="page-tasks" aria-selected="true">📋 Завдання</button>
+ <button type="button" class="lesson-tab" role="tab" data-page="editor" aria-controls="page-editor" aria-selected="false">📝 Редактор</button>
+ <button type="button" class="lesson-tab" role="tab" data-page="hints" aria-controls="page-hints" aria-selected="false">💡 Підказки</button>
+ <button type="button" class="lesson-tab" role="tab" data-page="progress" aria-controls="page-progress" aria-selected="false">📊 Прогрес роботи</button>
+</nav>
+<section id="page-tasks" class="lesson-page" role="tabpanel" aria-label="Завдання">
+ <div class="lesson-content">
+  <header class="lesson-hero"><span class="lesson-eyebrow">ІНФОРМАТИКА · 6 КЛАС</span><h1>Створюємо афішу шкільного заходу</h1>
+   <p>Створи власний текстовий документ із <b>заголовком, запрошенням, малюнком і таблицею</b>.</p>
+   <button id="tasksStart" class="hero-start" type="button">📝 Перейти до редактора →</button>
+  </header>
+  <div class="section-label"><h2>Твоє завдання — 5 кроків</h2><span>Виконуй послідовно</span></div>
+  <div class="task-grid">
+   <article class="task-card"><div class="task-num">1</div><h3>Обери подію</h3><p>Придумай назву: ярмарок, спортивний турнір, кіновечір або своя ідея.</p></article>
+   <article class="task-card"><div class="task-num">2</div><h3>Напиши запрошення</h3><p>Оформи заголовок і 2–3 речення: що відбудеться, де та коли.</p></article>
+   <article class="task-card"><div class="task-num">3</div><h3>Додай зображення</h3><p>Встав тематичний малюнок із галереї або зі смартфона. Вибери розмір.</p></article>
+   <article class="task-card"><div class="task-num">4</div><h3>Створи таблицю</h3><p>Зроби програму заходу: щонайменше <b>3 рядки та 2 стовпці</b> («Час» і «Подія»).</p></article>
+   <article class="task-card"><div class="task-num">5</div><h3>Перевір і відправ</h3><p>Відкрий «Прогрес роботи», перевір пункти, впиши прізвище, ім’я та клас і надішли документ Word.</p></article>
+  </div>
+  <aside class="lesson-example"><div><span class="lesson-eyebrow">ПРИКЛАД</span><h2>«День настільних ігор»</h2>
+   <p>«Запрошуємо шестикласників до бібліотеки у п’ятницю о 13:00!»</p>
+   <p>Таблиця: 13:00 — відкриття, 13:20 — турнір, 14:00 — нагородження.</p></div>
+   <button type="button" id="tasksTemplate" class="secondary-action">Відкрити шаблон</button>
+  </aside>
+  <div class="lesson-bottom"><button id="tasksNext" class="hero-start" type="button">Почати роботу в редакторі →</button></div>
+ </div>
+</section>
+<section id="page-editor" class="lesson-page" role="tabpanel" aria-label="Редактор" hidden>
 <div class="actionbar">
 <div class="actions">
+
+  <div class="ribbon-scroll-control" role="group" aria-label="Прокрутка інструментів">
+   <span>Інструменти ↔</span>
+   <button id="scrollRibbonLeft" type="button" aria-label="Ліворуч">◀</button>
+   <input id="scrollRibbonRange" type="range" min="0" max="100" step="1" value="0" aria-label="Скролбар стрічки інструментів">
+   <button id="scrollRibbonRight" type="button" aria-label="Праворуч">▶</button>
+   <small>Пересунь повзунок</small>
+  </div>
   <nav class="tabs" aria-label="Вкладки стрічки Word">
     <button class="tab filetab" data-tab="file" aria-selected="false">Файл</button>
     <button class="tab" data-tab="text" aria-selected="true">Основне</button>
@@ -471,11 +509,11 @@ footer{font-size:12px}
   </div>
 </div>
 </div>
-<main class="workspace">
+<main class="workspace editor-layout">
   <section class="paperwrap" aria-label="Документ">
     <div class="paper" id="paper"><div id="editor" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true" aria-label="Редактор текстового документа"></div></div>
     <section class="submission-panel" id="submissionPanel" aria-labelledby="submissionHeading">
-      <div class="submission-header"><span class="submission-mail-icon" aria-hidden="true">✉</span><div><h2 id="submissionHeading">Здати практичну роботу № 2</h2><p>Заповни два поля та натисни велику кнопку. Документ Word додасться до листа автоматично.</p></div></div>
+      <div class="submission-header"><span class="submission-mail-icon" aria-hidden="true">✉</span><div><h2 id="submissionHeading">Здати готову роботу</h2><p>Заповни два поля та натисни велику кнопку. Документ Word додасться до листа автоматично.</p></div></div>
       <div class="submission-fields">
         <label for="sendGrade">Твій клас
           <select id="sendGrade" required><option value="6-А">6-А</option><option value="6-Б">6-Б</option><option value="6-В">6-В</option></select>
@@ -489,41 +527,52 @@ footer{font-size:12px}
       <p class="submit-status" id="handInStatus" role="status" aria-live="polite"></p>
     </section>
   </section>
-  <aside class="sidebar">
-    <section class="panel">
-      <span class="pill">23 листопада · 6-А / 6-Б</span>
-      <h2>Практична робота № 2</h2>
-      <p><b>Тема:</b> Створення текстового документа з графічним зображенням і таблицею.</p>
-      <ol>
-        <li>Придумай назву шкільного заходу та оформи заголовок.</li>
-        <li>Напиши запрошення (2–3 речення).</li>
-        <li>Встав малюнок із телефона або готовий малюнок.</li>
-        <li>Додай таблицю програми заходу (від 3 рядків, 2 стовпці).</li>
-        <li>Коли завершиш — натисни велику кнопку <b>«ВІДПРАВИТИ РОБОТУ»</b> під документом.</li>
-      </ol>
-      <p class="hint">Працюй самостійно. Не використовуй чужі зображення без дозволу. Не додавай у документ особисті адреси, номери телефонів чи паролі.</p>
-    </section>
-    <section class="panel">
-      <h2>Самоперевірка</h2>
-      <div id="checks"></div><div class="meter"><b id="meterBar"></b></div>
-      <p id="checkSummary" class="hint">Перевіримо твою роботу.</p>
-      <button class="tool primary" id="checkButton">✓ Перевірити документ</button>
-      <p class="hint">Це підказки, а не автоматична оцінка. Учитель оцінить якість роботи.</p>
-    </section>
-    <section class="panel">
-      <h2>Підказки</h2>
-      <p><b>На телефоні:</b> виділи слово довгим дотиком, тоді натисни <b>Ж</b> або <b>К</b>.</p>
-      <p><b>Таблиця:</b> після вставлення торкнися клітинки й введи текст. Вкладка «Таблиця» дозволяє додати рядки.</p>
-      <p><b>Фото:</b> зменшуй великі зображення на вкладці «Макет».</p>
-      <p><b>Здавання роботи:</b> після завершення напиши прізвище, ім’я, вибери клас і натисни велику кнопку <b>«ВІДПРАВИТИ РОБОТУ»</b>. Не потрібно шукати значок пошти. Пошта вчителя вже вказана.</p><p><b>Збереження:</b> чернетка зберігається тільки на цьому пристрої. Рекомендуємо також завантажити резервну копію.</p>
-    </section>
-  </aside>
 </main>
-<div class="mobile-submit-wrap" id="mobileSubmitWrap"><button type="button" class="submit-big" id="mobileSubmit"><span aria-hidden="true">✉</span> ВІДПРАВИТИ РОБОТУ</button></div>
 <div class="statusbar" aria-live="polite">
 <div class="left"><span id="wordStatus">Слів: 0</span><span id="charStatus">Символів: 0</span><span>Українська</span></div>
 <div class="right"><button id="statusZoomOut" title="Зменшити масштаб">−</button><input id="zoomRange" type="range" min="70" max="130" step="10" value="100" aria-label="Масштаб сторінки"><button id="statusZoomIn" title="Збільшити масштаб">+</button><span id="zoomText">100%</span></div>
 </div>
+</section>
+<section id="page-hints" class="lesson-page" role="tabpanel" aria-label="Підказки" hidden>
+ <div class="lesson-content">
+  <header class="lesson-heading"><span class="lesson-eyebrow">ДОПОМОГА</span><h1>Підказки</h1><p>Натисни на потрібне запитання, щоб розгорнути інструкцію.</p></header>
+  <div class="hint-stack">
+   <details open><summary>✍️ Як зробити заголовок?</summary><p>У редакторі введи назву заходу, виділи текст та відкрий <b>«Основне» → «Заголовок 1»</b>. За бажанням зміни колір і шрифт.</p></details>
+   <details><summary>🖼️ Як додати малюнок?</summary><p><b>«Вставлення» → «Рисунки з телефона»</b> або <b>«Готові рисунки»</b>. Торкнися малюнка, щоб відкрити «Формат зображення» та змінити розмір.</p></details>
+   <details><summary>▦ Як створити таблицю?</summary><p><b>«Вставлення» → «Таблиця»</b>. Створи щонайменше 3 рядки й 2 стовпці. Торкнися клітинки та впиши текст. Нові рядки додаються у «Конструкторі таблиць».</p></details>
+   <details><summary>🔠 Як форматувати текст?</summary><p>Виділи слово довгим дотиком на телефоні. На вкладці «Основне» вибери <b>Ж</b> (напівжирний), <b>К</b> (курсив), колір, список або вирівнювання.</p></details>
+   <details><summary>↔ Де шукати інші інструменти?</summary><p>У верхній частині стрічки Word є спеціальний <b>скролбар «Інструменти ↔»</b>. Пересунь повзунок або натисни стрілки ◀ ▶. Вкладки Word також можна гортати пальцем.</p></details>
+   <details><summary>💾 Як зберегти документ?</summary><p>Чернетка зберігається в браузері автоматично. Додатково можна натиснути <b>«Файл» → «Завантажити Word (.docx)»</b> або «Резервна копія».</p></details>
+   <details><summary>✉ Як відправити роботу?</summary><p>Велику зелену кнопку <b>«ВІДПРАВИТИ РОБОТУ»</b> знайдеш під аркушем у редакторі або на сторінці <b>«Прогрес роботи»</b>. Укажи клас, прізвище та ім’я. Переконайся в підтвердженні від FormSubmit.</p></details>
+  </div>
+  <div class="lesson-bottom"><button id="hintsBack" type="button" class="hero-start">← Повернутися до редактора</button></div>
+ </div>
+</section>
+<section id="page-progress" class="lesson-page" role="tabpanel" aria-label="Прогрес роботи" hidden>
+ <div class="lesson-content">
+  <header class="lesson-heading"><span class="lesson-eyebrow">САМОПЕРЕВІРКА</span><h1>Прогрес роботи</h1><p>Подивися, що вже готове. Це підказка, а не оцінка.</p></header>
+  <div class="progress-grid">
+   <section class="progress-card">
+    <div class="progress-top"><div><h2>Мій результат</h2><p id="checkSummary">Перевіримо твою роботу.</p></div><span id="progressPercent">0%</span></div>
+    <div class="meter progress-meter"><b id="meterBar"></b></div>
+    <div id="checks"></div>
+    <button type="button" class="secondary-action" id="checkButton">✓ Перевірити знову</button>
+    <p class="hint">Зелені позначки означають, що потрібні елементи знайдено. Якість роботи оцінить учитель.</p>
+   </section>
+   <section class="progress-send">
+    <div class="submission-header"><span class="submission-mail-icon" aria-hidden="true">✉</span><div><h2>Готово? Відправ роботу вчителю!</h2><p>Word-файл створиться і прикріпиться автоматично.</p></div></div>
+    <div class="submission-fields">
+     <label for="progressGrade">Твій клас<select id="progressGrade"><option>6-А</option><option>6-Б</option><option>6-В</option></select></label>
+     <label for="progressStudent">Прізвище та ім’я<input id="progressStudent" type="text" autocomplete="name" maxlength="70" placeholder="Наприклад: Коваль Марія"></label>
+    </div>
+    <button type="button" class="submit-big" id="submitProgress"><span aria-hidden="true">✉</span> ВІДПРАВИТИ РОБОТУ</button>
+    <p class="submit-help">Документ .docx буде передано через FormSubmit на пошту вчителя. Перевір підтвердження від сервісу.</p>
+    <p class="submit-status" id="progressSubmitStatus" role="status" aria-live="polite"></p>
+   </section>
+  </div>
+  <div class="lesson-bottom"><button id="progressBack" class="secondary-action" type="button">← Повернутися до редактора</button></div>
+ </div>
+</section>
 <div class="note">Чернетка зберігається тільки в браузері цього пристрою. Документ передається до поштового застосунку або сервісу вчителя лише після вашого натискання «Надіслати». Не вводьте персональні дані.</div>
 <div class="toast" id="toast" role="status"></div>
 <input type="file" id="imageInput" accept="image/*" hidden>
@@ -562,7 +611,7 @@ var starter='<h1>ЗАПРОШЕННЯ НА ШКІЛЬНИЙ ЗАХІД</h1><p>З
 function $(s){return document.querySelector(s)}
 function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function safeName(s){return String(s||'document').replace(/[^a-zA-Z0-9а-яА-ЯіїєґІЇЄҐ_-]/g,'_').slice(0,60)}
-function nameFile(ext){return 'Pr2_'+safeName($('#grade').value)+'_'+safeName($('#studentName').value.trim()||$('#title').value)+'.'+ext}
+function nameFile(ext){return 'Робота_'+safeName($('#grade').value)+'_'+safeName($('#studentName').value.trim()||$('#title').value)+'.'+ext}
 function tip(message){clearTimeout(toastTimer);var el=$('#toast');el.textContent=message;el.classList.add('show');toastTimer=setTimeout(function(){el.classList.remove('show')},3300)}
 function setStatus(s){status.textContent=s}
 function isInEditor(node){return node && (node===editor||editor.contains(node))}
@@ -852,8 +901,8 @@ function sendWork(){
   if(!$('#wordAttachment').files||$('#wordAttachment').files.length!==1)throw Error('Не вдалося прикріпити файл');
   saveNow();
   $('#formClass').value=klass;$('#formStudentName').value=student;
-  $('#formSubject').value='Інформатика · 6 клас · Практична №2 · '+klass+' · '+student;
-  $('#formDescription').value='Практична робота № 2. Клас: '+klass+'; учень: '+student+'; вкладення: '+filename+'.';
+  $('#formSubject').value='Інформатика · 6 клас · Текстовий документ · '+klass+' · '+student;
+  $('#formDescription').value='Текстовий документ. Клас: '+klass+'; учень: '+student+'; вкладення: '+filename+'.';
   $('#submitReady').value='true';
   $('#mailForm').requestSubmit();
   setHandInStatus('Відкрито сторінку FormSubmit. Перейди на нову вкладку та заверши відправлення. Переконайся, що з’явилося підтвердження.',false);
@@ -882,7 +931,7 @@ $('#sendViaPhone').onclick=async function(){
   $('#emailPrepStatus').textContent='Браузер не підтримує вкладення. Завантаж DOCX та прикріпи його вручну.';return
  }
  try{
-  await navigator.share({files:[file],title:'Практична робота №2 · '+$('#grade').value,text:'Клас: '+$('#grade').value+'; учень: '+($('#studentName').value||'Не вказано')+'.'});
+  await navigator.share({files:[file],title:'Текстовий документ · '+$('#grade').value,text:'Клас: '+$('#grade').value+'; учень: '+($('#studentName').value||'Не вказано')+'.'});
   $('#emailPrepStatus').textContent='Файл передано вибраному застосунку. Перевір, чи справді надіслано лист.'
  }catch(e){$('#emailPrepStatus').textContent='Поширення скасовано або недоступне.'}
 };
