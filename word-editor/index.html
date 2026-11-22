@@ -416,19 +416,78 @@ footer{font-size:12px}
  .task-progress{scroll-margin-top:65px}
 }
 @media print{.lesson-send-tab{display:none!important}}
+
+/* Compact identity header — no labels/second and third rows on phones. */
+.top .doc-meta{
+ display:grid;
+ grid-template-columns:72px minmax(0,1fr);
+ align-items:center;
+ gap:7px;
+ min-width:0;
+ width:min(360px,38vw);
+ flex-wrap:nowrap;
+}
+.top .doc-meta #grade,
+.top .doc-meta #studentName{
+ display:block;
+ box-sizing:border-box;
+ min-width:0;
+ max-width:none;
+ width:100%;
+ margin:0;
+ height:35px;
+ padding:6px 8px;
+ font-size:14px;
+ background:#fff;
+ color:#1f314d;
+}
+.top .doc-meta #studentName::placeholder{color:#667994}
+@media(max-width:900px){
+ .top{padding:5px 8px}
+ .top .topline{
+  display:grid;
+  grid-template-columns:30px minmax(0,1fr);
+  align-items:center;
+  column-gap:7px;
+  width:100%;
+  min-height:35px;
+  max-width:none;
+  flex-wrap:nowrap;
+ }
+ .top .brand{grid-column:1;min-width:0;width:30px;gap:0}
+ .top .brandicon{width:29px;height:29px;font-size:20px}
+ .top .doc-meta{
+  display:grid;
+  grid-column:2;
+  grid-template-columns:65px minmax(0,1fr);
+  align-items:center;
+  flex:none;
+  width:100%;
+  min-width:0;
+  gap:6px;
+  order:unset;
+ }
+ .top .doc-meta #grade,
+ .top .doc-meta #studentName{height:35px;min-width:0;max-width:none;width:100%;font-size:14px}
+ .top .quick-access,
+ .top .status{display:none!important}
+}
+@media(max-width:360px){
+ .top{padding:4px 5px}
+ .top .topline{grid-template-columns:28px minmax(0,1fr);column-gap:5px}
+ .top .doc-meta{grid-template-columns:60px minmax(0,1fr);gap:5px}
+ .top .doc-meta #grade{padding:4px 3px;font-size:13px}
+ .top .doc-meta #studentName{padding:5px 7px;font-size:13px}
+}
 </style>
 </head>
 <body>
 <header class="top">
  <div class="topline">
   <div class="brand" aria-label="Word"><span class="brandicon" title="Мій Word">W</span></div>
-  <div class="doc-meta">
-   <label class="header-grade" for="grade">Клас
-    <select id="grade" aria-label="Клас"><option>6-А</option><option>6-Б</option><option>6-В</option></select>
-   </label>
-   <label class="header-student" for="studentName">Прізвище та ім’я
-    <input id="studentName" aria-label="Прізвище та ім’я" placeholder="Прізвище та ім’я" autocomplete="name" maxlength="70">
-   </label>
+  <div class="doc-meta" role="group" aria-label="Дані учня">
+   <select id="grade" aria-label="Клас"><option>6-А</option><option>6-Б</option><option>6-В</option></select>
+   <input id="studentName" aria-label="Прізвище та ім’я" placeholder="Прізвище та ім’я" autocomplete="name" maxlength="70">
   </div>
   <div class="quick-access" aria-label="Швидкі дії">
    <button id="quickSave" title="Зберегти">▣</button>
