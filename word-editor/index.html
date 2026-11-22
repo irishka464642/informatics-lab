@@ -1221,10 +1221,11 @@ function docxBlob(){
   var heading=el.tagName==='H1'?1:el.tagName==='H2'?2:0;
   var props='';
   if(heading)props+='<w:pStyle w:val="Heading'+heading+'"/><w:keepNext/>';
+  // OOXML paragraph properties must follow the schema ordering.
+  props+='<w:spacing w:before="'+(heading?160:0)+'" w:after="'+(heading?140:100)+'"/>';
   if(prefix)props+='<w:ind w:left="600" w:hanging="260"/>';
   var align=alignFor(el);
   if(align!=='left')props+='<w:jc w:val="'+align+'"/>';
-  props+='<w:spacing w:before="'+(heading?160:0)+'" w:after="'+(heading?140:100)+'"/>';
   var st=styleFromElement(el,Object.assign({font:'Arial',sz:heading===1?42:heading===2?32:24,bold:!!heading},inheritedStyle||{}));
   var runs=prefix?txtRuns(prefix,st):'';
   nodes.forEach(function(node){runs+=inline(node,st)});
@@ -1236,7 +1237,7 @@ function docxBlob(){
   var align=alignFor(parent);
   var own=String(img.style.textAlign||'').toLowerCase();
   if(own==='center'||(img.style.marginLeft==='auto'&&img.style.marginRight==='auto'))align='center';
-  return '<w:p><w:pPr><w:jc w:val="'+align+'"/><w:spacing w:before="80" w:after="120"/></w:pPr>'+pictureRun(img)+'</w:p>'
+  return '<w:p><w:pPr><w:spacing w:before="80" w:after="120"/><w:jc w:val="'+align+'"/></w:pPr>'+pictureRun(img)+'</w:p>'
  }
  function tableXml(t){
   var rowNodes=Array.from(t.rows),out='<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:tblBorders><w:top w:val="single" w:sz="6"/><w:left w:val="single" w:sz="6"/><w:bottom w:val="single" w:sz="6"/><w:right w:val="single" w:sz="6"/><w:insideH w:val="single" w:sz="5"/><w:insideV w:val="single" w:sz="5"/></w:tblBorders></w:tblPr>';
