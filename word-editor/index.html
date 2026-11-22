@@ -698,6 +698,89 @@ footer{font-size:12px}
  #page-editor .history-action{min-width:33px;width:33px}
 }
 @media print{#page-editor .history-actions{display:none!important}}
+
+/* Compact phone header: W / class / short name / Undo / Redo, exactly one row. */
+@media(max-width:900px){
+ .top .topline{
+  display:grid;
+  grid-template-columns:30px minmax(0,1fr) 75px;
+  gap:6px;
+  align-items:center;
+  min-height:36px;
+  width:100%;
+  flex-wrap:nowrap;
+ }
+ .top .brand{grid-column:1;min-width:0;width:30px}
+ .top .doc-meta{
+  grid-column:2;
+  display:grid;
+  grid-template-columns:59px minmax(0,1fr);
+  min-width:0;
+  width:100%;
+  gap:5px;
+ }
+ .top .doc-meta #studentName{
+  width:100%;
+  max-width:none;
+  min-width:0;
+  height:35px;
+  font-size:13px;
+  padding:5px 7px;
+ }
+ .top .doc-meta #grade{
+  min-width:0;
+  width:100%;
+  height:35px;
+  font-size:13px;
+  padding:3px;
+ }
+ .top .quick-access{
+  grid-column:3;
+  display:flex!important;
+  width:75px;
+  min-width:0;
+  align-items:center;
+  justify-content:space-between;
+  gap:3px;
+  padding:0;
+  margin:0;
+  border:0;
+  background:transparent;
+ }
+ .top .quick-access button{
+  min-width:35px;
+  width:35px;
+  height:35px;
+  padding:0;
+  display:grid;
+  place-items:center;
+  font:700 24px/1 system-ui,sans-serif;
+  color:white;
+  background:#ffffff13;
+  border:1px solid #ffffff70;
+  border-radius:6px;
+  touch-action:manipulation;
+ }
+ .top .quick-access button:active{background:#ffffff40}
+ .top .status{display:none!important}
+}
+@media(max-width:420px){
+ .top{padding:4px 5px}
+ .top .topline{grid-template-columns:28px minmax(0,1fr) 65px;gap:5px}
+ .top .brand,.top .brandicon{width:28px;min-width:28px}
+ .top .doc-meta{grid-template-columns:53px minmax(0,1fr);gap:5px}
+ .top .quick-access{width:65px;gap:3px}
+ .top .quick-access button{min-width:31px;width:31px;height:34px;font-size:23px}
+ .top .doc-meta #grade,
+ .top .doc-meta #studentName{height:34px}
+ .top .doc-meta #studentName{font-size:12px;padding:5px 6px}
+}
+@media(max-width:340px){
+ .top .topline{grid-template-columns:27px minmax(0,1fr) 62px;gap:4px}
+ .top .doc-meta{grid-template-columns:50px minmax(0,1fr);gap:4px}
+ .top .quick-access{width:62px;gap:2px}
+ .top .quick-access button{min-width:30px;width:30px}
+}
 </style>
 </head>
 <body>
@@ -708,11 +791,9 @@ footer{font-size:12px}
    <select id="grade" aria-label="Клас"><option>6-А</option><option>6-Б</option><option>6-В</option></select>
    <input id="studentName" aria-label="Прізвище та ім’я" placeholder="Прізвище та ім’я" autocomplete="name" maxlength="70">
   </div>
-  <div class="quick-access" aria-label="Швидкі дії">
-   <button id="quickSave" title="Зберегти">▣</button>
-   <button id="quickSend" title="Надіслати роботу">✉</button>
-   <button id="quickUndo" title="Скасувати">↶</button>
-   <button id="quickRedo" title="Повторити">↷</button>
+  <div class="quick-access" role="group" aria-label="Назад і вперед">
+   <button type="button" id="quickUndo" aria-label="Назад — скасувати дію" title="Назад — скасувати дію">↶</button>
+   <button type="button" id="quickRedo" aria-label="Вперед — повторити дію" title="Вперед — повторити дію">↷</button>
   </div>
   <span class="status" id="status" aria-live="polite">Готово</span>
  </div>
@@ -796,10 +877,6 @@ footer{font-size:12px}
     <button class="tab picturetab" data-tab="picture" aria-selected="false">Формат зображення</button>
     <button class="ribbon-toggle" id="toggleRibbon" title="Згорнути або розгорнути стрічку" aria-expanded="true">⌃</button>
   </nav>
-    <div class="history-actions" role="group" aria-label="Скасувати або повторити дію">
-      <button type="button" class="history-action" id="undoToolbar" aria-label="Назад — скасувати останню дію" title="Назад — скасувати дію"><span aria-hidden="true">↶</span><span class="history-label">Назад</span></button>
-      <button type="button" class="history-action" id="redoToolbar" aria-label="Вперед — повторити скасовану дію" title="Вперед — повторити дію"><span aria-hidden="true">↷</span><span class="history-label">Вперед</span></button>
-    </div>
   </div>
   <div class="persistent-scrollbar" id="tabsScrollBar" role="group" aria-label="Прокрутка вкладок Word">
    <span aria-hidden="true">◀</span>
@@ -1463,7 +1540,6 @@ function sendWork(){
 }
 $('#topSubmit').onclick=sendWork;
 $('#openEmailDialog').onclick=focusHandIn;
-$('#quickSend').onclick=focusHandIn;
 $('#goToSubmit').onclick=function(){$('#emailDialog').close();focusHandIn()};
 $('#closeEmailDialog').onclick=function(){$('#emailDialog').close()};
 $('#emailDialog').addEventListener('close',function(){preparedEmailDocx=null});
@@ -1494,10 +1570,7 @@ function updateStats(){
  $('#wordStatus').textContent='Слів: '+words;$('#charStatus').textContent='Символів: '+txt.length;
 }
 function command(name){restoreSelection();var ok=document.execCommand(name,false,null);if(ok)change();else tip('Команда недоступна в цьому браузері')}
-$('#quickSave').onclick=function(){saveNow();tip('Чернетку збережено')};
 $('#quickUndo').onclick=function(){command('undo')};$('#quickRedo').onclick=function(){command('redo')};
-$('#undoToolbar').onclick=function(){$('#quickUndo').click()};
-$('#redoToolbar').onclick=function(){$('#quickRedo').click()};
 $('#copyButton').onclick=function(){command('copy');tip('Копіювання: у деяких браузерах потрібен довгий дотик до тексту')};
 $('#cutButton').onclick=function(){command('cut')};
 $('#pasteButton').onclick=async function(){
