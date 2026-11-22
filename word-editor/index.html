@@ -479,6 +479,87 @@ footer{font-size:12px}
  .top .doc-meta #grade{padding:4px 3px;font-size:13px}
  .top .doc-meta #studentName{padding:5px 7px;font-size:13px}
 }
+
+/* Always-visible compact native-style scrollbars under Word tabs and commands. */
+#page-editor .persistent-scrollbar{
+ box-sizing:border-box;
+ display:flex;
+ align-items:center;
+ width:100%;
+ height:17px;
+ min-height:17px;
+ gap:6px;
+ padding:0 8px;
+ background:#eaf1fb;
+ border-top:1px solid #cadbf0;
+ border-bottom:1px solid #d1dfef;
+}
+#page-editor .persistent-scrollbar[hidden]{display:none!important}
+#page-editor .persistent-scrollbar span{
+ font-size:10px;
+ line-height:1;
+ color:#245b9b;
+ flex:none;
+}
+#page-editor .persistent-scrollbar:not(.can-scroll) span{opacity:.32}
+#page-editor .persistent-scrollbar input[type="range"]{
+ -webkit-appearance:none;
+ appearance:none;
+ display:block;
+ flex:1;
+ width:100%;
+ min-width:0;
+ height:15px;
+ min-height:15px;
+ margin:0;
+ padding:0;
+ border:0;
+ background:transparent;
+ opacity:1;
+ cursor:ew-resize;
+ touch-action:pan-y;
+}
+#page-editor .persistent-scrollbar input[type="range"]::-webkit-slider-runnable-track{
+ height:5px;
+ border-radius:99px;
+ background:#b5cbe7;
+}
+#page-editor .persistent-scrollbar input[type="range"]::-webkit-slider-thumb{
+ -webkit-appearance:none;
+ appearance:none;
+ width:var(--scroll-thumb-width,42px);
+ height:11px;
+ margin-top:-3px;
+ border-radius:99px;
+ background:#286ab8;
+ border:1px solid #19589c;
+ box-shadow:0 0 0 1px #ffffffb3;
+}
+#page-editor .persistent-scrollbar input[type="range"]::-moz-range-track{
+ height:5px;
+ border-radius:99px;
+ background:#b5cbe7;
+}
+#page-editor .persistent-scrollbar input[type="range"]::-moz-range-thumb{
+ width:var(--scroll-thumb-width,42px);
+ height:11px;
+ border:1px solid #19589c;
+ border-radius:99px;
+ background:#286ab8;
+}
+#page-editor .persistent-scrollbar input[type="range"]:disabled{opacity:.35;cursor:default}
+#page-editor .tabs,#page-editor .tools{
+ scrollbar-width:none;
+}
+#page-editor .tabs::-webkit-scrollbar,
+#page-editor .tools::-webkit-scrollbar{height:0;display:none}
+@media(max-width:600px){
+ #page-editor .persistent-scrollbar{
+  height:16px;min-height:16px;padding:0 6px;gap:5px;
+ }
+ #page-editor .actionbar{top:59px}
+}
+@media print{#page-editor .persistent-scrollbar{display:none!important}}
 </style>
 </head>
 <body>
@@ -549,13 +630,6 @@ footer{font-size:12px}
 <div class="actionbar">
 <div class="actions">
 
-  <div class="ribbon-scroll-control" role="group" aria-label="Прокрутка інструментів">
-   <span>Інструменти ↔</span>
-   <button id="scrollRibbonLeft" type="button" aria-label="Ліворуч">◀</button>
-   <input id="scrollRibbonRange" type="range" min="0" max="100" step="1" value="0" aria-label="Скролбар стрічки інструментів">
-   <button id="scrollRibbonRight" type="button" aria-label="Праворуч">▶</button>
-   <small>Пересунь повзунок</small>
-  </div>
   <nav class="tabs" aria-label="Вкладки стрічки Word">
     <button class="tab filetab" data-tab="file" aria-selected="false">Файл</button>
     <button class="tab" data-tab="text" aria-selected="true">Основне</button>
@@ -569,6 +643,11 @@ footer{font-size:12px}
     <button class="tab picturetab" data-tab="picture" aria-selected="false">Формат зображення</button>
     <button class="ribbon-toggle" id="toggleRibbon" title="Згорнути або розгорнути стрічку" aria-expanded="true">⌃</button>
   </nav>
+  <div class="persistent-scrollbar" id="tabsScrollBar" role="group" aria-label="Прокрутка вкладок Word">
+   <span aria-hidden="true">◀</span>
+   <input id="tabsScrollRange" type="range" min="0" max="100" step="1" value="0" aria-label="Гортай вкладки Word ліворуч і праворуч">
+   <span aria-hidden="true">▶</span>
+  </div>
   <div class="ribbon-viewport" id="ribbonViewport">
     <div class="tools active" id="tools-text">
       <section class="ribbon-group">
@@ -752,6 +831,11 @@ footer{font-size:12px}
       </div><div class="group-label">Експорт</div></section>
     </div>
   </div>
+  <div class="persistent-scrollbar" id="toolsScrollBar" role="group" aria-label="Прокрутка кнопок Word">
+   <span aria-hidden="true">◀</span>
+   <input id="toolsScrollRange" type="range" min="0" max="100" step="1" value="0" aria-label="Гортай кнопки інструментів Word">
+   <span aria-hidden="true">▶</span>
+  </div>
 </div>
 </div>
 <main class="workspace editor-layout">
@@ -832,7 +916,7 @@ function restoreSelection(){editor.focus();if(selectedRange){try{var s=window.ge
 function change(){filesWritten=false;setStatus('Є зміни…');clearTimeout(saveTimer);saveTimer=setTimeout(saveNow,850);check(false);updateStats()}
 function saveNow(){try{localStorage.setItem(KEY,JSON.stringify({html:editor.innerHTML,title:$('#title').value,grade:$('#grade').value,name:$('#studentName').value,compact:paper.classList.contains('compact'),theme:paper.dataset.theme||'classic',landscape:paper.classList.contains('landscape'),borderpage:paper.classList.contains('borderpage'),spellcheck:editor.spellcheck,zoom:Number($('#zoomRange').value)}));setStatus('Збережено ✓')}catch(e){setStatus('Не збережено!');tip('Пам’ять пристрою заповнена. Завантажте документ через «Файл».')}}
 function setTab(tab){document.querySelectorAll('.tab').forEach(function(el){el.setAttribute('aria-selected',el.dataset.tab===tab?'true':'false')});document.querySelectorAll('.tools').forEach(function(el){el.classList.toggle('active',el.id==='tools-'+tab)});if($('#ribbonViewport').classList.contains('collapsed')){toggleRibbon(true)}requestAnimationFrame(syncRibbonScrollbar)}
-function toggleRibbon(open){$('#ribbonViewport').classList.toggle('collapsed',!open);$('#toggleRibbon').setAttribute('aria-expanded',open?'true':'false');$('#toggleRibbon').textContent=open?'⌃':'⌄'}
+function toggleRibbon(open){$('#ribbonViewport').classList.toggle('collapsed',!open);$('#toolsScrollBar').hidden=!open;$('#toggleRibbon').setAttribute('aria-expanded',open?'true':'false');$('#toggleRibbon').textContent=open?'⌃':'⌄';requestAnimationFrame(syncRibbonScrollbar)}
 $('#toggleRibbon').onclick=function(){toggleRibbon($('#ribbonViewport').classList.contains('collapsed'))};
 function contextTabs(){var t=$('.tab.tabletab'),p=$('.tab.picturetab');t.classList.toggle('present',!!(selectedCell&&isInEditor(selectedCell)));p.classList.toggle('present',!!(selectedImage&&isInEditor(selectedImage)));var tab=$('.tab[aria-selected="true"]');if(tab&&((tab.dataset.tab==='table'&&!t.classList.contains('present'))||(tab.dataset.tab==='picture'&&!p.classList.contains('present'))))setTab('text')}
 document.querySelectorAll('.tab').forEach(function(el){el.addEventListener('click',function(){rememberSelection();setTab(el.dataset.tab)})});
@@ -1252,39 +1336,40 @@ $('#tasksNext').onclick=function(){showPage('editor')};
 $('#tasksTemplate').onclick=function(){showPage('editor');$('#useTemplate').click()};
 $('#hintsBack').onclick=function(){showPage('editor')};
 $('#studentName').addEventListener('input',function(){check(false)});
-// A visible scrollbar ABOVE the Word commands, including on touch devices.
+// Permanent small scrollbars below each Word menu.
+// Mobile browsers automatically hide native scrollbars; these rails stay visible.
 function activeRibbon(){
- return document.querySelector('#page-editor .tools.active')
+ return document.querySelector('#page-editor .tools.active');
+}
+function updateRail(scrollArea,range,rail){
+ if(!scrollArea||!range||!rail)return;
+ var max=Math.max(0,scrollArea.scrollWidth-scrollArea.clientWidth);
+ var canScroll=max>2;
+ range.disabled=!canScroll;
+ range.value=canScroll?Math.round(scrollArea.scrollLeft*100/max):0;
+ rail.classList.toggle('can-scroll',canScroll);
+ range.style.setProperty('--scroll-thumb-width',canScroll
+  ?Math.max(28,Math.min(125,Math.round((scrollArea.clientWidth/scrollArea.scrollWidth)*100)))+'px'
+  :'40px');
 }
 function syncRibbonScrollbar(){
- var bar=activeRibbon(),range=$('#scrollRibbonRange');
- if(!bar)return;
- var maximum=Math.max(0,bar.scrollWidth-bar.clientWidth);
- var scrollable=maximum>1;
- range.disabled=!scrollable;
- range.value=scrollable?Math.round(100*bar.scrollLeft/maximum):0;
- $('#scrollRibbonLeft').disabled=!scrollable||bar.scrollLeft<=1;
- $('#scrollRibbonRight').disabled=!scrollable||bar.scrollLeft>=maximum-1;
+ updateRail($('.tabs'),$('#tabsScrollRange'),$('#tabsScrollBar'));
+ updateRail(activeRibbon(),$('#toolsScrollRange'),$('#toolsScrollBar'));
 }
-$('#scrollRibbonRange').addEventListener('input',function(){
- var el=activeRibbon();if(!el)return;
- var max=Math.max(0,el.scrollWidth-el.clientWidth);
- el.scrollLeft=max*Number(this.value)/100;
- syncRibbonScrollbar()
-});
-$('#scrollRibbonLeft').onclick=function(){
- var el=activeRibbon();if(!el)return;el.scrollBy({left:-Math.max(180,el.clientWidth*.5),behavior:'smooth'})
-};
-$('#scrollRibbonRight').onclick=function(){
- var el=activeRibbon();if(!el)return;el.scrollBy({left:Math.max(180,el.clientWidth*.5),behavior:'smooth'})
-};
+function wireRail(rangeId,areaFn){
+ $(rangeId).addEventListener('input',function(){
+  var el=areaFn();if(!el)return;
+  var max=Math.max(0,el.scrollWidth-el.clientWidth);
+  el.scrollLeft=max*Number(this.value)/100;
+ });
+}
+wireRail('#tabsScrollRange',function(){return $('.tabs')});
+wireRail('#toolsScrollRange',activeRibbon);
+$('.tabs').addEventListener('scroll',syncRibbonScrollbar,{passive:true});
 document.querySelectorAll('#page-editor .tools').forEach(function(tool){
- tool.addEventListener('scroll',syncRibbonScrollbar,{passive:true})
+ tool.addEventListener('scroll',syncRibbonScrollbar,{passive:true});
 });
 window.addEventListener('resize',syncRibbonScrollbar);
-const ribbonTabs=$('.tabs');
-ribbonTabs.addEventListener('scroll',syncRibbonScrollbar,{passive:true});
-
 function init(){
  try{var stored=JSON.parse(localStorage.getItem(KEY)||'null');if(stored&&stored.html){editor.innerHTML=sanitize(stored.html);$('#title').value=stored.title||'Моя афіша';$('#grade').value=stored.grade||'6-А';$('#studentName').value=stored.name||'';paper.classList.toggle('compact',!!stored.compact);paper.classList.toggle('landscape',!!stored.landscape);paper.classList.toggle('borderpage',!!stored.borderpage);paper.dataset.theme=stored.theme||'classic';editor.spellcheck=stored.spellcheck!==false;$('#zoomRange').value=stored.zoom||100;applyZoom(false);updateMarginButton();updateOrientationButton();updateThemeButtons();updateSpellButton();setStatus('Чернетку відновлено ✓')}else{editor.innerHTML='';setStatus('Новий документ')}}catch(e){editor.innerHTML='';setStatus('Готово')}
  check(false);updateStats()
