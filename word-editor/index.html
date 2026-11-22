@@ -1193,17 +1193,43 @@ function docxBlob(){
   Array.from(node.childNodes).forEach(function(n){content+=inline(n,st)});
   return content
  }
- function paragraph(el,prefix){
+ function alignFor(el){
+  // CSS alignment is often inherited from a parent DIV in contenteditable.
+  var node=el,align='';
+  while(node&&node.nodeType===1&&node!==editor){
+   if(node.style&&node.style.textAlign){align=node.style.textAlign;break}
+   node=node.parentElement;
+  }
+  if(!align&&el&&el.nodeType===1){
+   try{align=window.getComputedStyle(el).textAlign||''}catch(e){}
+  }
+  align=String(align||'').toLowerCase();
+  if(align==='justify'||align==='both')return 'both';
+  if(align==='center')return 'center';
+  if(align==='right'||align==='end')return 'right';
+  return 'left'
+ }
+ // A Word paragraph is one block. Never put a picture next to unrelated text.
+ function paragraphParts(el,nodes,prefix){
   var heading=el.tagName==='H1'?1:el.tagName==='H2'?2:0;
-  var cs=el.style,al=(cs.textAlign||'').toLowerCase(),pp='<w:spacing w:after="'+(heading?140:100)+'"/>';
-  if(heading)pp+='<w:pStyle w:val="Heading'+heading+'"/>';
-  if(['center','right','both','justify'].includes(al))pp+='<w:jc w:val="'+(al==='justify'?'both':al)+'"/>';
-  if(prefix)pp+='<w:ind w:left="420"/>';
+  var props='';
+  if(heading)props+='<w:pStyle w:val="Heading'+heading+'"/>';
+  if(prefix)props+='<w:ind w:left="600" w:hanging="260"/>';
+  var align=alignFor(el);
+  if(align!=='left')props+='<w:jc w:val="'+align+'"/>';
+  props+='<w:spacing w:before="'+(heading?160:0)+'" w:after="'+(heading?140:100)+'"/>';
   var st=styleFromElement(el,{font:'Arial',sz:heading===1?42:heading===2?32:24,bold:!!heading});
-  var content=prefix?txtRuns(prefix,st):'';
-  Array.from(el.childNodes).forEach(function(n){content+=inline(n,st)});
-  if(!content)content='<w:r><w:t></w:t></w:r>';
-  return '<w:p><w:pPr>'+pp+'</w:pPr>'+content+'</w:p>'
+  var runs=prefix?txtRuns(prefix,st):'';
+  nodes.forEach(function(node){runs+=inline(node,st)});
+  if(!runs)runs=txtRuns(' ',st);
+  return '<w:p><w:pPr>'+props+'</w:pPr>'+runs+'</w:p>'
+ }
+ function pictureParagraph(img){
+  var parent=img.parentElement||editor;
+  var align=alignFor(parent);
+  var own=String(img.style.textAlign||'').toLowerCase();
+  if(own==='center'||(img.style.marginLeft==='auto'&&img.style.marginRight==='auto'))align='center';
+  return '<w:p><w:pPr><w:jc w:val="'+align+'"/><w:spacing w:before="80" w:after="120"/></w:pPr>'+pictureRun(img)+'</w:p>'
  }
  function tableXml(t){
   var rowNodes=Array.from(t.rows),out='<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:tblBorders><w:top w:val="single" w:sz="6"/><w:left w:val="single" w:sz="6"/><w:bottom w:val="single" w:sz="6"/><w:right w:val="single" w:sz="6"/><w:insideH w:val="single" w:sz="5"/><w:insideV w:val="single" w:sz="5"/></w:tblBorders></w:tblPr>';
@@ -1214,14 +1240,62 @@ function docxBlob(){
    out+=paragraphCell(cell,head);out+='</w:tc>'
   });out+='</w:tr>'});return out+'</w:tbl>'
  }
- function paragraphCell(el,head){var st={font:'Arial',sz:22,bold:head},runs='';Array.from(el.childNodes).forEach(function(n){runs+=inline(n,st)});return '<w:p><w:pPr><w:spacing w:after="0"/></w:pPr>'+(runs||txtRuns(' ',st))+'</w:p>'}
- function nodesBlock(el){var out='',tag=el.tagName;if(tag==='TABLE')return tableXml(el);if(tag==='HR')return '<w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:sz="10"/></w:pBdr></w:pPr></w:p>';
- if(tag==='UL'||tag==='OL'){Array.from(el.children).forEach(function(li,i){out+=paragraph(li,tag==='UL'?'• ':String(i+1)+'. ')});return out}
- if(tag==='IMG')return paragraph(el);
- if(['H1','H2','P','DIV','LI'].includes(tag)){var kids=Array.from(el.children).filter(function(c){return ['TABLE','UL','OL'].includes(c.tagName)});if(kids.length){Array.from(el.childNodes).forEach(function(c){if(c.nodeType===1 && ['TABLE','UL','OL'].includes(c.tagName))out+=nodesBlock(c);else if(c.nodeType===1)out+=nodesBlock(c);else if(c.nodeType===3&&c.textContent.trim())out+=paragraph({tagName:'P',style:{textAlign:''},childNodes:[c]},'')});return out}return paragraph(el)}
- return paragraph(el)}
- var body='';Array.from(editor.children).forEach(function(el){body+=nodesBlock(el)});
- if(!body)body=paragraph({tagName:'P',style:{textAlign:''},childNodes:[document.createTextNode('')]});
+ function paragraphCell(el,head){
+  // Table cells can contain P, DIV, BR, images and lists, not just a text run.
+  // Render each child block as its own Word paragraph.
+  return contentBlocks(el,'',head?{bold:true}:null)
+ }
+ var blockTags=new Set(['P','DIV','H1','H2','H3','H4','H5','H6','UL','OL','TABLE','IMG','HR','BLOCKQUOTE','SECTION','ARTICLE','HEADER','FOOTER']);
+ function hasEmbeddedBlocks(node){
+  return node.nodeType===1&&node.querySelector&&
+    !!node.querySelector('p,div,h1,h2,h3,h4,h5,h6,ul,ol,table,img,hr,blockquote,section,article');
+ }
+ function contentBlocks(parent,prefix,cellStyle){
+  var result='',pending=[],unconsumedPrefix=prefix||'';
+  function flush(){
+   if(!pending.length)return;
+   result+=paragraphParts(parent,pending,unconsumedPrefix);
+   pending=[];unconsumedPrefix=''
+  }
+  Array.from(parent.childNodes).forEach(function(node){
+   var structural=node.nodeType===1&&(blockTags.has(node.tagName)||hasEmbeddedBlocks(node));
+   if(!structural){
+    pending.push(node);
+    return
+   }
+   flush();
+   // A bullet belongs to the first text paragraph of an LI, not a blank
+   // paragraph preceding nested content.
+   if(unconsumedPrefix&&['P','DIV','H1','H2','H3','H4','H5','H6'].includes(node.tagName)){
+    result+=nodesBlock(node,unconsumedPrefix);
+    unconsumedPrefix='';
+   }else{
+    if(unconsumedPrefix){result+=paragraphParts(parent,[],unconsumedPrefix);unconsumedPrefix=''}
+    result+=nodesBlock(node)
+   }
+  });
+  flush();
+  if(!result)result=paragraphParts(parent,[],unconsumedPrefix);
+  return result
+ }
+ function nodesBlock(el,prefix){
+  if(!el||el.nodeType!==1)return '';
+  var tag=el.tagName;
+  if(tag==='TABLE')return tableXml(el);
+  if(tag==='IMG')return pictureParagraph(el);
+  if(tag==='HR')return '<w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:sz="10"/></w:pBdr></w:pPr></w:p>';
+  if(tag==='UL'||tag==='OL'){
+   var out='';
+   Array.from(el.children).forEach(function(li,index){
+    if(li.tagName!=='LI')return;
+    var marker=tag==='UL'?'• ':String(index+1)+'. ';
+    out+=contentBlocks(li,marker)
+   });
+   return out||paragraphParts(el,[],prefix||'')
+  }
+  return contentBlocks(el,prefix||'')
+ }
+ var body=contentBlocks(editor,'');
  var doc='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
  doc+='<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><w:body>'+body+'<w:sectPr><w:pgSz w:w="'+(paper.classList.contains('landscape')?'16838':'11906')+'" w:h="'+(paper.classList.contains('landscape')?'11906':'16838')+'"/><w:pgMar w:top="1020" w:right="1020" w:bottom="1020" w:left="1020" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr></w:body></w:document>';
  var types='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>';
