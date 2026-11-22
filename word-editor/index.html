@@ -560,6 +560,93 @@ footer{font-size:12px}
  #page-editor .actionbar{top:59px}
 }
 @media print{#page-editor .persistent-scrollbar{display:none!important}}
+
+/* One task = one progress indicator. No duplicate checklist card. */
+.task-overview{
+ margin:22px 0 12px;
+ background:#fff;
+ border:1px solid #cdddf0;
+ border-radius:12px;
+ padding:16px 19px 14px;
+ box-shadow:0 2px 11px #1c4a7810;
+}
+.task-overview-top{display:flex;gap:12px;align-items:center;justify-content:space-between}
+.task-overview-top h2{margin:0 0 3px;font-size:20px;color:#1d4a80}
+.task-overview-top p{margin:0;color:#526b87;font-weight:650;font-size:13px}
+.task-total-percent{font-size:29px;font-weight:900;letter-spacing:-1px;color:#215da2;white-space:nowrap}
+.task-meter{margin:12px 0 7px;height:12px;background:#e0e9f4}
+.task-meter b{background:#19835b}
+.task-progress-note{margin:0;font-size:12px;color:#718097}
+.integrated-tasks{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.integrated-tasks .task-card{
+ padding:15px 16px;
+ border-left:4px solid #b9cee7;
+ min-width:0;
+ transition:border-color .2s,background-color .2s;
+}
+.integrated-tasks .task-card.is-done{border-left-color:#25825b;background:#f8fdf9}
+.integrated-tasks .task-card-header{display:flex;gap:9px;align-items:center;margin:0 0 8px;flex-wrap:wrap}
+.integrated-tasks .task-num{flex:none;width:31px;height:31px;margin:0;font-size:16px}
+.integrated-tasks .task-card h3{font-size:15px;flex:1;min-width:90px;margin:0;color:#204b7b}
+.integrated-tasks .task-card p{font-size:13px;line-height:1.48;margin:0}
+.integrated-tasks .task-state{
+ flex:none;
+ font-size:11px;
+ padding:5px 8px;
+ color:#536780;
+ background:#edf2fa;
+ border-radius:99px;
+ font-weight:800;
+ white-space:nowrap;
+}
+.integrated-tasks .is-done .task-state{background:#e1f5e9;color:#146740}
+.integrated-tasks .task-card-last{grid-column:1/-1}
+.task-check-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:13px 0}
+.task-check-actions p{color:#60728a;font-size:12px;margin:0;line-height:1.45;flex:1;min-width:180px}
+.task-example{display:block!important;margin:12px 0 16px;padding:0;background:#fff;border-left:3px solid #7fa7d7}
+.task-example summary{padding:14px 17px;cursor:pointer;font-size:13px;color:#245790;font-weight:800}
+.task-example-inner{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:0 17px 16px}
+.task-example h3{font-size:15px;color:#295786;margin:0 0 6px}
+.task-example p{font-size:12px;color:#5b6b80;margin:3px 0;line-height:1.45}
+.task-submit{margin-top:15px}
+.task-submit .submission-header h2{font-size:18px}
+@media(max-width:750px){
+ .integrated-tasks{grid-template-columns:1fr}
+ .integrated-tasks .task-card-last{grid-column:auto}
+}
+@media(max-width:600px){
+ .task-overview{margin:14px 0 9px;padding:13px}
+ .task-overview-top h2{font-size:17px}
+ .task-total-percent{font-size:25px}
+ .integrated-tasks .task-card{
+  display:block;
+  padding:11px 12px;
+ }
+ .integrated-tasks .task-card-header{
+  display:grid;
+  grid-template-columns:28px minmax(0,1fr) auto;
+  gap:7px;
+  margin:0 0 5px;
+ }
+ .integrated-tasks .task-num{
+  grid-row:auto;
+  width:27px;height:27px;font-size:14px;
+ }
+ .integrated-tasks .task-card h3{
+  grid-column:auto;
+  margin:0;
+  font-size:13px;
+  min-width:0;
+ }
+ .integrated-tasks .task-card p{display:block;grid-column:auto;font-size:12px;padding-left:35px}
+ .integrated-tasks .task-state{font-size:10px;padding:4px 6px}
+ .task-check-actions{gap:7px}
+ .task-check-actions .secondary-action{min-height:38px;font-size:12px;padding:8px 10px}
+ .task-check-actions p{font-size:11px;min-width:160px}
+ .task-example-inner{align-items:stretch;flex-direction:column;gap:10px}
+ .task-example-inner button{width:100%}
+ .task-submit{margin-top:13px}
+}
 </style>
 </head>
 <body>
@@ -592,38 +679,60 @@ footer{font-size:12px}
    <p>Створи власний текстовий документ із <b>заголовком, запрошенням, малюнком і таблицею</b>.</p>
    <button id="tasksStart" class="hero-start" type="button">📝 Перейти до редактора →</button>
   </header>
-  <div class="section-label"><h2>Твоє завдання — 5 кроків</h2><span>Виконуй послідовно</span></div>
-  <div class="task-grid">
-   <article class="task-card"><div class="task-num">1</div><h3>Обери подію</h3><p>Придумай назву: ярмарок, спортивний турнір, кіновечір або своя ідея.</p></article>
-   <article class="task-card"><div class="task-num">2</div><h3>Напиши запрошення</h3><p>Оформи заголовок і 2–3 речення: що відбудеться, де та коли.</p></article>
-   <article class="task-card"><div class="task-num">3</div><h3>Додай зображення</h3><p>Встав тематичний малюнок із галереї або зі смартфона. Вибери розмір.</p></article>
-   <article class="task-card"><div class="task-num">4</div><h3>Створи таблицю</h3><p>Зроби програму заходу: щонайменше <b>3 рядки та 2 стовпці</b> («Час» і «Подія»).</p></article>
-   <article class="task-card"><div class="task-num">5</div><h3>Перевір і відправ</h3><p>Перевір прогрес унизу цієї сторінки, уведи прізвище та ім’я у синій панелі й натисни «Надіслати».</p></article>
-  </div>
-  <aside class="lesson-example"><div><span class="lesson-eyebrow">ПРИКЛАД</span><h2>«День настільних ігор»</h2>
-   <p>«Запрошуємо шестикласників до бібліотеки у п’ятницю о 13:00!»</p>
-   <p>Таблиця: 13:00 — відкриття, 13:20 — турнір, 14:00 — нагородження.</p></div>
-   <button type="button" id="tasksTemplate" class="secondary-action">Відкрити шаблон</button>
-  </aside>
-    <section class="task-progress" id="taskProgress" aria-labelledby="taskProgressHeading">
-    <div class="section-label progress-head"><h2 id="taskProgressHeading">📊 Прогрес роботи</h2><span>Перевір себе перед відправленням</span></div>
-    <div class="progress-grid">
-   <section class="progress-card">
-    <div class="progress-top"><div><h2>Мій результат</h2><p id="checkSummary">Перевіримо твою роботу.</p></div><span id="progressPercent">0%</span></div>
-    <div class="meter progress-meter"><b id="meterBar"></b></div>
-    <div id="checks"></div>
-    <button type="button" class="secondary-action" id="checkButton">✓ Перевірити знову</button>
-    <p class="hint">Зелені позначки означають, що потрібні елементи знайдено. Якість роботи оцінить учитель.</p>
-   </section>
-   <section class="progress-send">
-    <div class="submission-header"><span class="submission-mail-icon" aria-hidden="true">✉</span><div><h2>Готово? Відправ роботу вчителю!</h2><p>Word-файл створиться і прикріпиться автоматично.</p></div></div>
-    <button type="button" class="submit-big" id="submitProgress"><span aria-hidden="true">✉</span> ВІДПРАВИТИ РОБОТУ</button>
-    <p class="submit-help">Документ .docx буде передано через FormSubmit на пошту вчителя. Перевір підтвердження від сервісу.</p>
-    <p class="submit-status" id="progressSubmitStatus" role="status" aria-live="polite"></p>
-   </section>
-  </div>
+
+  <section class="task-overview" aria-label="Мій прогрес">
+   <div class="task-overview-top">
+    <div><h2>Твоє завдання — 5 кроків</h2><p id="checkSummary">Перевіряємо виконання кроків…</p></div>
+    <span id="progressPercent" class="task-total-percent" aria-label="Відсоток виконання">0%</span>
+   </div>
+   <div class="meter task-meter" aria-hidden="true"><b id="meterBar"></b></div>
+   <p class="task-progress-note">Позначки оновлюються автоматично, коли ти працюєш у редакторі.</p>
   </section>
-  <div class="lesson-bottom"><button id="tasksNext" class="hero-start" type="button">Почати роботу в редакторі →</button></div>
+  <div class="task-grid integrated-tasks" id="taskSteps">
+   <article class="task-card" data-step="0">
+    <div class="task-card-header"><div class="task-num">1</div><h3>Створи заголовок</h3><span class="task-state">Ще потрібно</span></div>
+    <p>Обери шкільну подію та оформи її назву заголовком у документі.</p>
+   </article>
+   <article class="task-card" data-step="1">
+    <div class="task-card-header"><div class="task-num">2</div><h3>Напиши запрошення</h3><span class="task-state">Ще потрібно</span></div>
+    <p>Напиши 2–3 речення: що відбудеться, де та коли. Перевір правопис.</p>
+   </article>
+   <article class="task-card" data-step="2">
+    <div class="task-card-header"><div class="task-num">3</div><h3>Додай зображення</h3><span class="task-state">Ще потрібно</span></div>
+    <p>Встав тематичний малюнок із галереї або зі смартфона, налаштуй розмір.</p>
+   </article>
+   <article class="task-card" data-step="3">
+    <div class="task-card-header"><div class="task-num">4</div><h3>Створи таблицю</h3><span class="task-state">Ще потрібно</span></div>
+    <p>Додай програму заходу: щонайменше <b>3 рядки й 2 стовпці</b> («Час» і «Подія»).</p>
+   </article>
+   <article class="task-card task-card-last" data-step="4">
+    <div class="task-card-header"><div class="task-num">5</div><h3>Підготуй здавання</h3><span class="task-state">Ще потрібно</span></div>
+    <p>Упиши <b>прізвище та ім’я</b> і вибери клас у синій панелі вгорі. Потім натисни «Надіслати».</p>
+   </article>
+  </div>
+  <div class="task-check-actions">
+   <button type="button" class="secondary-action" id="checkButton">✓ Оновити прогрес</button>
+   <p>100% означає готовність елементів документа, <b>але не підтверджує надсилання</b>.</p>
+  </div>
+  <details class="lesson-example task-example">
+   <summary>💡 Потрібен приклад афіші? Натисни тут</summary>
+   <div class="task-example-inner">
+    <div><h3>«День настільних ігор»</h3>
+     <p>«Запрошуємо шестикласників до бібліотеки у п’ятницю о 13:00!»</p>
+     <p>Таблиця: 13:00 — відкриття; 13:20 — турнір; 14:00 — нагородження.</p>
+    </div>
+    <button type="button" id="tasksTemplate" class="secondary-action">Відкрити шаблон</button>
+   </div>
+  </details>
+  <section class="progress-send task-submit" id="taskProgress" aria-label="Надсилання роботи">
+   <div class="submission-header"><span class="submission-mail-icon" aria-hidden="true">✉</span>
+    <div><h2>Готово? Надішли роботу вчителю!</h2><p>Дані учня — у синій панелі вгорі. Word-файл прикріпиться автоматично.</p></div>
+   </div>
+   <button type="button" class="submit-big" id="submitProgress"><span aria-hidden="true">✉</span> ВІДПРАВИТИ РОБОТУ</button>
+   <p class="submit-help">На сторінці FormSubmit дочекайся підтвердження. Саме натискання кнопки ще не означає доставки.</p>
+   <p class="submit-status" id="progressSubmitStatus" role="status" aria-live="polite"></p>
+  </section>
+  
  </div>
 </section>
 <section id="page-editor" class="lesson-page" role="tabpanel" aria-label="Редактор" hidden>
@@ -984,13 +1093,29 @@ function makePicture(kind){
 }
 document.querySelectorAll('[data-picture]').forEach(function(el){el.onclick=function(){$('#galleryDialog').close();addImage(makePicture(el.dataset.picture),el.textContent.trim())}});
 function check(showToast){
- var hasTitle=!!editor.querySelector('h1,h2');var words=editor.textContent.replace(/\s+/g,' ').trim();var desc=words.length>=65;
- var hasImage=!!editor.querySelector('img');var table=editor.querySelector('table');var hasTable=!!(table&&table.rows.length>=3&&table.rows[0].cells.length>=2);
- var data=[['Заголовок оформлено',hasTitle],['Є текст запрошення',desc],['Вставлено зображення',hasImage],['Є таблиця щонайменше 3 × 2',hasTable],['Вказано прізвище та ім’я',($('#studentName').value.trim().split(/\s+/).length>=2 && $('#studentName').value.trim().length>=5)]];
- var wrap=$('#checks');wrap.replaceChildren();var ok=0;
- data.forEach(function(d){if(d[1])ok++;var row=document.createElement('div');row.className='checkrow'+(d[1]?' ok':'');var box=document.createElement('span');box.textContent=d[1]?'✓':'○';var label=document.createElement('span');label.textContent=d[0];row.append(box,label);wrap.appendChild(row)});
- $('#meterBar').style.width=(ok/data.length*100)+'%';$('#progressPercent').textContent=Math.round(ok/data.length*100)+'%';$('#checkSummary').textContent=ok+' із '+data.length+' пунктів виконано.';
- if(showToast)tip(ok===data.length?'Чудово! Усі пункти перевірки виконано.':'Виконано '+ok+' із '+data.length+'. Перегляньте, що залишилося.');
+ var hasTitle=!!editor.querySelector('h1,h2');
+ var words=editor.textContent.replace(/\s+/g,' ').trim();
+ var hasInvitation=words.length>=65;
+ var hasImage=!!editor.querySelector('img');
+ var table=editor.querySelector('table');
+ var hasTable=!!(table&&table.rows.length>=3&&table.rows[0].cells.length>=2);
+ var fullName=$('#studentName').value.trim().replace(/\s+/g,' ');
+ var nameReady=fullName.length>=5&&fullName.split(' ').length>=2;
+ var ready=[hasTitle,hasInvitation,hasImage,hasTable,nameReady];
+ var done=0;
+ document.querySelectorAll('#taskSteps [data-step]').forEach(function(card){
+  var idx=Number(card.dataset.step),complete=!!ready[idx];
+  if(complete)done++;
+  card.classList.toggle('is-done',complete);
+  var indicator=card.querySelector('.task-state');
+  indicator.textContent=complete?'✓ Готово':'○ Ще потрібно';
+  indicator.setAttribute('aria-label',complete?'Крок виконано':'Крок ще не виконано');
+ });
+ var percent=Math.round(done/ready.length*100);
+ $('#meterBar').style.width=percent+'%';
+ $('#progressPercent').textContent=percent+'%';
+ $('#checkSummary').textContent=done+' із '+ready.length+' кроків виконано';
+ if(showToast)tip(done===ready.length?'Усі кроки підготовлено! Натисни «Надіслати».':'Виконано '+done+' із '+ready.length+' кроків. Перевір, що ще потрібно.');
 }
 $('#checkButton').onclick=function(){check(true)};
 function download(blob,filename){var a=document.createElement('a'),url=URL.createObjectURL(blob);a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},3000);filesWritten=true;check(false);saveNow()}
@@ -1332,7 +1457,6 @@ document.querySelectorAll('.lesson-tab').forEach(function(tab){
  tab.addEventListener('click',function(){showPage(tab.dataset.page)});
 });
 $('#tasksStart').onclick=function(){showPage('editor')};
-$('#tasksNext').onclick=function(){showPage('editor')};
 $('#tasksTemplate').onclick=function(){showPage('editor');$('#useTemplate').click()};
 $('#hintsBack').onclick=function(){showPage('editor')};
 $('#studentName').addEventListener('input',function(){check(false)});
