@@ -1421,7 +1421,7 @@ $('#spellButton').onclick=function(){editor.spellcheck=!editor.spellcheck;update
 $('#wordCountButton').onclick=function(){updateStats();tip($('#wordStatus').textContent+' · '+$('#charStatus').textContent)};
 $('#findReview').onclick=function(){$('#findButton').click()};
 $('#replaceReview').onclick=function(){$('#replaceButton').click()};
-$('#checkReview').onclick=function(){showPage('tasks');check(true);$('#taskProgress').scrollIntoView({block:'start',behavior:'smooth'})};
+$('#checkReview').onclick=function(){showPage('tasks');check(true);$('.task-overview').scrollIntoView({block:'start',behavior:'smooth'})};
 function applyZoom(shouldSave){
  var val=Number($('#zoomRange').value)||100;
  document.documentElement.style.setProperty('--paper-zoom',String(val/100));$('#zoomText').textContent=val+'%';
