@@ -337,6 +337,40 @@ footer{font-size:12px}
  #page-editor{display:block!important}
  .submission-panel{display:none!important}
 }
+
+/* Primary send action in the main four-page navigation. */
+.lesson-submit-top{
+ border:0;
+ border-radius:9px;
+ background:#147046;
+ color:#fff;
+ font:850 14px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;
+ letter-spacing:.01em;
+ padding:12px 17px;
+ min-height:49px;
+ box-shadow:0 3px 0 #095137;
+ white-space:nowrap;
+}
+.lesson-submit-top:hover{background:#0d5e38}
+.lesson-submit-top:active{transform:translateY(2px);box-shadow:0 1px 0 #095137}
+.lesson-submit-top:focus-visible{outline:3px solid #ecac34;outline-offset:2px}
+.lesson-submit-top:disabled{opacity:.55;cursor:wait}
+@media(max-width:600px){
+ .lesson-submit-top{
+  grid-column:1 / -1;
+  width:100%;
+  min-height:47px;
+  font-size:15px;
+  padding:9px 12px;
+ }
+ #page-editor .actionbar{top:118px}
+}
+@media(max-width:850px) and (min-width:601px){
+ .lesson-nav{flex-wrap:wrap}
+ .lesson-submit-top{flex:1;min-width:225px}
+ #page-editor .actionbar{top:67px}
+}
+@media print{.lesson-submit-top{display:none!important}}
 </style>
 </head>
 <body>
@@ -362,6 +396,7 @@ footer{font-size:12px}
  <button type="button" class="lesson-tab" role="tab" data-page="editor" aria-controls="page-editor" aria-selected="false">📝 Редактор</button>
  <button type="button" class="lesson-tab" role="tab" data-page="hints" aria-controls="page-hints" aria-selected="false">💡 Підказки</button>
  <button type="button" class="lesson-tab" role="tab" data-page="progress" aria-controls="page-progress" aria-selected="false">📊 Прогрес роботи</button>
+ <button type="button" class="lesson-submit-top" id="topSubmit" title="Відправити документ Word учителю">✉ ВІДПРАВИТИ РОБОТУ</button>
 </nav>
 <section id="page-tasks" class="lesson-page" role="tabpanel" aria-label="Завдання">
  <div class="lesson-content">
@@ -983,7 +1018,7 @@ function sendWork(source){
  }
  // Явна дія користувача — кнопка «Відправити роботу».
  var filename=nameFile('docx');
- wordSending=true;$('#submitBig').disabled=true;$('#submitProgress').disabled=true;
+ wordSending=true;$('#submitBig').disabled=true;$('#submitProgress').disabled=true;$('#topSubmit').disabled=true;
  try{
   var file=new File([blob],filename,{type:DOCX_TYPE});
   var dt=new DataTransfer();dt.items.add(file);$('#wordAttachment').files=dt.files;
@@ -998,11 +1033,12 @@ function sendWork(source){
  }catch(e){
   console.error(e);setHandInStatus('Браузер не зміг прикріпити файл. Натисни «Файл → Завантажити Word» та надішли його через пошту.',true)
  }finally{
-  wordSending=false;$('#submitBig').disabled=false;$('#submitProgress').disabled=false;$('#submitReady').value='false'
+  wordSending=false;$('#submitBig').disabled=false;$('#submitProgress').disabled=false;$('#topSubmit').disabled=false;$('#submitReady').value='false'
  }
 }
 $('#submitBig').onclick=function(){sendWork('editor')};
 $('#submitProgress').onclick=function(){sendWork('progress')};
+$('#topSubmit').onclick=function(){showPage('progress');sendWork('progress')};
 $('#openEmailDialog').onclick=focusHandIn;
 $('#quickSend').onclick=focusHandIn;
 $('#goToSubmit').onclick=function(){$('#emailDialog').close();focusHandIn()};
