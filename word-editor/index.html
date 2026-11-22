@@ -1259,12 +1259,18 @@ function docxBlob(){
  }
  function contentBlocks(parent,prefix,cellStyle){
   var result='',pending=[],unconsumedPrefix=prefix||'';
+  // Browsers add whitespace text nodes around block elements. They must not
+  // turn into empty Word paragraphs (especially after images).
+  var hasBlocks=Array.from(parent.childNodes).some(function(child){
+   return child.nodeType===1&&(blockTags.has(child.tagName)||hasEmbeddedBlocks(child))
+  });
   function flush(){
    if(!pending.length)return;
    result+=paragraphParts(parent,pending,unconsumedPrefix,cellStyle);
    pending=[];unconsumedPrefix=''
   }
   Array.from(parent.childNodes).forEach(function(node){
+   if(hasBlocks&&node.nodeType===3&&!node.nodeValue.trim())return;
    var structural=node.nodeType===1&&(blockTags.has(node.tagName)||hasEmbeddedBlocks(node));
    if(!structural){
     pending.push(node);
