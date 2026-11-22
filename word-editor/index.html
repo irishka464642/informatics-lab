@@ -1149,7 +1149,14 @@ function txtRuns(text,style){
  if(style.bold)pr+='<w:b/>';if(style.italic)pr+='<w:i/>';if(style.underline)pr+='<w:u w:val="single"/>';if(style.strike)pr+='<w:strike/>';
  if(style.color)pr+='<w:color w:val="'+style.color+'"/>';if(style.sz)pr+='<w:sz w:val="'+style.sz+'"/>';
  if(style.font)pr+='<w:rFonts w:ascii="'+xml(style.font)+'" w:hAnsi="'+xml(style.font)+'"/>';
- return '<w:r>'+(pr?'<w:rPr>'+pr+'</w:rPr>':'')+'<w:t xml:space="preserve">'+xml(text)+'</w:t></w:r>'
+ // Word requires explicit break and tab elements; raw newlines in w:t can collapse.
+ var pieces=String(text).replace(/\r\n?/g,'\n').split(/(\n|\t)/);
+ var runs=pieces.map(function(piece){
+  if(piece==='\n')return '<w:br/>';
+  if(piece==='\t')return '<w:tab/>';
+  return piece?'<w:t xml:space="preserve">'+xml(piece)+'</w:t>':''
+ }).join('');
+ return '<w:r>'+(pr?'<w:rPr>'+pr+'</w:rPr>':'')+(runs||'<w:t xml:space="preserve"></w:t>')+'</w:r>'
 }
 function styleFromElement(el,base){
  var st=Object.assign({},base),tag=el.tagName,cs=el.style;
@@ -1210,15 +1217,15 @@ function docxBlob(){
   return 'left'
  }
  // A Word paragraph is one block. Never put a picture next to unrelated text.
- function paragraphParts(el,nodes,prefix){
+ function paragraphParts(el,nodes,prefix,inheritedStyle){
   var heading=el.tagName==='H1'?1:el.tagName==='H2'?2:0;
   var props='';
-  if(heading)props+='<w:pStyle w:val="Heading'+heading+'"/>';
+  if(heading)props+='<w:pStyle w:val="Heading'+heading+'"/><w:keepNext/>';
   if(prefix)props+='<w:ind w:left="600" w:hanging="260"/>';
   var align=alignFor(el);
   if(align!=='left')props+='<w:jc w:val="'+align+'"/>';
   props+='<w:spacing w:before="'+(heading?160:0)+'" w:after="'+(heading?140:100)+'"/>';
-  var st=styleFromElement(el,{font:'Arial',sz:heading===1?42:heading===2?32:24,bold:!!heading});
+  var st=styleFromElement(el,Object.assign({font:'Arial',sz:heading===1?42:heading===2?32:24,bold:!!heading},inheritedStyle||{}));
   var runs=prefix?txtRuns(prefix,st):'';
   nodes.forEach(function(node){runs+=inline(node,st)});
   if(!runs)runs=txtRuns(' ',st);
@@ -1254,7 +1261,7 @@ function docxBlob(){
   var result='',pending=[],unconsumedPrefix=prefix||'';
   function flush(){
    if(!pending.length)return;
-   result+=paragraphParts(parent,pending,unconsumedPrefix);
+   result+=paragraphParts(parent,pending,unconsumedPrefix,cellStyle);
    pending=[];unconsumedPrefix=''
   }
   Array.from(parent.childNodes).forEach(function(node){
@@ -1267,18 +1274,18 @@ function docxBlob(){
    // A bullet belongs to the first text paragraph of an LI, not a blank
    // paragraph preceding nested content.
    if(unconsumedPrefix&&['P','DIV','H1','H2','H3','H4','H5','H6'].includes(node.tagName)){
-    result+=nodesBlock(node,unconsumedPrefix);
+    result+=nodesBlock(node,unconsumedPrefix,cellStyle);
     unconsumedPrefix='';
    }else{
-    if(unconsumedPrefix){result+=paragraphParts(parent,[],unconsumedPrefix);unconsumedPrefix=''}
-    result+=nodesBlock(node)
+    if(unconsumedPrefix){result+=paragraphParts(parent,[],unconsumedPrefix,cellStyle);unconsumedPrefix=''}
+    result+=nodesBlock(node,'',cellStyle)
    }
   });
   flush();
-  if(!result)result=paragraphParts(parent,[],unconsumedPrefix);
+  if(!result)result=paragraphParts(parent,[],unconsumedPrefix,cellStyle);
   return result
  }
- function nodesBlock(el,prefix){
+ function nodesBlock(el,prefix,cellStyle){
   if(!el||el.nodeType!==1)return '';
   var tag=el.tagName;
   if(tag==='TABLE')return tableXml(el);
@@ -1289,11 +1296,11 @@ function docxBlob(){
    Array.from(el.children).forEach(function(li,index){
     if(li.tagName!=='LI')return;
     var marker=tag==='UL'?'• ':String(index+1)+'. ';
-    out+=contentBlocks(li,marker)
+    out+=contentBlocks(li,marker,cellStyle)
    });
-   return out||paragraphParts(el,[],prefix||'')
+   return out||paragraphParts(el,[],prefix||'',cellStyle)
   }
-  return contentBlocks(el,prefix||'')
+  return contentBlocks(el,prefix||'',cellStyle)
  }
  var body=contentBlocks(editor,'');
  var doc='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
