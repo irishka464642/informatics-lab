@@ -51,10 +51,13 @@ main{position:relative;padding:26px 0 70px}.hero{border:1px solid #67618e;border
 </head>
 <body>
 <header class="top"><div class="wrap topinner"><div class="brand"><span class="em">10-Б</span> АЛГО<span style="color:var(--yellow)">ЧЕЛЕНДЖ</span></div><div class="stats" aria-live="polite"><span class="stat">⚡ <b id="xp">0</b> XP</span><span class="stat">🔥 <b id="streak">0</b></span><span class="stat">⏱️ <b id="clock">00:00</b></span></div></div></header>
-<main class="wrap"><div id="app"></div><div class="footer">Ледар.exe — вигаданий персонаж. Без реєстрації та реклами. Ім’я, прізвище й результат зберігаються лише у браузері цього пристрою.</div></main>
+<main class="wrap"><div id="app"></div><div class="footer"><div id="syncState" aria-live="polite" style="margin:14px 0 8px"></div>Ледар.exe — вигаданий персонаж. Без реєстрації та реклами. Ім’я, прізвище й результат зберігаються лише у браузері цього пристрою.</div></main>
 <script>
 'use strict';
 const STORAGE='algochallenge10b_v3';
+const RESULTS_WEB_APP_URL = ''; // Додати URL /exec після розгортання Apps Script
+const RESULTS_QUEUE_KEY = 'algochallenge10b_pending_results_v1';
+const RESULTS_SCHEMA = 1;
 const TEACHER_CODE=[0x432,0x43e,0x432,0x430].map(c=>String.fromCharCode(c)).join('');
 const MAX=11;
 const CHECK_COST=20, HINT_COST=20, PER_LEVEL=100;
@@ -74,14 +77,91 @@ const keys=["Для неупорядкованого списку підходи
 const buildLevels=[{"intro":"📶 Бот вимкнув інтернет. Збери алгоритм діагностики Wi-Fi: умовні дії виконуються лише за істинної умови.","steps":["Перевірити, чи ввімкнено режим польоту.","Якщо ввімкнено — вимкнути режим польоту.","Перевірити, чи ввімкнено Wi-Fi.","Якщо Wi-Fi вимкнено — увімкнути його.","Обрати потрібну мережу та спробувати підключитися.","Перевірити, чи з’явилося з’єднання.","Якщо з’єднання немає — повідомити про проблему."],"shuffled":[4,2,6,0,5,1,3]},{"intro":"🕵️ У класний чат прилетіла «сенсація». Склади алгоритм перевірки повідомлення перед поширенням.","steps":["Прочитати повідомлення та виділити головне твердження.","Знайти автора або першоджерело повідомлення.","Перевірити дату публікації та контекст.","Знайти незалежні надійні джерела з цього питання.","Порівняти відомості та визначити, чи є підтвердження.","Якщо підтвердження немає — не поширювати; інакше — навести джерела."],"shuffled":[3,5,0,2,4,1]},{"intro":"🏆 Бали перемішано. Побудуй алгоритм пошуку МАКСИМУМУ в непорожньому списку без сортування.","steps":["Отримати непорожній список балів.","Прийняти перший бал за поточний максимум.","Перейти до наступного балу, якщо він є.","Якщо поточний бал більший за максимум — оновити максимум.","Повторювати перевірку для кожного наступного балу.","Показати знайдений максимальний бал."],"shuffled":[5,2,0,4,1,3]},{"intro":"💸 Промокод знижує ціну лише якщо він чинний. Склади алгоритм із розгалуженням.","steps":["Отримати початкову ціну товару та промокод.","Перевірити, чи промокод чинний.","Якщо чинний — визначити відсоток знижки; інакше — узяти 0%.","Обчислити суму знижки у гривнях.","Відняти знижку від початкової ціни.","Показати кінцеву ціну покупки."],"shuffled":[4,1,5,0,3,2]},{"intro":"⏰ Дедлайни наступають швидше, ніж понеділок. Збери алгоритм пошуку найближчого терміну здачі.","steps":["Зібрати список завдань із датами здачі.","Вилучити вже виконані завдання.","Якщо завдань не залишилося — показати «Усе готово» й завершити.","Прийняти перше невиконане завдання за найтерміновіше.","Перевірити решту дат і запам’ятати найближчий дедлайн.","Показати найтерміновіше завдання та його дату.","Запланувати нагадування до дедлайну."],"shuffled":[6,3,0,5,2,4,1]}];
 const failMessages=["Плейлист не відсортовано. Який спосіб не вимагає попереднього впорядкування?","Перевір порядок: спершу дані, потім перший лідер, далі цикл з умовою, і лише наприкінці результат.","Менша ціна всього пакета ≠ менша ціна за 1 ГБ. Поділи гривні на гігабайти.","Усі ціни за 1 ГБ додатні. Чи може число бути меншим за початковий нуль?","Порівняй довжини смужок. Навіщо сортувати все, коли потрібен один мінімум?","Спершу режим польоту, потім перемикач Wi-Fi, і тільки потім мережа.","Не роби висновок до того, як перевіриш джерело, дату й незалежні підтвердження.","Не можна показувати максимум, поки не переглянуто всі бали.","Суму знижки не порахуєш, поки не перевіриш чинність промокоду.","Спершу прибери виконані завдання та перевір порожній список.","Нам потрібен НАЙМЕНШИЙ час. Не найбільший."];
 const hintMessages=["Для хаотичного списку використовуй лінійний пошук — перевіряй елементи один за одним.","Порядок груп: дані → перший тариф → лідер → цикл для решти → перевірка «дешевше?» → результат.","Порівняй: А = 13 грн/ГБ; Б = 11 грн/ГБ. Обчисли В та Г.","Почни з коректного додатного значення — ціни 1 ГБ першого тарифу.","Порівняння: для 20 товарів алгоритм А робить 19, а Б — 190.","Послідовність: літак → Wi-Fi → мережа → перевірка результату → повідомлення про збій.","Твердження → першоджерело → дата → незалежні підтвердження → висновок.","Список → перший максимум → наступний бал → порівняння → повторення → результат.","Ціна та промокод → чинність → відсоток → сума знижки → віднімання → ціна.","Список → невиконані → перевірка порожнечі → перший лідер → решта дат → результат → нагадування.","Алгоритм має запам’ятовувати найменший час. Серед маршрутів є один за 10 хв."];
-function base(){return {screen:'welcome',surname:'',givenName:'',runNumber:1,level:0,done:Array(MAX).fill(false),scores:Array(MAX).fill(0),attempts:Array(MAX).fill(0),verifications:Array(MAX).fill(0),hints:Array(MAX).fill(false),streak:0,bestStreak:0,selection:null,order:[3,5,0,4,1,2],orders:buildLevels.map(x=>x.shuffled.slice()),n:20,finalPhase:0,route:null,elapsed:0,started:false};}
+function newRunId(){if(typeof crypto!=='undefined'&&typeof crypto.randomUUID==='function')return crypto.randomUUID();return 'aq'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,14)}
+function base(){return {screen:'welcome',surname:'',givenName:'',runId:newRunId(),runNumber:1,level:0,done:Array(MAX).fill(false),scores:Array(MAX).fill(0),attempts:Array(MAX).fill(0),verifications:Array(MAX).fill(0),hints:Array(MAX).fill(false),streak:0,bestStreak:0,selection:null,order:[3,5,0,4,1,2],orders:buildLevels.map(x=>x.shuffled.slice()),n:20,finalPhase:0,route:null,elapsed:0,started:false};}
 let teacher={screen:null,level:0,showAnswer:false,bossPhase:0,error:''};
 let state=base();try{let saved=JSON.parse(localStorage.getItem(STORAGE));if(saved&&Array.isArray(saved.done)&&saved.done.length===MAX){state={...base(),...saved};if(state.screen==='quest'&&state.done[state.level])state.screen='quest';}}catch(e){}
+if(!state.runId)state.runId=newRunId();
 let activeSince=null;
 if(state.started&&state.screen!=='finish')activeSince=Date.now();
 function persist(){try{localStorage.setItem(STORAGE,JSON.stringify(state))}catch(e){}}
 function elapsed(){return state.elapsed+(activeSince?Date.now()-activeSince:0)}
 function hhmm(ms){let secs=Math.max(0,Math.floor(ms/1000));return `${String(Math.floor(secs/60)).padStart(2,'0')}:${String(secs%60).padStart(2,'0')}`}
+
+function savedResultsQueue(){
+  try{const data=JSON.parse(localStorage.getItem(RESULTS_QUEUE_KEY));return Array.isArray(data)?data.filter(d=>d&&d.schema===RESULTS_SCHEMA&&typeof d.eventId==='string').slice(-150):[]}
+  catch(e){return []}
+}
+function writeResultsQueue(queue){
+  try{localStorage.setItem(RESULTS_QUEUE_KEY,JSON.stringify(queue.slice(-150)))}catch(e){}
+  showSyncState();
+}
+function syncHint(){
+  const pending=savedResultsQueue().length;
+  if(!RESULTS_WEB_APP_URL)return pending?'📲 '+pending+' записів збережено на телефоні. Шкільна синхронізація ще не підключена.':'📲 Google Таблиця ще не підключена. До налаштування результати залишаться на телефоні.';
+  return pending?'📡 Очікує підтвердження Google Таблиці: '+pending:'✅ Усі збережені результати підтверджені Google Таблицею';
+}
+function showSyncState(){const box=document.getElementById('syncState');if(box)box.textContent=syncHint()}
+function recordLevelResult(index){
+  if(index<0||index>=MAX||!state.done[index]||!state.surname||!state.givenName)return;
+  if(!state.runId)state.runId=newRunId();
+  const eventId=state.runId+':'+(index+1);
+  const queue=savedResultsQueue();
+  if(!queue.some(x=>x.eventId===eventId)){
+    queue.push({
+      schema:RESULTS_SCHEMA,eventId,runId:state.runId,runNumber:state.runNumber||1,
+      className:'10-Б',surname:state.surname,givenName:state.givenName,
+      level:index+1,title:titles[index],levelXp:state.scores[index],totalXp:xp(),
+      levelChecks:state.verifications[index],totalChecks:state.verifications.reduce((a,b)=>a+b,0),
+      hintUsed:!!state.hints[index],totalHints:state.hints.filter(Boolean).length,
+      elapsedSec:Math.floor(elapsed()/1000)
+    });
+    writeResultsQueue(queue);
+  }
+  persist();
+  void syncQueuedResults();
+}
+function confirmResultReceipt(eventId){
+  return new Promise(resolve=>{
+    if(!RESULTS_WEB_APP_URL)return resolve(false);
+    const callback='__aqReceipt_'+Math.random().toString(36).slice(2,14);
+    const script=document.createElement('script');
+    let timeout,finished=false;
+    const done=ok=>{
+      if(finished)return;
+      finished=true;clearTimeout(timeout);delete window[callback];script.remove();resolve(ok);
+    };
+    window[callback]=(data)=>done(!!data&&data.id===eventId&&data.stored===true);
+    script.onerror=()=>done(false);
+    timeout=setTimeout(()=>done(false),9000);
+    script.src=RESULTS_WEB_APP_URL+'?check='+encodeURIComponent(eventId)+'&cb='+encodeURIComponent(callback)+'&_t='+Date.now();
+    document.head.appendChild(script);
+  });
+}
+let syncingResults=false;
+async function syncQueuedResults(){
+  if(syncingResults||!RESULTS_WEB_APP_URL||typeof fetch!=='function'||(typeof navigator!=='undefined'&&navigator.onLine===false))return;
+  syncingResults=true;
+  try{
+    for(const item of savedResultsQueue()){
+      let ok=false;
+      try{
+        const before=await confirmResultReceipt(item.eventId);
+        if(before)ok=true;
+        else{
+          await fetch(RESULTS_WEB_APP_URL,{
+            method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=UTF-8'},
+            body:JSON.stringify(item),keepalive:true
+          });
+          ok=await confirmResultReceipt(item.eventId);
+        }
+      }catch(e){ok=false}
+      if(ok){writeResultsQueue(savedResultsQueue().filter(x=>x.eventId!==item.eventId))}
+      else break; // наступна спроба — при поверненні інтернету або пізніше
+    }
+  }finally{syncingResults=false;showSyncState()}
+}
+
 function pause(){if(activeSince!==null){state.elapsed+=Date.now()-activeSince;activeSince=null;persist()}}
 function resume(){if(state.started&&state.screen!=='finish'&&activeSince===null)activeSince=Date.now()}
 document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();else resume()});window.addEventListener('pagehide',pause);
@@ -168,7 +248,7 @@ function teacherPick(n){
   render();window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function render(){document.body.classList.toggle('teacher-view',!!teacher.screen);document.getElementById('xp').textContent=xp();document.getElementById('streak').textContent=state.streak;document.getElementById('clock').textContent=hhmm(elapsed());let app=document.getElementById('app');app.innerHTML=teacher.screen==='login'?viewTeacherLogin():teacher.screen==='teacher'?viewTeacher():state.screen==='welcome'?viewWelcome():state.screen==='map'?viewMap():state.screen==='finish'?viewFinish():viewQuest();document.title=teacher.screen?'Вчитель · АлгоЧелендж 10-Б':(state.screen==='quest'?titles[state.level]+' · ':'')+'10-Б vs Ледар.exe';}
+function render(){showSyncState();document.body.classList.toggle('teacher-view',!!teacher.screen);document.getElementById('xp').textContent=xp();document.getElementById('streak').textContent=state.streak;document.getElementById('clock').textContent=hhmm(elapsed());let app=document.getElementById('app');app.innerHTML=teacher.screen==='login'?viewTeacherLogin():teacher.screen==='teacher'?viewTeacher():state.screen==='welcome'?viewWelcome():state.screen==='map'?viewMap():state.screen==='finish'?viewFinish():viewQuest();document.title=teacher.screen?'Вчитель · АлгоЧелендж 10-Б':(state.screen==='quest'?titles[state.level]+' · ':'')+'10-Б vs Ледар.exe';}
 function openLevel(i){let available=state.done.findIndex(x=>!x);if(available<0)available=MAX; if(i>available)return;state.level=i;state.screen='quest';state.selection=null;state.message=null;persist();render();window.scrollTo({top:0,behavior:'smooth'});}
 function award(){let i=state.level;if(state.done[i])return;state.done[i]=true;let points=potential(i);state.scores[i]=points;if(state.attempts[i]===0&&!state.hints[i])state.streak++;else state.streak=0;state.bestStreak=Math.max(state.bestStreak,state.streak);state.message={type:'good',title:`🎯 ЗАРАХОВАНО! +${points} XP`,text:`${keys[i]} Перевірок: ${state.verifications[i]}; підказка: ${state.hints[i]?'так':'ні'}.`};state.selection=null;persist();render();}
 function fail(){let i=state.level;state.attempts[i]++;state.streak=0;state.message={type:'bad',title:`⚠️ Перевірка №${state.verifications[i]}: −20 XP`,text:`${failMessages[i]} Наступна правильна перевірка дасть ${potential(i)} XP.`};persist();render();}
@@ -182,12 +262,15 @@ if(i===10){if(state.finalPhase===0&&state.selection===0){state.finalPhase=1;stat
 if(i>=5&&i<=9)right=state.orders[i-5].every((v,j)=>v===j);right?award():fail();}
 function hint(){let i=state.level;if(state.done[i])return;let first=!state.hints[i];state.hints[i]=true;state.message={type:'good',title:first?'💡 Підказка: −20 XP':'💡 Повтор підказки: без нового штрафу',text:hintMessages[i]};persist();render();}
 function reset(){if(!confirm('Почати новий забіг? Поточні XP та місії будуть скинуті.'))return;pause();let nextRun=(state.runNumber||1)+1;state=base();state.runNumber=nextRun;persist();render();window.scrollTo({top:0,behavior:'smooth'})}
-function next(){if(!state.done[state.level])return;if(state.level===MAX-1){pause();state.screen='finish';persist();render()}else openLevel(state.level+1);window.scrollTo({top:0,behavior:'smooth'})}
+function next(){if(!state.done[state.level])return;recordLevelResult(state.level);if(state.level===MAX-1){pause();state.screen='finish';persist();render()}else openLevel(state.level+1);window.scrollTo({top:0,behavior:'smooth'})}
 async function share(){let text=`🏆 10-Б vs Ледар.exe\nІм’я та прізвище: ${fullName()}\nМісії: 11/11\nXP: ${xp()}/1100\nОцінка: ${grade()}/12\nПеревірок: ${state.verifications.reduce((a,b)=>a+b,0)}\nЗабіг: ${state.runNumber||1}\nЧас: ${hhmm(elapsed())}\nКомбо: x${state.bestStreak}\n#АлгоЧелендж`;let status=document.getElementById('sharestatus');try{if(navigator.share){await navigator.share({title:'АлгоЧелендж 10-Б',text})}else if(navigator.clipboard){await navigator.clipboard.writeText(text);if(status)status.textContent='✅ Скопійовано. Можна надіслати вчителю.'}else if(status){status.textContent='Зроби скриншот цього екрана.'}}catch(e){if(e.name!=='AbortError'&&status)status.textContent='Зроби скриншот цього екрана.'}}
-document.addEventListener('click',e=>{const el=e.target.closest('button[data-action]');if(!el||el.disabled)return;const action=el.dataset.action;switch(action){case 'teacherLogin':teacher.screen='login';teacher.error='';render();break;case 'teacherExit':teacher.screen=null;teacher.error='';teacher.showAnswer=false;render();window.scrollTo({top:0,behavior:'smooth'});break;case 'teacherSelect':teacherPick(Number(el.dataset.value));break;case 'teacherPrev':teacherPick(teacher.level-1);break;case 'teacherNext':teacherPick(teacher.level+1);break;case 'teacherAnswer':if(teacher.screen==='teacher'){teacher.showAnswer=!teacher.showAnswer;render()}break;case 'teacherPhase':if(teacher.screen==='teacher'&&teacher.level===MAX-1){teacher.bossPhase=Number(el.dataset.value)===1?1:0;teacher.showAnswer=false;render()}break;case 'start':{const surnameInput=document.getElementById('surname'),givenInput=document.getElementById('givenName');const s=(surnameInput?.value||'').trim().slice(0,45),g=(givenInput?.value||'').trim().slice(0,45);if(!s||!g){const target=!s?surnameInput:givenInput;target.setCustomValidity('Заповни це поле');target.reportValidity();target.addEventListener('input',()=>target.setCustomValidity(''),{once:true});return;}state.surname=s;state.givenName=g;state.screen='map';state.started=true;resume();persist();render();break;}case 'go':openLevel(Number(el.dataset.value));break;case 'map':state.screen='map';state.message=null;persist();render();window.scrollTo({top:0,behavior:'smooth'});break;case 'pick':state.selection=Number(el.dataset.value);state.message=null;persist();render();break;case 'check':check();break;case 'hint':hint();break;case 'move':{let p=Number(el.dataset.pos),to=p+Number(el.dataset.dir),arr=state.level===1?state.order:state.orders[state.level-5];if(arr&&to>=0&&to<arr.length){[arr[p],arr[to]]=[arr[to],arr[p]];state.message=null;persist();render()}break;}case 'setn':state.n=Number(el.dataset.value);persist();render();break;case 'next':next();break;case 'finish':pause();state.screen='finish';persist();render();break;case 'restart':reset();break;case 'share':share();break;}});
+document.addEventListener('click',e=>{const el=e.target.closest('button[data-action]');if(!el||el.disabled)return;const action=el.dataset.action;switch(action){case 'teacherLogin':teacher.screen='login';teacher.error='';render();break;case 'teacherExit':teacher.screen=null;teacher.error='';teacher.showAnswer=false;render();window.scrollTo({top:0,behavior:'smooth'});break;case 'teacherSelect':teacherPick(Number(el.dataset.value));break;case 'teacherPrev':teacherPick(teacher.level-1);break;case 'teacherNext':teacherPick(teacher.level+1);break;case 'teacherAnswer':if(teacher.screen==='teacher'){teacher.showAnswer=!teacher.showAnswer;render()}break;case 'teacherPhase':if(teacher.screen==='teacher'&&teacher.level===MAX-1){teacher.bossPhase=Number(el.dataset.value)===1?1:0;teacher.showAnswer=false;render()}break;case 'start':{const surnameInput=document.getElementById('surname'),givenInput=document.getElementById('givenName');const s=(surnameInput?.value||'').trim().slice(0,45),g=(givenInput?.value||'').trim().slice(0,45);if(!s||!g){const target=!s?surnameInput:givenInput;target.setCustomValidity('Заповни це поле');target.reportValidity();target.addEventListener('input',()=>target.setCustomValidity(''),{once:true});return;}state.surname=s;state.givenName=g;state.screen='map';state.started=true;resume();persist();render();break;}case 'go':openLevel(Number(el.dataset.value));break;case 'map':state.screen='map';state.message=null;persist();render();window.scrollTo({top:0,behavior:'smooth'});break;case 'pick':state.selection=Number(el.dataset.value);state.message=null;persist();render();break;case 'check':check();break;case 'hint':hint();break;case 'move':{let p=Number(el.dataset.pos),to=p+Number(el.dataset.dir),arr=state.level===1?state.order:state.orders[state.level-5];if(arr&&to>=0&&to<arr.length){[arr[p],arr[to]]=[arr[to],arr[p]];state.message=null;persist();render()}break;}case 'setn':state.n=Number(el.dataset.value);persist();render();break;case 'next':next();break;case 'finish':if(state.done[MAX-1])recordLevelResult(MAX-1);pause();state.screen='finish';persist();render();break;case 'restart':reset();break;case 'share':share();break;}});
 document.addEventListener('submit',e=>{if(e.target&&e.target.id==='teacherForm'){e.preventDefault();teacherEnter()}});
+window.addEventListener('online',()=>void syncQueuedResults());
 setInterval(()=>{if(state.started&&state.screen!=='finish'&&!teacher.screen)document.getElementById('clock').textContent=hhmm(elapsed())},500);
+setInterval(()=>void syncQueuedResults(),90000);
 render();
+void syncQueuedResults();
 </script>
 </body>
 </html>
