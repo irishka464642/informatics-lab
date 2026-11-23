@@ -111,9 +111,9 @@ function recordLevelResult(index){
     queue.push({
       schema:RESULTS_SCHEMA,eventId,runId:state.runId,runNumber:state.runNumber||1,
       className:'10-Б',surname:state.surname,givenName:state.givenName,
-      level:index+1,title:titles[index],levelXp:state.scores[index],totalXp:xp(),
-      levelChecks:state.verifications[index],totalChecks:state.verifications.reduce((a,b)=>a+b,0),
-      hintUsed:!!state.hints[index],totalHints:state.hints.filter(Boolean).length,
+      level:index+1,title:titles[index],levelXp:state.scores[index],totalXp:state.scores.slice(0,index+1).reduce((a,b)=>a+b,0),
+      levelChecks:state.verifications[index],totalChecks:state.verifications.slice(0,index+1).reduce((a,b)=>a+b,0),
+      hintUsed:!!state.hints[index],totalHints:state.hints.slice(0,index+1).filter(Boolean).length,
       elapsedSec:Math.floor(elapsed()/1000)
     });
     writeResultsQueue(queue);
