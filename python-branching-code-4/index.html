@@ -165,7 +165,7 @@ textarea:focus-visible{outline:2px solid #56bca6;outline-offset:-2px}
 <body><div class="shell">
 <header class="navtop">
  <a class="brand" href="../python-branching-starter-5/"><span class="logo" aria-hidden="true">✍️</span><span><span class="eyebrow">7 клас · Python · Частина 2</span><span class="brand-title">Академія рішень</span></span></a>
- <div class="navlinks"><a class="navbutton" href="../python-branching-starter-5/">← Частина 1</a><button class="navbutton" id="restart" type="button">↻ Нова спроба</button></div>
+ <div class="navlinks"><a class="navbutton" href="../python-branching-starter-5/">← Частина 1</a><a class="navbutton" href="../python-branching-pro-10/">🧠 Продовження · 10 рівнів →</a><button class="navbutton" id="restart" type="button">↻ Нова спроба</button></div>
 </header>
 <section id="studentBar" class="student-bar" aria-label="Учень і результат">
  <div class="student-fields">
@@ -592,7 +592,8 @@ function finishHTML(){
  '<div><strong>'+(bonus?"✅":"☆")+'</strong><span>бонус '+(bonus?"виконано":"ще доступний")+'</span></div></div>'+
  (bonus?'<div class="bonusgold"><strong>🌟 Виконано складний бонус!</strong><p>Ти написав по дві команди в кожній гілці та перевірив результат за різних чисел. Це сильне підтвердження навичок для високого рівня оцінювання; остаточну оцінку визначає вчитель.</p></div>':
  '<div class="info">Основна частина виконана. ⭐ Бонус можна пройти зараз або повернутися до нього на наступному уроці — без повторення перших трьох місій.</div>')+
- '<div class="actions">'+(!bonus?'<button type="button" class="btn primary" data-action="start-bonus">⭐ Відкрити бонус</button>':"")+
+ '<div class="info"><strong>🚀 Готовий до наступного етапу?</strong> У продовженні тебе чекають 10 рівнів: повторення із зайвою кнопкою, пошук помилок, elif та складання Python з окремих елементів.</div>'+ 
+ '<div class="actions"><a class="btn primary" href="../python-branching-pro-10/">🧠 Перейти до 10 нових рівнів →</a>'+(!bonus?'<button type="button" class="btn secondary" data-action="start-bonus">⭐ Відкрити бонус</button>':"")+
  '<a class="btn secondary" href="../python-branching-starter-5/">🧭 Частина 1</a>'+
  '<button type="button" class="btn secondary" data-action="copy">📋 Скопіювати результат</button></div>'+
  '<p class="micro" id="copyResult"></p></div></section>'+
