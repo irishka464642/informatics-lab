@@ -202,6 +202,13 @@ textarea[readonly]{min-height:150px}
 .succession strong{display:block;font-size:24px;color:#baffdf}
 .succession .actions{justify-content:center}
 .succession .btn{font-size:19px}
+.succession.pending{border-color:#e3bb69;background:linear-gradient(110deg,#44331f,#30384c);box-shadow:0 10px 30px #0004}
+.succession.pending strong{color:#ffe4a4}
+.succession.pending .remaining{font-size:clamp(15px,2.3vw,20px);font-weight:850;color:#fff1c9}
+.succession .remaining-values{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.succession .remaining-value{display:inline-block;border-radius:10px;background:#654723;border:1px solid #d8b46e;color:#fff2cb;padding:7px 12px;font:800 14px ui-monospace,Consolas,monospace}
+.succession .progress-count{color:#f9e8bc;font-weight:850}
+
 .practice-info{border:1px solid #7b9cc0;background:#1d304c;border-radius:14px;padding:12px 15px}
 .final-hero{padding:28px;text-align:center}
 .final-hero h2{font-size:clamp(29px,4vw,44px)}
@@ -704,6 +711,7 @@ function codingHTML(m){
 function missionHTML(){
  var m=lesson(),i=state.level,done=state.finished[i];
  var selected=m.values.includes(state.selection[i])?state.selection[i]:m.values[0];
+ var remaining=m.values.filter(v=>!state.tests[i].includes(v));
  var tests=m.values.map(v=>'<button type="button" class="test-choice '+(selected===v?"active ":"")+
  (state.tests[i].includes(v)?"passed":"")+'" data-action="select" data-value="'+v+'" aria-pressed="'+(selected===v)+'">'+
  (state.tests[i].includes(v)?"✓ ":"▶ ")+esc(m.variable)+" = "+v+'</button>').join("");
@@ -723,6 +731,13 @@ function missionHTML(){
  '<div class="actions"><button type="button" class="btn primary" data-action="check"'+(done?" disabled":"")+'>▶ Перевірити код ⚡</button>'+
  '<span class="micro">Правильні перевірки: '+state.tests[i].length+' / '+m.values.length+'</span></div></div></section>'+
  sceneHTML(m)+
+ (!done?'<section class="quest-panel"><div class="quest-pad"><div class="succession pending" role="status">'+
+ '<strong>⏳ ЩЕ НЕ ВСІ ТЕСТОВІ ДАНІ ПЕРЕВІРЕНО!</strong>'+
+ '<p class="progress-count">Перевірено '+state.tests[i].length+' із '+m.values.length+' значень.</p>'+
+ '<p class="remaining">ЩОБ ПЕРЕЙТИ ДАЛІ, ПЕРЕВІР ЩЕ:</p>'+
+ '<div class="remaining-values">'+remaining.map(v=>'<span class="remaining-value">'+esc(m.variable)+' = '+v+'</span>').join('')+'</div>'+
+ '<p>Повернись до блоку «🧪 Тестові дані», вибери кожне з цих чисел і натисни «▶ Перевірити код ⚡».</p>'+
+ '</div></div></section>':"")+
  (done?'<section class="quest-panel"><div class="quest-pad"><div class="succession"><strong>🎉 РІВЕНЬ '+m.id+' ПРОЙДЕНО!</strong>'+
  '<p>Усі '+m.values.length+' перевірки виконано. Наступне випробування готове.</p><div class="actions">'+
  '<button type="button" class="btn primary" data-action="next">'+(i===9?"🏆 Завершити гру й зберегти":"💾 Зберегти та перейти до рівня "+(i+2)+" →")+'</button></div></div></div></section>':"")+
