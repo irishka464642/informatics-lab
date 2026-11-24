@@ -172,7 +172,6 @@ textarea:focus-visible{outline:2px solid #56bca6;outline-offset:-2px}
 .mini-step{padding:13px 15px;border-left:4px solid #70d6ba;background:#1a3950;border-radius:10px;margin:10px 0;color:#e0f9f4}
 .block-button{min-width:180px;flex:1 1 205px}
 .block-button .tag-category{font-size:11px;color:#bdcbe9}
-.block-button.false{border-color:#b29aa1}
 .block-button:disabled{opacity:.33}
 .fix-line{display:block;background:#342536;border:1px solid #cf8197;border-radius:9px;padding:7px 10px;margin:3px 0;color:#ffe3e9}
 .choices-title{font-size:15px;font-weight:950;color:#ffe1a7;margin:9px 0 7px}
@@ -649,7 +648,7 @@ function codingHTML(m){
  if(m.mode==="lines"){
   var options=lineChoices(m);
   buttons='<div class="block-grid">'+options.map(o=>
-   '<button type="button" class="block-button '+(o.id>=expectedLines(m).length?"false":"")+'" data-action="addline" data-value="'+o.id+'"'+
+   '<button type="button" class="block-button" data-action="addline" data-value="'+o.id+'"'+
     (state.finished[i]||state.choices[i].includes(o.id)?" disabled":"")+'><code>'+esc(o.text)+'</code>'+
    '<small>Натисни, щоб додати рядок</small></button>').join("")+'</div>';
  }else if(m.mode==="fix"){
