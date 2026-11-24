@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1428">
+<meta name="description" content="Академія рішень: частина 3. Десять рівнів від блоків до складання умов Python з окремих елементів.">
+<title>Академія рішень — Частина 3: Розгалуження PRO · 10 рівнів</title>
+<style>
+:root{color-scheme:dark;--ink:#f5f8ff;--muted:#bed0e7;--line:#415a80;--green:#7ce6c3;--gold:#ffd68b;--red:#ffadba}
+*{box-sizing:border-box}
+html{background:#090f20;scroll-behavior:smooth}body{margin:0;min-height:100vh;color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:radial-gradient(circle at 10% 2%,#183c64 0,transparent 36%),radial-gradient(circle at 100% 16%,#3a284d 0,transparent 34%),#090f20}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #7fe9c5;outline-offset:2px}
+button:disabled{opacity:.5;cursor:not-allowed}
+.shell{max-width:1200px;margin:0 auto;padding:17px 20px 55px}
+.navtop{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+.logo{width:49px;height:49px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(130deg,#755dd6,#24baaa);font-size:26px}
+.brand-title{font-size:22px;font-weight:950;letter-spacing:-.035em}.eyebrow{font-size:11px;letter-spacing:.15em;color:#98f8d2;text-transform:uppercase;font-weight:900}
+.navlinks{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.navbutton{display:inline-flex;align-items:center;justify-content:center;border:1px solid #536e91;border-radius:11px;color:#f2f6ff;text-decoration:none;padding:9px 12px;background:#1b2b47;font-size:13px;font-weight:750}
+.student-bar{position:sticky;top:0;z-index:100;display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:11px 13px;margin:13px 0;background:#0d1b30f4;border:1px solid #6381aa;border-radius:17px;box-shadow:0 10px 32px #0009;backdrop-filter:blur(16px)}
+.student-fields{display:flex;flex-wrap:wrap;gap:8px}
+.field{display:grid;gap:2px;min-width:100px;max-width:180px;flex:1}
+.field.small{min-width:80px;max-width:114px;flex:0 1 100px}.field label{font-size:11px;color:#bdd4f0;font-weight:850}
+.field input,.field select{width:100%;height:37px;background:#1c3150;color:white;border:1px solid #7a93b6;padding:5px 8px;border-radius:9px;min-width:0;font-size:14px}
+.field input:disabled,.field select:disabled{opacity:.85;background:#28394d;color:#e5ecf7}
+.stats{min-width:153px}.stats-head{display:flex;align-items:center;justify-content:space-between;gap:9px}
+.stats strong{color:var(--gold);font-size:20px;white-space:nowrap}
+.stats-label{font-size:11px;font-weight:900;color:#c1d3eb}
+.track{background:#32455f;border-radius:20px;overflow:hidden;height:9px}.track>div{height:100%;background:linear-gradient(90deg,#47c9ac,#ffd67f);transition:width .25s}
+.sync{grid-column:1/-1;font-size:12px;color:#bdd1e6;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sync button{padding:4px 9px;border:1px solid #648bb5;border-radius:9px;background:#274363;color:#fff;font-size:12px}
+.hero{background:linear-gradient(111deg,#172d50,#1d2343 65%,#212747);border:1px solid #537095;border-radius:24px;padding:27px 29px 22px;box-shadow:0 13px 43px #0004}
+.hero h1{margin:4px 0 9px;font-size:clamp(29px,4.2vw,43px);line-height:1.1;letter-spacing:-.045em}
+.hero p{margin:0;max-width:760px;color:#cedcf2}
+.levels{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:18px}
+.pip{padding:10px 6px;text-align:center;border:1px solid #526886;color:#c0cce1;background:#ffffff12;border-radius:11px;font-size:12px;font-weight:900}
+.pip.active{background:#725729;color:#fff1ca;border-color:#ffd68b}.pip.done{background:#17584d;color:#d8fff3;border-color:#51cdae}.pip.bonus{border-color:#a582d2}
+.workspace{display:grid;grid-template-columns:minmax(0,1.16fr) minmax(300px,.84fr);gap:18px;margin-top:19px}
+.panel{background:linear-gradient(150deg,#17243c,#111c30);border:1px solid #415778;border-radius:22px;overflow:hidden;box-shadow:0 15px 42px #0004}
+.pad{padding:24px}.kicker{font-size:12px;letter-spacing:.13em;color:var(--gold);font-weight:900;text-transform:uppercase}
+h2{margin:7px 0 9px;font-size:clamp(24px,3.5vw,33px);line-height:1.15;letter-spacing:-.035em}
+.lead{color:#e0eafb;margin:0 0 17px;font-size:15px}
+.info{border-left:4px solid #71d7bb;background:#213c51;color:#e6fbf7;padding:13px 15px;border-radius:10px;margin:15px 0}
+.info strong{color:#a9ffdb}
+.task{border:1px solid #536e91;border-radius:14px;background:#14243a;padding:15px 17px;margin-bottom:16px}
+.task h3{margin:0 0 8px;color:var(--gold);font-size:15px}.task p{margin:7px 0;color:#dfeafd}
+code,.mono{font:600 14px/1.45 ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;background:#061324;color:#9bf8d2;border-radius:6px;padding:2px 5px}
+.editor{border:1px solid #6180a6;border-radius:15px;overflow:hidden;background:#080f1c}
+.editor-top{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;padding:9px 12px;background:#1b304b;color:#bfd7ef;font-weight:800;font-size:12px}
+textarea{display:block;width:100%;resize:vertical;min-height:190px;border:0;outline:0;background:#07101e;color:#e4f3ff;padding:17px;font:16px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace;tab-size:4;white-space:pre;overflow:auto}
+textarea:focus-visible{outline:2px solid #56bca6;outline-offset:-2px}
+.micro{font-size:12px;color:#a9c2dd}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 15px}
+.toolbtn{border:1px solid #6684a9;background:#243958;color:#eaf5ff;border-radius:10px;padding:8px 10px;font-size:13px;font-weight:750}
+.testlist{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:13px 0}
+.testbtn{padding:12px 9px;background:#283f61;color:#f8fbff;border:1px solid #7094b8;border-radius:12px;font-weight:850}
+.testbtn:hover{background:#3b5780}
+.testbtn.passed{background:#19483d;border-color:#55d1ad;color:#d8fff2}
+.testbtn[disabled]{opacity:.8}
+.feedback{border:1px solid #6080a5;background:#213952;border-radius:13px;margin:14px 0;padding:14px;color:#e6f5ff}
+.feedback.good{border-color:#47c6a0;background:#133e39;color:#d7fff1}
+.feedback.bad{border-color:#e18793;background:#482632;color:#ffe6e7}
+.feedback p{margin:5px 0}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 0}
+.btn{border:0;border-radius:12px;padding:12px 16px;font-weight:900;min-height:46px;display:inline-flex;align-items:center;justify-content:center;text-align:center;text-decoration:none}
+.btn.primary{background:linear-gradient(115deg,#fac369,#ffe09a);color:#2c2730}
+.btn.secondary{border:1px solid #6a86a9;background:#263b59;color:white}
+.visual{padding:25px 20px;min-height:300px;background:radial-gradient(circle at 52% 26%,#345b88 0%,#1a304d 51%,#121d32 100%);display:flex;align-items:center;flex-direction:column;justify-content:center;text-align:center;position:relative;overflow:hidden}
+.visual:before{content:"";position:absolute;inset:14px;background:linear-gradient(transparent 95%,#7292ae1a 96%) 0 0/100% 26px,linear-gradient(90deg,transparent 95%,#7292ae1a 96%) 0 0/26px 100%;opacity:.6;pointer-events:none}
+.emoji{font-size:clamp(80px,10vw,118px);filter:drop-shadow(0 16px 20px #0008);z-index:1;animation:float 3s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-9px)}}
+.scene-title{z-index:1;color:#ffe19f;font-size:12px;font-weight:950;letter-spacing:.14em;text-transform:uppercase;margin:14px 0 0}
+.scene-metric{z-index:1;font-weight:950;font-size:26px;margin:7px 0}.scene-hint{z-index:1;font-size:13px;color:#c1d7f5;max-width:310px}
+.side{padding:21px}
+.side h3{color:var(--gold);margin:0 0 10px;font-size:16px}.side p{margin:10px 0;font-size:14px;color:#dbe9fb}
+.tip{background:#213752;border:1px solid #546d93;border-radius:11px;padding:12px 13px;margin:10px 0}
+.run-line{border:1px solid #5c82a4;border-radius:9px;padding:9px 11px;margin-top:7px;background:#1c3450;font-size:13px}
+.run-line.good{border-color:#4ebf9d;background:#143b32;color:#c9ffe5}
+.run-line.bad{border-color:#e89da4;background:#482a38;color:#ffe0e4}
+.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{padding:6px 10px;background:#283b57;border-radius:20px;border:1px solid #6882a4;font-size:12px;font-weight:800}
+.hintbox{border:1px solid #a582d2;border-radius:12px;background:#342c47;padding:13px;margin-top:12px}
+.hintbox pre{white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.8 ui-monospace,Consolas,monospace;margin:7px 0;color:#ffe5be}
+.report{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.report>div{background:#233955;border:1px solid #6e83a7;border-radius:15px;padding:19px}
+.report strong{font-size:26px;color:#ffe099}.report span{display:block;font-size:12px;color:#ccdcef}
+.bonus-gate{border:2px solid #d9aa52;border-radius:23px;background:linear-gradient(125deg,#3d2e42,#313753 54%,#233c47);box-shadow:0 20px 65px #0007,0 0 30px #e4b25119;text-align:center;padding:26px 22px 28px;scroll-margin-top:180px}
+.bonus-gate.ready{border-color:#6ee4bb;background:linear-gradient(120deg,#153e3d,#293b4e 60%,#43384d);box-shadow:0 0 34px #49d9b52b}
+.bonus-gate h3{font-size:clamp(25px,4.2vw,41px);line-height:1.13;letter-spacing:-.035em;text-transform:uppercase;color:#ffe0a4;margin:10px auto;max-width:850px}
+.bonus-gate.ready h3{color:#a4ffdb}
+.bonus-gate p{color:#e0ecfa;font-size:clamp(15px,2vw,19px);margin:10px auto;max-width:800px}
+.bonus-gate .gate-count{font-weight:950;font-size:clamp(26px,4.8vw,44px);color:#fff4c8;line-height:1.25}
+.bonus-gate .gate-choices{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:16px 0 19px}
+.bonus-gate .gate-chip{display:inline-block;padding:8px 13px;border-radius:11px;border:1px solid #8b91b4;background:#303751;color:#e8e9fa;font-weight:850;font-size:14px}
+.bonus-gate .gate-chip.ok{border-color:#62d3ac;background:#195b4c;color:#e0fff4}
+.bonus-gate .actions{justify-content:center;margin-top:17px}
+.bonus-gate .big-cta{font-size:clamp(17px,2.5vw,24px);font-weight:950;padding:15px 24px;min-height:60px}
+.bonus-gate .big-cta:disabled{opacity:.65;background:#354156;color:#e4e9f0;border:1px dashed #9ba6bf}
+.bonusgold{border:1px solid #e3b94f;background:#4c3c22;border-radius:15px;padding:16px;color:#ffe9b2}
+.quest-stack{display:grid;gap:17px;margin-top:18px}
+.quest-panel{border:1px solid #425d81;border-radius:21px;overflow:hidden;background:linear-gradient(150deg,#162841,#111d31);box-shadow:0 12px 38px #0003}
+.quest-pad{padding:22px 24px}
+.section-head{display:flex;gap:12px;align-items:center;margin-bottom:13px}
+.section-number{display:grid;place-items:center;width:40px;height:40px;flex:0 0 40px;border-radius:12px;background:#3c4b75;border:1px solid #799cce;color:#fff4cf;font-weight:950}
+.section-eyebrow{font-size:11px;color:#a8bfdf;font-weight:850;letter-spacing:.1em}
+.section-head h3{margin:0;font-size:22px;letter-spacing:-.02em}
+.block-grid{display:flex;flex-wrap:wrap;gap:9px;margin:12px 0}
+.block-button{border:1px solid #7d9bbb;background:#253e61;color:#f5faff;border-radius:11px;padding:11px 15px;text-align:left;display:grid;gap:4px;min-width:195px;max-width:100%;box-shadow:0 4px 12px #0003}
+.block-button:hover{background:#39567d;border-color:#e0ebff}
+.block-button code{color:#e0f3ff;font-size:14px;padding:0;background:none;white-space:pre-wrap;overflow-wrap:anywhere}
+.block-button small{color:#b7d4ed;font-size:11px;font-weight:750}
+.block-button[disabled]{opacity:.4}
+.editor[readonly],textarea[readonly]{cursor:default;opacity:1}
+.block-feedback{padding:12px 14px;background:#202f50;border:1px solid #718cc0;border-radius:11px;margin:13px 0;color:#eaf2ff}
+.block-feedback strong{color:#ffe2ab}
+.block-feedback p{margin:6px 0}
+.block-next{font-weight:800;color:#a3e9d5}
+.test-choice.active{background:#68562d;border-color:#ffdb91;color:#fff8d8}
+.test-choice.passed{border-color:#60cfad}
+.test-choice{background:#294365;border:1px solid #7395b5;border-radius:12px;padding:12px;color:#f0f7ff;font-weight:800;flex:1;min-width:120px}
+.test-chooser{display:flex;flex-wrap:wrap;gap:9px;margin:13px 0}
+.game-scene{margin-top:13px;border:1px solid #7297bd;border-radius:17px;background:linear-gradient(135deg,#1a3150,#17223e);overflow:hidden;scroll-margin-top:185px}
+.scene-hud{padding:13px 17px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;background:#0d1c2dcc;font-size:12px;font-weight:850;letter-spacing:.07em;color:#deeeff}
+.scene-live{color:#ffdb85}
+.scene-world{position:relative;min-height:245px;display:grid;place-items:center;align-content:center;gap:8px;text-align:center;background:radial-gradient(circle at 50% 35%,#365f83,#182845 64%,#111c30);overflow:hidden}
+.scene-world:before{content:"";position:absolute;inset:0;background:linear-gradient(transparent 94%,#7292ae12 96%) 0 0/100% 28px,linear-gradient(90deg,transparent 94%,#7292ae12 96%) 0 0/28px 100%;opacity:.7}
+.world-emoji{font-size:clamp(84px,10vw,122px);line-height:1.2;z-index:1;filter:drop-shadow(0 18px 24px #0009);animation:world-idle 2.8s ease-in-out infinite}
+.world-label{z-index:1;font-size:13px;color:#ffdea4;font-weight:900;letter-spacing:.12em}
+.world-number{z-index:1;color:white;font-weight:950;font-size:27px}
+@keyframes world-idle{50%{transform:translateY(-8px)}}
+@keyframes world-success{0%{transform:translateY(28px) scale(.7);opacity:.2}55%{transform:translateY(-14px) scale(1.16)}100%{transform:translateY(0) scale(1);opacity:1}}
+@keyframes world-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.game-scene[data-phase="positive"] .world-emoji,.game-scene[data-phase="normal"] .world-emoji{animation:world-success .85s both}
+.game-scene[data-phase="negative"] .world-emoji,.game-scene[data-phase="error"] .world-emoji{animation:world-shake .55s both}
+.game-scene[data-phase="negative"]{border-color:#d58092}
+/* Тематичне оформлення сцен: скарбниця, двері, станція, магазин */
+.game-scene[data-kind="0"] .scene-world{background:radial-gradient(ellipse at 50% 32%,#806330 0%,#35416b 53%,#15223a 100%)}
+.game-scene[data-kind="1"] .scene-world{background:radial-gradient(ellipse at 50% 30%,#396787 0%,#243a69 58%,#151e39 100%)}
+.game-scene[data-kind="2"] .scene-world{background:radial-gradient(ellipse at 50% 30%,#485f84 0%,#1b3854 55%,#16213c 100%)}
+.game-scene[data-kind="3"] .scene-world{background:radial-gradient(ellipse at 50% 30%,#795b4e 0%,#394069 52%,#1b203c 100%)}
+.game-scene[data-phase="positive"] .scene-world:after,
+.game-scene[data-phase="normal"] .scene-world:after{content:"✦ ✧ ✦";position:absolute;top:24px;left:15%;right:15%;z-index:0;color:#ffecad;font-size:26px;letter-spacing:2.3em;animation:world-success 1s both}
+.game-scene[data-phase="negative"] .scene-world:after{content:"●";position:absolute;top:18px;right:18px;color:#ff929f;font-size:25px;filter:drop-shadow(0 0 14px #f35e82)}
+.game-scene[data-kind="2"][data-phase="negative"] .scene-world{background:radial-gradient(ellipse at 50% 32%,#374b7e 0%,#1c3159 55%,#121c35 100%)}
+.game-scene[data-kind="2"][data-phase="normal"] .scene-world{background:radial-gradient(ellipse at 50% 32%,#356c63 0%,#204651 55%,#111e32 100%)}
+
+.game-scene[data-phase="positive"]{border-color:#4dcdab}
+.scene-details{padding:16px 18px;background:#111f33}
+.scene-meter{height:10px;border-radius:99px;overflow:hidden;background:#374d69;margin:9px 0 13px}
+.scene-meter span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#4cc7a6,#ffe18b);transition:width .5s ease}
+.scene-output{display:grid;gap:7px;margin-top:10px}
+.scene-output div{padding:9px 11px;background:#1e3651;border:1px solid #6884a7;border-radius:9px;font-weight:750}
+.scene-output .positive{color:#b5ffdf;border-color:#55cfaa;background:#184339}
+.scene-output .negative{color:#ffd4dc;border-color:#e099a5;background:#492a38}
+.scene-output .normal{color:#c3e1ff;border-color:#86a8d3;background:#1c385a}
+.game-scene:focus{outline:0}
+.footer{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:#9fb6d3;font-size:12px;margin-top:18px}
+@media(max-width:850px){.workspace{grid-template-columns:1fr}.visual{min-height:215px}.student-bar{grid-template-columns:1fr}.field{min-width:0;max-width:none;flex:1 1 35%}.field.small{flex:1 1 19%;max-width:none}.stats{min-width:0}.stats-head{display:flex;justify-content:space-between;gap:10px}}
+@media(max-width:480px){.shell{padding:13px 11px 45px}.student-bar{padding:9px}.hero{padding:22px 19px}.pad{padding:19px}.levels{gap:5px}.pip{font-size:11px;padding:9px 3px}.testlist{grid-template-columns:1fr}.student-bar{border-radius:13px}.field input,.field select{height:35px;font-size:13px}textarea{font-size:14px}.brand-title{font-size:18px}.btn{flex:1 1 45%}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+
+/* Третя частина: 10 рівнів та поетапне складання Python */
+.levels{grid-template-columns:repeat(10,minmax(0,1fr))}
+.pip{min-width:0;padding:9px 2px;font-size:12px}
+.roadmap{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 18px}
+.roadchip{border:1px solid #617d9f;border-radius:12px;padding:8px 11px;color:#cfddf0;font-size:12px;background:#16283e;font-weight:800}
+.quest-panel{border-color:#617da0}
+.quest-pad{padding:23px 25px}
+.task p{font-size:16px}
+.mini-step{padding:13px 15px;border-left:4px solid #70d6ba;background:#1a3950;border-radius:10px;margin:10px 0;color:#e0f9f4}
+.block-button{min-width:180px;flex:1 1 205px}
+.block-button .tag-category{font-size:11px;color:#bdcbe9}
+.block-button.false{border-color:#b29aa1}
+.block-button:disabled{opacity:.33}
+.fix-line{display:block;background:#342536;border:1px solid #cf8197;border-radius:9px;padding:7px 10px;margin:3px 0;color:#ffe3e9}
+.choices-title{font-size:15px;font-weight:950;color:#ffe1a7;margin:9px 0 7px}
+.fix-answer{border:1px solid #7195bb;border-radius:11px;color:#eaf5ff;background:#203757;padding:12px 15px;text-align:left;font-family:ui-monospace,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere;width:100%}
+.fix-answer.selected{border-color:#f8d189;box-shadow:0 0 0 2px #d5b26877;background:#4b3e42}
+.fix-list{display:grid;gap:8px}
+.token-groups{display:grid;gap:10px}
+.token-group{border:1px solid #425e82;border-radius:12px;background:#111f35;padding:12px}
+.token-group-title{font-size:12px;letter-spacing:.08em;color:#acc5e5;font-weight:850;text-transform:uppercase;margin-bottom:8px}
+.token-pills{display:flex;gap:7px;flex-wrap:wrap}
+.token-pill{background:#294d69;border:1px solid #70a1c3;border-radius:10px;color:#f4f9ff;min-width:45px;padding:9px 13px;font-family:ui-monospace,Consolas,monospace;font-size:14px;font-weight:850}
+.token-pill:hover{background:#3b698a}
+.token-pill.keyword{border-color:#c1a6eb;background:#3e365e}
+.token-pill.operator{border-color:#f2c87d;background:#55442d}
+.token-pill.string{border-color:#7fdaa7;background:#21513f}
+.token-pill.punctuation{border-color:#9daacf;background:#35435c}
+.tool-row{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.tool-row button{flex:1 1 155px}
+.code-status{padding:11px 14px;border:1px solid #6a87af;border-radius:11px;background:#1b344e;color:#dbf4ec;margin:12px 0;font-size:14px}
+.code-status strong{color:#ffe2a0}
+.code-area{min-height:155px}
+textarea[readonly]{min-height:150px}
+.test-chooser{align-items:stretch}
+.test-choice{min-width:135px}
+.scene-progress-label{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.scene-output .info-output{color:#d5e9ff;border-color:#8dacd1;background:#203a59}
+.succession{border:2px solid #7ad6b2;border-radius:18px;padding:19px 20px;background:linear-gradient(110deg,#153c3a,#243a4a);text-align:center}
+.succession strong{display:block;font-size:24px;color:#baffdf}
+.succession .actions{justify-content:center}
+.succession .btn{font-size:19px}
+.practice-info{border:1px solid #7b9cc0;background:#1d304c;border-radius:14px;padding:12px 15px}
+.final-hero{padding:28px;text-align:center}
+.final-hero h2{font-size:clamp(29px,4vw,44px)}
+.final-hero .medal{font-size:92px}
+@media(max-width:900px){.levels{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(max-width:480px){.quest-pad{padding:17px 16px}.block-button{min-width:calc(50% - 7px);flex-basis:calc(50% - 7px);padding:9px 8px}.block-button code{font-size:12px}.token-pill{font-size:13px;padding:8px 10px}.tool-row button{flex:1 1 100%}}
+</style>
+</head>
+<body><div class="shell">
+<header class="navtop">
+ <a class="brand" href="../python-branching-code-4/"><span class="logo" aria-hidden="true">🧠</span><span><span class="eyebrow">7 клас · Python · Частина 3</span><span class="brand-title">Академія рішень</span></span></a>
+ <div class="navlinks"><a class="navbutton" href="../python-branching-code-4/">← Частина 2</a><button class="navbutton" id="restart" type="button">↻ Нова спроба</button></div>
+</header>
+<section id="studentBar" class="student-bar" aria-label="Учень і результат">
+ <div class="student-fields">
+  <div class="field"><label for="first">Ім’я</label><input id="first" maxlength="60" placeholder="Ім’я" autocomplete="given-name"></div>
+  <div class="field"><label for="surname">Прізвище</label><input id="surname" maxlength="70" placeholder="Прізвище" autocomplete="family-name"></div>
+  <div class="field small"><label for="klass">Клас</label><select id="klass"><option value="">Оберіть</option><option value="7-А">7-А</option><option value="7-Б">7-Б</option><option value="7-В">7-В</option></select></div>
+  <div class="field small"><label for="group">Група</label><select id="group"><option value="">Оберіть</option><option value="1">1</option><option value="2">2</option></select></div>
+ </div>
+ <div class="stats"><div class="stats-head"><span class="stats-label">✅ Пройдено рівнів</span><strong id="counter">0 / 10</strong></div><div class="track"><div id="trackfill" style="width:0"></div></div><div class="stats-label" id="bonusStatus" style="margin-top:4px">🧩 Рядки → помилки → elif → елементи</div></div>
+ <div class="sync"><span id="syncStatus" role="status" aria-live="polite">💾 Результати надсилаються при переході на наступний рівень.</span><button id="retry" hidden type="button">↻ Повторити відправлення</button><span id="part1Badge" hidden>🧭 Частина 1 завершена</span></div>
+</section>
+<section class="hero">
+ <div class="eyebrow" id="tag">ПРАКТИКА · ПИШЕМО КОД</div>
+ <h1 id="heroTitle">Розгалуження PRO: 10 рівнів</h1><p id="heroText">Почни з готових рядків, навчися виправляти помилки та складай Python з окремих елементів.</p>
+ <div class="levels" id="levels"></div>
+</section>
+<main id="app"></main>
+<footer class="footer"><span>💾 Прогрес частини 3 зберігається окремо. Можна відкрити її без попередніх частин.</span><span>🎓 У кінці — три місії зі складання коду з окремих елементів.</span></footer>
+</div>
+<script>
+
+(function(){
+"use strict";
+var STORAGE="academy-branching-pro-10-v1";
+var PREV="decision-academy-code-4-v1";
+var FIRST="decision-academy-5-v1";
+var VERSION="academy-branching-pro-10-v1";
+var WEB_APP="https://script.google.com/macros/s/AKfycbwt-DCRbrBcXjx8hE3g1bT8f0HtN-3Y8CKvfabe8s7jVKVTHeYhdTx2MYFHF1spHfaqMw/exec";
+var el=id=>document.getElementById(id);
+function esc(text){return String(text).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function loadJSON(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}}
+function R(id,title,mode,situation,task,explain,hint,variable,solution,values,expected,visual,decoys,extra){
+ return Object.assign({id,title,mode,situation,task,explain,hint,variable,solution,values,expected,visual,decoys:decoys||[],side:"",icon:"🧠"},extra||{});
+}
+var missions=[
+ R(1,"Скарбниця: тільки if","lines","🎁 Скарбниця", "Якщо монет більше 20, виведи «Бонус». Інакше програма нічого не виводить.",
+   "Неповне розгалуження має тільки if: команда під ним виконується лише за істинної умови.",
+   "Перший рядок — if coins > 20:; другий — print з відступом 4 пробіли.",
+   "coins",'if coins > 20:\n    print("Бонус")',[15,20,21],
+   n=>n>20?["Бонус"]:[], n=>n>20?["🎁","positive","Скарбницю відкрито!"]:["📦","negative","Скарбниця не відкрилася."],
+   ['if coins >= 20:'],{icon:"🎁",side:"Перевір, чим > відрізняється від >=. При 20 монетах бонусу ще немає."}),
+ R(2,"Енергодвері: if та else","lines","🚪 Енергодвері","Якщо енергія 10 або більше, виведи «Двері відкрито». Інакше — «Мало енергії».",
+   "Повне розгалуження: if — одна гілка, else — інша. Виконується тільки одна.",
+   "Порядок: if → print → else → print. Зверни увагу на число 10: його вже достатньо.",
+   "energy",'if energy >= 10:\n    print("Двері відкрито")\nelse:\n    print("Мало енергії")',[9,10,11],
+   n=>n>=10?["Двері відкрито"]:["Мало енергії"],n=>n>=10?["🚪","positive","Двері відчинено!"]:["🔒","negative","Двері заблоковано."],
+   ['if energy > 10:'],{icon:"🚪",side:"Знак >= включає число 10, знак > — ні."}),
+ R(3,"Робот: дві гілки","lines","🤖 Робот-помічник","Якщо hp > 0, виведи «Робот рухається». Інакше виведи «Робот зупинився».",
+   "Два print — два різних повідомлення. У редакторі є один зайвий рядок, який треба не натискати.",
+   "Вибирай: if hp > 0:, повідомлення про рух, else:, повідомлення про зупинку.",
+   "hp",'if hp > 0:\n    print("Робот рухається")\nelse:\n    print("Робот зупинився")',[0,1,3],
+   n=>n>0?["Робот рухається"]:["Робот зупинився"],n=>n>0?["🤖","positive","Робот ожив!"]:["🛑","negative","Робот зупинився."],
+   ['    print("Робот спить")'],{icon:"🤖",side:"В іншій гілці не може бути випадкового повідомлення, якого немає в завданні."}),
+ R(4,"Знайди відсутню двокрапку","fix","🚧 Контроль доступу","У програмі неповне розгалуження. Один рядок записано неправильно. Виправ його, щоб за 25 балів чи більше відкривався доступ.",
+   "Після умови if обов'язково ставимо двокрапку :. Без неї Python не зрозуміє початку блоку дій.",
+   "Виправ перший рядок: не змінюй поріг 25, додай двокрапку в кінці умови.",
+   "points",'if points >= 25:\n    print("Доступ відкрито")',[24,25,26],
+   n=>n>=25?["Доступ відкрито"]:[],n=>n>=25?["✅","positive","Доступ відкрито!"]:["🚧","negative","Доступ закритий."],
+   [],{icon:"🚧",flawed:'if points >= 25\n    print("Доступ відкрито")',fixIndex:0,
+     fixes:['if points > 25:','if points >= 25:','if points == 25:'],side:"Тут одна помилка у синтаксисі: у першому рядку немає двокрапки."}),
+ R(5,"Виправ відступ після if","fix","🌡️ Кімнатний термостат","Коли температура нижча 15 °C, треба вивести «Увімкнути обігрів». У програмі порушено відступ.",
+   "Команда після if має починатися з чотирьох пробілів. Так Python бачить, що print належить до умови.",
+   "Другий рядок має починатися з 4 пробілів перед print.",
+   "temp",'if temp < 15:\n    print("Увімкнути обігрів")',[10,15,20],
+   n=>n<15?["Увімкнути обігрів"]:[],n=>n<15?["🔥","positive","Обігрів увімкнено!"]:["🌡️","normal","Обігрів не потрібен."],
+   [],{icon:"🌡️",flawed:'if temp < 15:\nprint("Увімкнути обігрів")',fixIndex:1,
+     fixes:['  print("Увімкнути обігрів")','    print("Увімкнути обігрів")','print("Увімкнути обігрів")'],side:"Дві пробіли — замало. Нуль пробілів — теж помилка. Потрібно чотири."}),
+ R(6,"Знайомимося з elif","lines","🌤️ Погода","Якщо температура нижче 15 °C — «Холодно». Інакше якщо до 25 °C включно — «Комфортно». Інакше — «Спекотно».",
+   "elif читаємо «інакше, якщо». Це додаткова умова, яку Python перевіряє, коли if не спрацював.",
+   "Правильна послідовність: if → print → elif → print → else → print.",
+   "temp",'if temp < 15:\n    print("Холодно")\nelif temp <= 25:\n    print("Комфортно")\nelse:\n    print("Спекотно")',[10,15,25,26],
+   n=>n<15?["Холодно"]:n<=25?["Комфортно"]:["Спекотно"],n=>n<15?["🧥","negative","Холодно."]:n<=25?["🌤️","positive","Комфортна погода."]:["☀️","normal","Спекотно."],
+   [],{icon:"🌤️",side:"Перша гілка — до 15; друга — від 15 до 25; третя — понад 25."}),
+ R(7,"Два elif: чотири шляхи","lines","🏅 Тренувальний зал","За score < 50 — «Тренуйся»; до 70 (не включно) — «Добре»; до 90 (не включно) — «Дуже добре»; інакше — «Відмінно».",
+   "Можна ставити кілька elif поспіль. Програма виконує першу гілку, умова якої істинна.",
+   "Вісім рядків: if, print, elif, print, elif, print, else, print.",
+   "score",'if score < 50:\n    print("Тренуйся")\nelif score < 70:\n    print("Добре")\nelif score < 90:\n    print("Дуже добре")\nelse:\n    print("Відмінно")',[45,50,69,70,90],
+   n=>n<50?["Тренуйся"]:n<70?["Добре"]:n<90?["Дуже добре"]:["Відмінно"],n=>n<50?["🏃","negative","Час тренуватися."]:n<70?["🥉","normal","Добре!"]:n<90?["🥈","positive","Дуже добре!"]:["🥇","positive","Відмінно!"],
+   [],{icon:"🏅",side:"Коли score дорівнює 70, друга умова <70 вже не підходить, тому виконується наступна."}),
+ R(8,"Пиши елементами: тільки if","tokens","⚔️ Майстерня","Якщо coins >= 30, виведи «Меч доступний». Створи всю програму з окремих кнопок: if, змінна, знак, число, двокрапка, print та дужки.",
+   "Тепер кнопки — не цілі рядки, а окремі частини коду. Скористайся ↵ новим рядком та ⇥ чотирма пробілами.",
+   "if → coins → >= → 30 → : → ↵ → ⇥ → print → ( → «Меч доступний» → ).",
+   "coins",'if coins >= 30:\n    print("Меч доступний")',[20,30,35],
+   n=>n>=30?["Меч доступний"]:[],n=>n>=30?["⚔️","positive","Меч можна отримати!"]:["🪙","negative","Монет недостатньо."],
+   [],{icon:"⚔️",tokens:["if","coins",">=","30",":","print","(","\"Меч доступний\"",")"],side:"Кнопки можна натискати багато разів, а ⌫ видаляє останній вибраний елемент."}),
+ R(9,"Пиши елементами: if і else","tokens","🛡️ Енергокупол","Якщо power >= 10, виведи «Купол активовано». Інакше — «Мало енергії». Склади два розгалуження з окремих елементів.",
+   "Зверни увагу: else починається без відступу, а print після else — з чотирма пробілами.",
+   "Перший рядок: if power >= 10:. Після print додай else:, під ним ще один print.",
+   "power",'if power >= 10:\n    print("Купол активовано")\nelse:\n    print("Мало енергії")',[9,10,11],
+   n=>n>=10?["Купол активовано"]:["Мало енергії"],n=>n>=10?["🛡️","positive","Купол активовано!"]:["🪫","negative","Енергії недостатньо."],
+   [],{icon:"🛡️",tokens:["if","else","power",">=","10",":","print","(","\"Купол активовано\"","\"Мало енергії\"",")"],side:"Елементи print, дужки та двокрапку доведеться використати повторно."}),
+ R(10,"Фінальний код: if / elif / else","tokens","🍎 Розумний кошик","Якщо яблук менше 5 — «Мало яблук». Від 5 до 12 включно — «Достатньо». Більше 12 — «Багато яблук». Склади Python з окремих елементів.",
+   "Фінальне випробування перевіряє і порядок умов, і відступи, і правильні межі трьох гілок.",
+   "if apples < 5:, потім elif apples <= 12:, а в інших випадках else:. Після кожної умови — print з 4 пробілами.",
+   "apples",'if apples < 5:\n    print("Мало яблук")\nelif apples <= 12:\n    print("Достатньо")\nelse:\n    print("Багато яблук")',[4,5,12,13],
+   n=>n<5?["Мало яблук"]:n<=12?["Достатньо"]:["Багато яблук"],n=>n<5?["🍏","negative","Яблук мало."]:n<=12?["🧺","positive","Яблук достатньо."]:["🍎","normal","Яблук багато!"],
+   [],{icon:"🍎",tokens:["if","elif","else","apples","<","<=","5","12",":","print","(","\"Мало яблук\"","\"Достатньо\"","\"Багато яблук\"",")"],side:"Одна й та сама кнопка може знадобитися кілька разів: print, apples, двокрапка, дужки."})
+];
+var TASK_COUNT=missions.length;
+var TOKEN_GUIDE={
+ "if":"if — «якщо»: перша умова.", "elif":"elif — «інакше, якщо»: наступна умова.", "else":"else — «інакше»: коли інші умови хибні.",
+ ":":"Двокрапка позначає початок групи команд.", "print":"print показує повідомлення на екрані.",
+ "(":"Відкривальна дужка потрібна для print(...).", ")":"Закривальна дужка завершує виклик print(...).",
+ ">=":"Більше або дорівнює: межове число включене.", "<=":"Менше або дорівнює: верхня межа включена.",
+ "<":"Менше: саме граничне число не входить до умови.",
+ "↵":"Новий рядок: наступна команда починається з початку рядка.",
+ "⇥":"Відступ 4 пробіли: команда належить до if, elif або else."
+};
+function blank(){return {level:0,finished:Array(10).fill(false),choices:Array.from({length:10},()=>[]),
+ segments:Array.from({length:10},()=>[]),fixes:Array(10).fill(-1),tests:Array.from({length:10},()=>[]),
+ attempts:Array(10).fill(0),errors:Array(10).fill(0),hints:Array(10).fill(0),showHint:false,
+ selection:Array(10).fill(null),scene:null,notice:"",noticeKind:"",lastExplanation:"",
+ student:{first:"",surname:"",klass:"",group:""},sessionId:"",linkedSession:"",locked:false,startedAt:0,
+ snapshots:{},pending:{},lastSent:0,saveError:""};}
+function load(){
+ var base=blank(),v=loadJSON(STORAGE);
+ if(v&&Number.isInteger(v.level)&&v.level>=0&&v.level<=10&&Array.isArray(v.finished)&&v.finished.length===10){
+  return Object.assign(base,v,{
+   student:Object.assign(base.student,v.student||{}),
+   choices:Array.isArray(v.choices)?v.choices:base.choices,segments:Array.isArray(v.segments)?v.segments:base.segments,
+   fixes:Array.isArray(v.fixes)?v.fixes:base.fixes,tests:Array.isArray(v.tests)?v.tests:base.tests,
+   attempts:Array.isArray(v.attempts)?v.attempts:base.attempts,errors:Array.isArray(v.errors)?v.errors:base.errors,
+   hints:Array.isArray(v.hints)?v.hints:base.hints,snapshots:v.snapshots||{},pending:v.pending||{}
+  });
+ }
+ var prev=loadJSON(PREV),first=loadJSON(FIRST),source=prev&&prev.student&&prev.student.first?prev:first;
+ if(source&&source.student&&source.student.first&&source.student.surname){
+  base.student={first:source.student.first||"",surname:source.student.surname||"",klass:source.student.klass||"",group:source.student.group||""};
+  base.linkedSession=source.sessionId||"";
+ }
+ return base;
+}
+var state=load(),sending=false;
+function store(){try{localStorage.setItem(STORAGE,JSON.stringify(state));}catch(e){}}
+function modeTitle(n){
+ if(n<3)return "🔁 Повторення · 1 зайвий рядок";
+ if(n<5)return "🛠️ Знайди та виправ помилку";
+ if(n<7)return "🔀 Нові гілки elif";
+ return "🧩 Складай із елементів Python";
+}
+function lesson(){return missions[state.level];}
+function correctCount(){return state.finished.filter(Boolean).length;}
+function testsCount(){return state.tests.reduce((n,a)=>n+a.length,0);}
+function renderProfile(){
+ var p=state.student;
+ [["first",p.first],["surname",p.surname],["klass",p.klass],["group",p.group]].forEach(pair=>{
+  var x=el(pair[0]);if(x.value!==pair[1])x.value=pair[1]||"";x.disabled=!!state.locked;
+ });
+ var done=correctCount();
+ el("counter").textContent=done+" / "+TASK_COUNT;
+ el("trackfill").style.width=(done/TASK_COUNT*100)+"%";
+ el("bonusStatus").textContent="🧪 Вдалих перевірок: "+testsCount();
+ var prev=loadJSON(PREV);
+ el("part1Badge").hidden=!(prev&&prev.complete&&prev.complete[2]);
+ if(prev&&prev.complete&&prev.complete[2])el("part1Badge").textContent="✓ Частина 2 завершена";
+}
+function readProfile(){
+ if(state.locked)return true;
+ state.student={first:el("first").value.trim().replace(/\s+/g," "),surname:el("surname").value.trim().replace(/\s+/g," "),
+ klass:el("klass").value,group:el("group").value};
+ store();
+ return state.student.first.length>=2&&state.student.surname.length>=2&&
+  ["7-А","7-Б","7-В"].includes(state.student.klass)&&["1","2"].includes(state.student.group);
+}
+function syncStatus(t,failed){
+ el("syncStatus").textContent=t;el("syncStatus").style.color=failed?"#ffb7c3":"#bed3eb";
+ el("retry").hidden=!failed;
+}
+function requireProfile(){
+ if(readProfile())return true;
+ syncStatus("⚠️ Заповни ім’я, прізвище, клас і групу, щоб зберегти завершений рівень.",true);
+ for(const id of ["first","surname","klass","group"]){
+  var x=el(id);if(!x.value||(["first","surname"].includes(id)&&x.value.trim().length<2)){if(x.focus)x.focus();break;}
+ }
+ return false;
+}
+function report(stage){
+ var stageLevels=missions.slice(0,stage).map((m,i)=>({
+  level:i+1,missionId:21+i,title:m.title,completed:!!state.finished[i],checks:state.tests[i].length,
+  failed:state.errors[i]||0,hints:state.hints[i]||0,distinctDatasets:state.tests[i].length,
+  testRuns:state.tests[i].length,invalidRuns:state.errors[i]||0,selections:0,durationSeconds:0,
+  usedInputs:state.tests[i].map(v=>[v])
+ }));
+ var runs=[];
+ for(var i=0;i<stage;i++)for(var j=0;j<state.tests[i].length;j++){
+  var n=state.tests[i][j];runs.push({level:i+1,missionId:21+i,runIndex:j+1,inputs:[n],
+  codeValid:true,executed:true,output:missions[i].expected(n),scenario:missions[i].title,
+  secondsFromStart:Math.round((Date.now()-(state.startedAt||Date.now()))/1000)});
+ }
+ var sum=k=>stageLevels.reduce((a,x)=>a+Number(x[k]||0),0);
+ return {submissionId:state.sessionId+"-L"+String(stage).padStart(2,"0"),version:VERSION,
+ student:{first:state.student.first,surname:state.student.surname,klass:state.student.klass,group:state.student.group},
+ summary:{completed:stage,total:TASK_COUNT,checks:sum("checks"),failedChecks:sum("failed"),
+ hints:sum("hints"),durationMinutes:Math.round((Date.now()-(state.startedAt||Date.now()))/6000)/10,
+ distinctDatasets:sum("distinctDatasets"),testRuns:runs.length},levels:stageLevels,runs:runs,
+ linkedPrevious:state.linkedSession||""};
+}
+function checkpoint(){
+ if(!requireProfile())return false;
+ if(!state.sessionId)state.sessionId="apro10-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,10);
+ if(!state.startedAt)state.startedAt=Date.now();
+ state.locked=true;
+ var stage=correctCount();
+ if(stage===0)return false;
+ if(!state.snapshots[stage])state.snapshots[stage]=report(stage);
+ if(stage>state.lastSent||state.pending[stage])state.pending[stage]=true;
+ store();renderProfile();sendQueued();return true;
+}
+async function sendQueued(){
+ if(sending||!state.locked)return;
+ sending=true;
+ try{
+  while(true){
+   var unsent=Object.keys(state.pending).filter(n=>state.pending[n]).map(Number).sort((a,b)=>a-b);
+   if(!unsent.length)break;
+   var n=unsent[0],body=state.snapshots[n];
+   if(!body){delete state.pending[n];store();continue;}
+   syncStatus("⏳ Надсилаємо рівень "+n+"/"+TASK_COUNT+"…",false);
+   try{
+    await fetch(WEB_APP,{method:"POST",mode:"no-cors",cache:"no-store",redirect:"follow",
+      headers:{"Content-Type":"text/plain;charset=UTF-8"},body:JSON.stringify(body),keepalive:true});
+    delete state.pending[n];state.lastSent=Math.max(state.lastSent||0,n);state.saveError="";store();
+    syncStatus("📤 Звіт "+n+"/"+TASK_COUNT+" надіслано. Перевірити запис можна в таблиці вчителя.",false);
+   }catch(e){
+    state.saveError="Мережна помилка. Звіт залишився на цьому пристрої.";store();
+    syncStatus("⚠️ "+state.saveError+" Натисни «Повторити».",true);break;
+   }
+  }
+ }finally{sending=false;}
+}
+function expectedLines(m){return m.solution.split("\n");}
+function lineChoices(m){
+ var lines=expectedLines(m).concat(m.decoys||[]);
+ var n=lines.length,byLevel={
+  1:[2,0,1],2:[2,4,0,3,1],3:[1,3,4,0,2],6:[2,4,0,3,5,1],7:[6,0,4,2,7,1,5,3]
+ };
+ var order=byLevel[m.id]||lines.map((v,i)=>i);
+ return order.map(i=>({id:i,text:lines[i]}));
+}
+function assembledCode(m){
+ var i=state.level;
+ if(m.mode==="lines"){var all=expectedLines(m).concat(m.decoys);return state.choices[i].map(k=>all[k]).join("\n");}
+ if(m.mode==="fix"){
+  var raw=m.flawed.split("\n"),which=state.fixes[i];
+  if(which>=0&&which<m.fixes.length)raw[m.fixIndex]=m.fixes[which];
+  return raw.join("\n");
+ }
+ var out="";
+ (state.segments[i]||[]).forEach(piece=>{
+  if(piece==="↵"){out+="\n";return;}
+  if(piece==="⇥"){out+="    ";return;}
+  var last=out.charAt(out.length-1);
+  var noSpace=!out||last==="\n"||last===" "||last==="("||piece===":"||piece===")"||piece==="(";
+  out+=(noSpace?"":" ")+piece;
+ });
+ return out;
+}
+function explainLine(line){
+ var t=line.trim();
+ if(t.startsWith("if "))return "if перевіряє умову. Після умови обов'язкова двокрапка.";
+ if(t.startsWith("elif "))return "elif означає «інакше, якщо»: додаткова умова.";
+ if(t==="else:")return "else виконується, коли жодна попередня умова не підійшла.";
+ if(t.startsWith("print("))return "print(...) виводить повідомлення. Чотири пробіли показують вкладеність.";
+ return "Перевір зміст цього рядка та його місце в програмі.";
+}
+function eraseTests(){
+ var i=state.level;state.tests[i]=[];state.scene=null;state.notice="";state.noticeKind="";
+}
+function addLine(v){
+ var m=lesson(),i=state.level,n=Number(v);
+ if(m.mode!=="lines"||state.finished[i])return;
+ var nmax=expectedLines(m).length+(m.decoys||[]).length;
+ if(!Number.isInteger(n)||n<0||n>=nmax||state.choices[i].includes(n))return;
+ state.choices[i].push(n);state.lastExplanation=explainLine(expectedLines(m).concat(m.decoys)[n]);
+ eraseTests();store();render();
+}
+function chooseFix(v){
+ var m=lesson(),i=state.level,k=Number(v);
+ if(m.mode!=="fix"||state.finished[i]||!Number.isInteger(k)||k<0||k>=m.fixes.length)return;
+ state.fixes[i]=k;state.lastExplanation="Зміна застосована. Запусти тести, щоб переконатися, що виправлення правильне.";
+ eraseTests();store();render();
+}
+function addToken(value){
+ var m=lesson(),i=state.level;
+ if(m.mode!=="tokens"||state.finished[i])return;
+ if(value!=="↵"&&value!=="⇥"&&!(m.tokens||[]).includes(value))return;
+ if(state.segments[i].length>=140)return;
+ state.segments[i].push(value);state.lastExplanation=TOKEN_GUIDE[value]||
+  (value.charAt(0)==='"'?"Це текст повідомлення, яке покаже print().":
+   "Цей елемент є частиною умови або значенням змінної.");
+ eraseTests();store();render();
+}
+function undo(){
+ if(state.level>=TASK_COUNT)return;
+ var m=lesson(),i=state.level;if(state.finished[i])return;
+ if(m.mode==="lines")state.choices[i].pop();
+ else if(m.mode==="tokens")state.segments[i].pop();
+ else state.fixes[i]=-1;
+ state.lastExplanation="Останню дію скасовано. Обери правильний наступний елемент.";
+ eraseTests();store();render();
+}
+function clearCode(){
+ if(state.level>=TASK_COUNT)return;
+ var m=lesson(),i=state.level;if(state.finished[i])return;
+ if(m.mode==="lines")state.choices[i]=[];
+ else if(m.mode==="tokens")state.segments[i]=[];
+ else state.fixes[i]=-1;
+ state.lastExplanation="Редактор очищено. Спробуй скласти код знову.";
+ eraseTests();store();render();
+}
+function compile(code){
+ var lines=String(code).replace(/\r/g,"").split("\n"),blocks=[],current=null;
+ for(var i=0;i<lines.length;i++){
+  var line=lines[i],trim=line.trim();
+  if(!trim)continue;
+  if(line.includes("\t"))throw Error("У рядку "+(i+1)+" заміни Tab на 4 пробіли.");
+  var c=line.match(/^(if|elif)\s+([a-zA-Z_]\w*)\s*(>=|<=|==|!=|>|<)\s*(-?\d+)\s*:\s*$/);
+  if(c){
+   if(c[1]==="if"&&blocks.length)throw Error("Другого if у цій програмі не потрібно. Використовуй elif.");
+   if(c[1]==="elif"&&(!blocks.length||blocks.some(b=>b.kind==="else")))throw Error("elif має стояти після if і перед else.");
+   current={kind:c[1],variable:c[2],operator:c[3],threshold:Number(c[4]),out:[]};blocks.push(current);continue;
+  }
+  if(/^else\s*:\s*$/.test(line)){
+   if(!blocks.length||blocks.some(b=>b.kind==="else"))throw Error("else має стояти після if і тільки один раз.");
+   current={kind:"else",out:[]};blocks.push(current);continue;
+  }
+  var p=line.match(/^ {4}print\(\s*(["'])(.*?)\1\s*\)\s*$/);
+  if(p){
+   if(!current)throw Error("Перед print напиши if або іншу гілку.");
+   current.out.push(p[2]);continue;
+  }
+  if(/^\s*print\s*\(/.test(line))throw Error("Рядок "+(i+1)+": перед print потрібен відступ рівно у 4 пробіли.");
+  if(/^(if|elif)\b/.test(trim))throw Error("Рядок "+(i+1)+": перевір умову та двокрапку в кінці.");
+  if(/^else\b/.test(trim))throw Error("Рядок "+(i+1)+": після else має бути двокрапка.");
+  throw Error("Рядок "+(i+1)+": перевір порядок команд, лапки, двокрапку та відступи.");
+ }
+ if(!blocks.length||blocks[0].kind!=="if")throw Error("Починай програму з умови if.");
+ if(blocks.some(b=>b.out.length!==1))throw Error("Після кожної умови має бути одна команда print з відступом.");
+ return blocks;
+}
+function cond(op,x,y){
+ switch(op){case ">":return x>y;case "<":return x<y;case ">=":return x>=y;case "<=":return x<=y;
+ case "==":return x===y;case "!=":return x!==y;}return false;
+}
+function run(blocks,m,value){
+ for(const b of blocks){
+  if(b.kind==="else")return b.out.slice();
+  if(b.variable!==m.variable)throw Error("Змінна має називатися "+m.variable+".");
+  if(cond(b.operator,value,b.threshold))return b.out.slice();
+ }
+ return [];
+}
+function same(a,b){return a.length===b.length&&a.every((v,i)=>v===b[i]);}
+function check(){
+ var i=state.level,m=lesson();if(state.finished[i])return;
+ var x=state.selection[i];
+ if(!m.values.includes(x))x=m.values[0];
+ var code=assembledCode(m);
+ state.attempts[i]++;
+ try{
+  if(m.mode==="lines"&&state.choices[i].length!==expectedLines(m).length)
+   throw Error("Додай у редактор усі потрібні рядки. Зайву кнопку використовувати не треба.");
+  if(m.mode==="fix"&&state.fixes[i]<0)
+   throw Error("Спочатку вибери, яким рядком виправити помилку.");
+  if(!code.trim())throw Error("Спочатку склади програму з готових елементів.");
+  var blocks=compile(code);
+  var expectedKinds=m.id===1||m.id===4||m.id===5||m.id===8?["if"]:
+   m.id===2||m.id===3||m.id===9?["if","else"]:
+   m.id===7?["if","elif","elif","else"]:["if","elif","else"];
+  if(blocks.map(b=>b.kind).join(",")!==expectedKinds.join(","))
+   throw Error("Перевір порядок: "+expectedKinds.join(" → ")+".");
+  var output=run(blocks,m,x),expected=m.expected(x);
+  if(!same(output,expected))
+   throw Error("Для "+m.variable+" = "+x+" програма показала «"+(output.join(" | ")||"нічого")+
+    "», а потрібно «"+(expected.join(" | ")||"нічого")+"». Перевір умову або повідомлення.");
+  if(!state.tests[i].includes(x))state.tests[i].push(x);
+  state.finished[i]=state.tests[i].length===m.values.length;
+  var phase=m.visual(x),description=phase[2];
+  state.scene={level:i,input:x,phase:phase[1],emoji:phase[0],description:description,output:output,correct:true};
+  state.notice=state.finished[i]?"Усі перевірки пройдено! Рівень виконано.":("Чудово! Правильно перевірено "+state.tests[i].length+" із "+m.values.length+".");
+  state.noticeKind="good";
+ }catch(e){
+  state.errors[i]++;state.notice=String(e.message||"Знайдено помилку у програмі.");
+  state.noticeKind="bad";
+  state.scene={level:i,input:x,phase:"error",emoji:"⚠️",description:"Програма ще потребує виправлення.",output:[],correct:false};
+ }
+ store();render();scrollScene();
+}
+function scrollScene(){
+ var scene=el("gameScene");if(!scene||!scene.scrollIntoView)return;
+ try{if(scene.focus)scene.focus({preventScroll:true});}catch(e){}
+ try{
+  var header=el("studentBar");
+  if(header&&header.getBoundingClientRect)
+   scene.style.scrollMarginTop=Math.ceil(header.getBoundingClientRect().height+16)+"px";
+ }catch(e){}
+ var reduced=false;try{reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}
+ scene.scrollIntoView({behavior:reduced?"auto":"smooth",block:"start"});
+}
+function proceed(){
+ if(state.level>=TASK_COUNT||!state.finished[state.level])return;
+ if(!checkpoint())return;
+ state.level=Math.min(TASK_COUNT,state.level+1);
+ state.notice="";state.noticeKind="";state.scene=null;state.lastExplanation="";state.showHint=false;
+ store();render();
+ if(window.scrollTo)window.scrollTo({top:0,behavior:"smooth"});
+}
+function sceneHTML(m){
+ var i=state.level,sc=state.scene&&state.scene.level===i?state.scene:null;
+ var phase=sc?sc.phase:"idle",icon=sc?sc.emoji:m.icon,done=state.tests[i].length,percent=Math.round(done/m.values.length*100);
+ var lines=sc?(sc.correct?(sc.output.length?sc.output:["Програма нічого не вивела — це правильно для цієї умови."]):[state.notice]):[];
+ var lineClass=sc?(sc.correct?(phase==="positive"?"positive":phase==="negative"?"negative":"info-output"):"negative"):"info-output";
+ return '<section class="quest-panel"><div class="quest-pad"><div class="section-head"><div class="section-number">4</div>'+
+ '<div><div class="section-eyebrow">КРОК 4 · ПОДИВИСЬ, ЯК ПРАЦЮЄ КОД</div><h3>🎮 АНІМОВАНА СЦЕНА</h3></div></div>'+
+ '<div id="gameScene" class="game-scene" tabindex="-1" data-phase="'+phase+'" data-kind="'+i+'">'+
+ '<div class="scene-hud"><span>'+esc(m.situation)+'</span><span class="scene-live">'+
+ (sc?(sc.correct?"● PYTHON ВИКОНАНО":"● ПОМИЛКА В КОДІ"):"● ОЧІКУЄМО ПЕРЕВІРКУ")+'</span></div>'+
+ '<div class="scene-world"><span class="world-emoji" aria-hidden="true">'+icon+'</span>'+
+ '<span class="world-label">'+(sc?esc(m.variable)+" = "+sc.input:"ТЕСТУВАННЯ ПРОГРАМИ")+'</span>'+
+ '<strong class="world-number">'+(sc?esc(sc.description):"Обери число і перевір код")+'</strong></div>'+
+ '<div class="scene-details"><div class="scene-progress-label"><span class="micro">Перевірено: '+done+' / '+m.values.length+'</span><span>'+percent+'%</span></div>'+
+ '<div class="scene-meter"><span style="width:'+percent+'%"></span></div>'+
+ (sc?'<div class="scene-output"><strong>'+(sc.correct?"Результат програми:":"Чому код не працює:")+'</strong>'+
+ lines.map(t=>'<div class="'+lineClass+'">'+esc(t)+'</div>').join("")+'</div>':'<p>Після перевірки тут зміниться анімована сцена й з’явиться результат програми.</p>')+
+ (state.notice?'<div class="feedback '+(state.noticeKind==="bad"?"bad":"good")+'" role="status">'+esc(state.notice)+'</div>':'')+
+ '</div></div></div></section>';
+}
+function codingHTML(m){
+ var i=state.level,code=assembledCode(m);
+ var label=modeTitle(i);
+ var buttons="";
+ if(m.mode==="lines"){
+  var options=lineChoices(m);
+  buttons='<div class="block-grid">'+options.map(o=>
+   '<button type="button" class="block-button '+(o.id>=expectedLines(m).length?"false":"")+'" data-action="addline" data-value="'+o.id+'"'+
+    (state.finished[i]||state.choices[i].includes(o.id)?" disabled":"")+'><code>'+esc(o.text)+'</code>'+
+   '<small>Натисни, щоб додати рядок</small></button>').join("")+'</div>';
+ }else if(m.mode==="fix"){
+  var old=m.flawed.split("\n");
+  buttons='<div class="practice-info"><strong>🔎 У програмі одна помилка:</strong>'+
+   '<pre class="mono" style="display:block;white-space:pre-wrap;padding:13px;margin:9px 0">'+
+   old.map((line,n)=>'<span class="'+(n===m.fixIndex?"fix-line":"")+'">'+esc(line)+'</span>').join("\n")+'</pre>'+
+   '<p>Який рядок потрібно вставити замість підсвіченого?</p></div>'+
+   '<div class="fix-list">'+m.fixes.map((line,n)=>'<button type="button" class="fix-answer '+(state.fixes[i]===n?"selected":"")+
+   '" data-action="fix" data-value="'+n+'" '+(state.finished[i]?"disabled":"")+'>'+esc(line)+'</button>').join("")+'</div>';
+ }else{
+  var type=t=>{
+   if(["if","elif","else"].includes(t))return "keyword";
+   if([">","<",">=","<=","==","!="].includes(t))return "operator";
+   if(t.charAt(0)==='"')return "string";
+   if([":","(",")"].includes(t))return "punctuation";
+   return "";
+  };
+  var categ=[
+   {name:"Умови",values:m.tokens.filter(t=>["if","elif","else"].includes(t))},
+   {name:"Змінні, числа та порівняння",values:m.tokens.filter(t=>!["if","elif","else","print",":","(",")"].includes(t)&&t.charAt(0)!=='"')},
+   {name:"Команда виведення й знаки",values:m.tokens.filter(t=>["print",":","(",")"].includes(t))},
+   {name:"Текст повідомлень",values:m.tokens.filter(t=>t.charAt(0)==='"')}
+  ];
+  buttons='<div class="token-groups">'+categ.map(g=>'<div class="token-group"><div class="token-group-title">'+g.name+'</div><div class="token-pills">'+
+   g.values.map(t=>'<button type="button" class="token-pill '+type(t)+'" data-action="token" data-value="'+esc(t)+'" '+(state.finished[i]?"disabled":"")+'>'+esc(t)+'</button>').join("")+
+   '</div></div>').join("")+'</div>'+
+   '<div class="tool-row"><button type="button" class="toolbtn" data-action="token" data-value="↵"'+(state.finished[i]?" disabled":"")+'>↵ Новий рядок</button>'+
+   '<button type="button" class="toolbtn" data-action="token" data-value="⇥"'+(state.finished[i]?" disabled":"")+'>⇥ Відступ +4 пробіли</button></div>';
+ }
+ return '<section class="quest-panel"><div class="quest-pad"><div class="section-head"><div class="section-number">2</div>'+
+ '<div><div class="section-eyebrow">КРОК 2 · '+esc(label)+'</div><h3>⌨️ РЕДАКТОР КОДУ</h3></div></div>'+
+ '<div class="editor"><div class="editor-top"><span>🐍 Python · '+esc(label)+'</span><span>'+
+ (m.mode==="lines"?"Рядків "+state.choices[i].length+"/"+expectedLines(m).length:
+  m.mode==="fix"?"Виправ один рядок":"Елементів "+state.segments[i].length)+
+ '</span></div><textarea id="editor" class="code-area" readonly spellcheck="false" aria-label="Програма Python із вибраних елементів">'+esc(code)+'</textarea></div>'+
+ '<div class="toolbar"><button type="button" class="toolbtn" data-action="undo"'+
+ (state.finished[i]?" disabled":"")+'>↶ Скасувати останню дію</button>'+
+ '<button type="button" class="toolbtn" data-action="clear"'+(state.finished[i]?" disabled":"")+'>🧽 Очистити</button>'+
+ '<button type="button" class="toolbtn" data-action="hint">'+(state.showHint?"Сховати підказку":"💡 Підказка")+'</button></div>'+
+ '<div class="choices-title">'+(m.mode==="fix"?"ВИБЕРИ ВИПРАВЛЕННЯ:":m.mode==="tokens"?"ОКРЕМІ ЕЛЕМЕНТИ PYTHON:":"СКЛАДИ РЯДКИ В ПРАВИЛЬНОМУ ПОРЯДКУ:")+'</div>'+
+ (i<3?'<div class="mini-step">👀 Серед кнопок є <strong>один зайвий рядок</strong>. Не використовуй його.</div>':"")+
+ (m.mode==="tokens"?'<div class="mini-step">Елементи можна натискати повторно. Після двокрапки натисни <strong>↵ Новий рядок</strong>, потім <strong>⇥ Відступ +4 пробіли</strong>.</div>':"")+
+ buttons+
+ '<div class="code-status"><strong>💡 Пояснення:</strong> '+esc(state.lastExplanation||(
+ m.mode==="fix"?"Уважно порівняй виділений рядок із правилами Python.":
+ m.mode==="tokens"?"Обирай невеликі елементи по черзі. Гра складе з них програму.":
+ "Кожне натискання додає один рядок Python. Дивись на відступи."
+ ))+'</div>'+
+ (state.showHint?'<div class="hintbox"><strong>Підказка</strong><p>'+esc(m.hint)+'</p></div>':"")+
+ '</div></section>';
+}
+function missionHTML(){
+ var m=lesson(),i=state.level,done=state.finished[i];
+ var selected=m.values.includes(state.selection[i])?state.selection[i]:m.values[0];
+ var tests=m.values.map(v=>'<button type="button" class="test-choice '+(selected===v?"active ":"")+
+ (state.tests[i].includes(v)?"passed":"")+'" data-action="select" data-value="'+v+'" aria-pressed="'+(selected===v)+'">'+
+ (state.tests[i].includes(v)?"✓ ":"▶ ")+esc(m.variable)+" = "+v+'</button>').join("");
+ return '<div class="quest-stack">'+
+ '<section class="quest-panel"><div class="quest-pad"><div class="kicker">РІВЕНЬ '+m.id+' ІЗ '+TASK_COUNT+' · '+esc(modeTitle(i))+'</div>'+
+ '<h2>'+esc(m.title)+'</h2><p class="lead">'+esc(m.situation)+'</p>'+
+ '<div class="section-head"><div class="section-number">1</div><div><div class="section-eyebrow">КРОК 1 · ПРОЧИТАЙ УМОВУ</div><h3>📜 ЗАВДАННЯ</h3></div></div>'+
+ '<div class="task"><p>'+esc(m.task)+'</p></div>'+
+ '<div class="info"><strong>🧠 Як працює це розгалуження?</strong> '+esc(m.explain)+'</div>'+
+ (m.side?'<div class="mini-step">🔍 '+esc(m.side)+'</div>':"")+
+ '<p class="micro">Значення '+esc(m.variable)+' задає гра — input() писати не потрібно.</p></div></section>'+
+ codingHTML(m)+
+ '<section class="quest-panel"><div class="quest-pad"><div class="section-head"><div class="section-number">3</div>'+
+ '<div><div class="section-eyebrow">КРОК 3 · ОБЕРИ ВХІДНІ ДАНІ</div><h3>🧪 ТЕСТОВІ ДАНІ</h3></div></div>'+
+ '<p class="lead">Вибери число й натисни <strong>«Перевірити код»</strong>. Для завершення рівня потрібно перевірити всі значення.</p>'+
+ '<div class="test-chooser">'+tests+'</div>'+
+ '<div class="actions"><button type="button" class="btn primary" data-action="check"'+(done?" disabled":"")+'>▶ Перевірити код ⚡</button>'+
+ '<span class="micro">Правильні перевірки: '+state.tests[i].length+' / '+m.values.length+'</span></div></div></section>'+
+ sceneHTML(m)+
+ (done?'<section class="quest-panel"><div class="quest-pad"><div class="succession"><strong>🎉 РІВЕНЬ '+m.id+' ПРОЙДЕНО!</strong>'+
+ '<p>Усі '+m.values.length+' перевірки виконано. Наступне випробування готове.</p><div class="actions">'+
+ '<button type="button" class="btn primary" data-action="next">'+(i===9?"🏆 Завершити гру й зберегти":"💾 Зберегти та перейти до рівня "+(i+2)+" →")+'</button></div></div></div></section>':"")+
+ '</div>';
+}
+function finishHTML(){
+ var score=correctCount(),f=state.student;
+ return '<div class="quest-panel final-hero"><div class="medal">🏆</div>'+
+ '<div class="kicker">АКАДЕМІЯ РІШЕНЬ · РОЗГАЛУЖЕННЯ PRO</div>'+
+ '<h2>Вітаємо! Ти пройшов усі 10 рівнів!</h2>'+
+ '<p class="lead">Від готових рядків до власної програми з if, elif та else.</p>'+
+ '<div class="report"><div><strong>'+score+'/10</strong><span>пройдено рівнів</span></div>'+
+ '<div><strong>'+testsCount()+'</strong><span>правильних запусків тестів</span></div></div>'+
+ '<p class="practice-info">Ти навчився знаходити синтаксичні помилки, виправляти відступи, працювати з elif та збирати код із окремих елементів.</p>'+
+ '<div class="actions" style="justify-content:center"><button type="button" class="btn primary" data-action="copy">📋 Скопіювати результат</button>'+
+ '<a class="btn secondary" href="../python-branching-code-4/">← До частини 2</a>'+
+ '<button type="button" class="btn secondary" data-action="restart">↻ Нова спроба</button></div>'+
+ '<p class="micro" id="copyText"></p></div>';
+}
+function render(){
+ var done=state.level>=TASK_COUNT,m=missions[Math.min(state.level,TASK_COUNT-1)];
+ el("heroTitle").textContent=done?"Ти опанував розгалуження!":m.title;
+ el("heroText").textContent=done?"Всі рівні успішно завершено.":m.task;
+ el("tag").textContent=done?"ФІНІШ · 10/10":modeTitle(state.level);
+ el("levels").innerHTML=missions.map((v,i)=>'<div class="pip '+(state.finished[i]?"done":i===state.level?"active":"")+'">'+
+ (state.finished[i]?"✓":i+1)+'</div>').join("");
+ el("app").innerHTML=done?finishHTML():missionHTML();
+ renderProfile();
+}
+function interact(action,value){
+ if(action==="addline"){addLine(value);return;}
+ if(action==="fix"){chooseFix(value);return;}
+ if(action==="token"){addToken(value);return;}
+ if(action==="undo"){undo();return;}
+ if(action==="clear"){clearCode();return;}
+ if(action==="hint"){var i=state.level;if(i>=TASK_COUNT)return;
+  if(!state.showHint)state.hints[i]++;state.showHint=!state.showHint;store();render();return;}
+ if(action==="select"){var i=state.level;if(i>=TASK_COUNT)return;
+  var x=Number(value);if(missions[i].values.includes(x)){state.selection[i]=x;store();render();}return;}
+ if(action==="check"){check();return;}
+ if(action==="next"){proceed();return;}
+ if(action==="restart"){restart();return;}
+ if(action==="copy"){
+  var t="Академія рішень · Розгалуження PRO 10. "+state.student.klass+", група "+state.student.group+
+   ", "+state.student.surname+" "+state.student.first+". Рівні: "+correctCount()+"/10. Правильні тести: "+testsCount()+".";
+  Promise.resolve(navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject(Error("copy")))
+   .then(()=>el("copyText").textContent="✅ Результат скопійовано.")
+   .catch(()=>el("copyText").textContent=t);
+ }
+}
+function restart(){
+ if(!confirm("Почати всі 10 рівнів заново? Локальний прогрес цієї частини буде очищено."))return;
+ var person=Object.assign({},state.student),parent=state.linkedSession;
+ state=blank();state.student=person;state.linkedSession=parent;store();render();
+ syncStatus("Почата нова спроба. Перевір дані учня перед відправленням.",false);
+}
+document.addEventListener("click",e=>{
+ var button=e.target.closest("[data-action]");if(!button)return;
+ interact(button.getAttribute("data-action"),button.getAttribute("data-value"));
+});
+["first","surname","klass","group"].forEach(id=>{
+ var x=el(id);
+ x.addEventListener("input",()=>{if(!state.locked){readProfile();syncStatus("💾 Дані учня збережено на цьому пристрої.",false);}});
+ x.addEventListener("change",()=>{if(!state.locked){readProfile();syncStatus("💾 Дані учня готові.",false);}});
+});
+el("retry").addEventListener("click",()=>{
+ if(!state.locked){requireProfile();return;}
+ if(!Object.keys(state.pending).length&&state.lastSent){state.pending[state.lastSent]=true;store();}
+ sendQueued();
+});
+el("restart").addEventListener("click",restart);
+window.addEventListener("online",sendQueued);
+render();
+if(state.linkedSession&&!state.locked)syncStatus("👤 Дані підставлено з попередньої частини. Перевір ім’я, прізвище, клас і групу.",false);
+if(Object.keys(state.pending).length)sendQueued();
+})();
+
+</script>
+</body>
+</html>
