@@ -227,7 +227,6 @@ textarea[readonly]{min-height:150px}
   <div class="field"><label for="first">Ім’я</label><input id="first" maxlength="60" placeholder="Ім’я" autocomplete="given-name"></div>
   <div class="field"><label for="surname">Прізвище</label><input id="surname" maxlength="70" placeholder="Прізвище" autocomplete="family-name"></div>
   <div class="field small"><label for="klass">Клас</label><select id="klass"><option value="">Оберіть</option><option value="7-А">7-А</option><option value="7-Б">7-Б</option><option value="7-В">7-В</option></select></div>
-  <div class="field small"><label for="group">Група</label><select id="group"><option value="">Оберіть</option><option value="1">1</option><option value="2">2</option></select></div>
  </div>
  <div class="stats"><div class="stats-head"><span class="stats-label">✅ Пройдено рівнів</span><strong id="counter">0 / 10</strong></div><div class="track"><div id="trackfill" style="width:0"></div></div><div class="stats-label" id="bonusStatus" style="margin-top:4px">🧩 Рядки → помилки → elif → елементи</div></div>
  <div class="sync"><span id="syncStatus" role="status" aria-live="polite">💾 Результати надсилаються при переході на наступний рівень.</span><button id="retry" hidden type="button">↻ Повторити відправлення</button><span id="part1Badge" hidden>🧭 Частина 1 завершена</span></div>
@@ -366,7 +365,7 @@ function correctCount(){return state.finished.filter(Boolean).length;}
 function testsCount(){return state.tests.reduce((n,a)=>n+a.length,0);}
 function renderProfile(){
  var p=state.student;
- [["first",p.first],["surname",p.surname],["klass",p.klass],["group",p.group]].forEach(pair=>{
+ [["first",p.first],["surname",p.surname],["klass",p.klass]].forEach(pair=>{
   var x=el(pair[0]);if(x.value!==pair[1])x.value=pair[1]||"";x.disabled=!!state.locked;
  });
  var done=correctCount();
@@ -380,10 +379,10 @@ function renderProfile(){
 function readProfile(){
  if(state.locked)return true;
  state.student={first:el("first").value.trim().replace(/\s+/g," "),surname:el("surname").value.trim().replace(/\s+/g," "),
- klass:el("klass").value,group:el("group").value};
+ klass:el("klass").value,group:state.student.group||""};
  store();
  return state.student.first.length>=2&&state.student.surname.length>=2&&
-  ["7-А","7-Б","7-В"].includes(state.student.klass)&&["1","2"].includes(state.student.group);
+  ["7-А","7-Б","7-В"].includes(state.student.klass);
 }
 function syncStatus(t,failed){
  el("syncStatus").textContent=t;el("syncStatus").style.color=failed?"#ffb7c3":"#bed3eb";
@@ -391,8 +390,8 @@ function syncStatus(t,failed){
 }
 function requireProfile(){
  if(readProfile())return true;
- syncStatus("⚠️ Заповни ім’я, прізвище, клас і групу, щоб зберегти завершений рівень.",true);
- for(const id of ["first","surname","klass","group"]){
+ syncStatus("⚠️ Заповни ім’я, прізвище та клас, щоб зберегти завершений рівень.",true);
+ for(const id of ["first","surname","klass"]){
   var x=el(id);if(!x.value||(["first","surname"].includes(id)&&x.value.trim().length<2)){if(x.focus)x.focus();break;}
  }
  return false;
@@ -781,7 +780,7 @@ function interact(action,value){
  if(action==="next"){proceed();return;}
  if(action==="restart"){restart();return;}
  if(action==="copy"){
-  var t="Академія рішень · Розгалуження PRO 10. "+state.student.klass+", група "+state.student.group+
+  var t="Академія рішень · Розгалуження PRO 10. "+state.student.klass+
    ", "+state.student.surname+" "+state.student.first+". Рівні: "+correctCount()+"/10. Правильні тести: "+testsCount()+".";
   Promise.resolve(navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject(Error("copy")))
    .then(()=>el("copyText").textContent="✅ Результат скопійовано.")
@@ -798,7 +797,7 @@ document.addEventListener("click",e=>{
  var button=e.target.closest("[data-action]");if(!button)return;
  interact(button.getAttribute("data-action"),button.getAttribute("data-value"));
 });
-["first","surname","klass","group"].forEach(id=>{
+["first","surname","klass"].forEach(id=>{
  var x=el(id);
  x.addEventListener("input",()=>{if(!state.locked){readProfile();syncStatus("💾 Дані учня збережено на цьому пристрої.",false);}});
  x.addEventListener("change",()=>{if(!state.locked){readProfile();syncStatus("💾 Дані учня готові.",false);}});
