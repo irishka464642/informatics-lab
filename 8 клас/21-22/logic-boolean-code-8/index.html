@@ -80,6 +80,7 @@
 
 .student-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px}.reset-progress{flex:none;min-height:32px;border:1px solid #cbab82;border-radius:9px;padding:5px 10px;color:#ffdfab;background:#413a37;font-size:12px;font-weight:850;white-space:nowrap}.reset-progress:focus-visible{outline:3px solid #ffe29c;outline-offset:2px}@media(max-width:650px){.student-actions{gap:6px}.student-actions small{display:none}.reset-progress{padding:5px 8px;font-size:11px;min-height:32px}}
 .builder-buttons .builder-chip{white-space:pre-wrap;text-align:left;justify-items:start}.builder-order .builder-chip{white-space:pre-wrap}.builder-help strong{color:#edfff8}.sample-row{display:flex;align-items:baseline;flex-wrap:wrap;gap:5px;margin-top:5px}.builder-line .builder-chip{font-family:ui-monospace,Consolas,monospace}
+.offline-chip{font-size:11px;line-height:1.4;padding:6px 8px;margin-top:5px;border:1px solid #536e92;border-radius:8px;color:#d0e0f0;background:#152741}.offline-chip[data-state="ready"],.offline-chip[data-state="offline"]{background:#16463d;color:#defff3;border-color:#64cca8}.offline-chip[data-state="error"]{background:#49352e;color:#ffdfbc;border-color:#d7a172}@media(max-width:650px){.offline-chip{font-size:10px;padding:5px 7px}}
 </style>
 </head>
 <body><div class="wrap">
@@ -95,6 +96,7 @@
  <div class="student-stats"><span id="progressText">Місія 1 із 4</span><span class="stat" id="score">0/12</span></div>
  <div class="meter" aria-hidden="true"><span id="meterFill"></span></div>
  <div class="sync-line warning" role="status" aria-live="polite" id="syncStatus">Прогрес зберігається на телефоні</div>
+ <div class="offline-chip" id="offlineState" role="status" aria-live="polite">⏳ Підготовка офлайн-режиму…</div>
 </section>
 <div class="lesson-caption">2 завдання — доповни готовий код; 2 — склади програму з блоків; 5-те — збери код із тегів та дій. Усе кнопками, без ручного введення.</div>
 <div id="dots" class="pips"></div>
@@ -170,6 +172,7 @@ function sync(message,warn){
  $('syncStatus').classList.toggle('warning',!!warn);
 }
 function refreshSync(){
+ if(!navigator.onLine){sync('📴 Без інтернету. Прогрес збережено на телефоні. У черзі записів: '+outbox.length,true);return;}
  if(sending)sync('Надсилання результатів…',false);
  else if(outbox.length)sync('Очікують повторного надсилання: '+outbox.length,true);
  else sync(serverStatus||'Результати надсилаються до журналу, перевірка — у вчителя.',false);
@@ -349,7 +352,7 @@ function enqueueResult(t,index){
  saveQueue();
 }
 async function sendPending(){
- if(sending||!outbox.length){refreshSync();return}
+ if(sending||!outbox.length||!navigator.onLine){refreshSync();return}
  sending=true;refreshSync();
  try{
   while(outbox.length){
@@ -381,7 +384,10 @@ $('copy').onclick=async()=>{
  try{await navigator.clipboard.writeText(t);$('copy').textContent='✓ Скопійовано'}
  catch{prompt('Скопіюй результат:',t)}
 };
+window.addEventListener('online',()=>{sendPending();refreshSync();});
+window.addEventListener('offline',refreshSync);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&navigator.onLine)sendPending();});
 render();sendPending();
 })();
 
-</script></body></html>
+</script><script src="../offline.js" defer></script></body></html>
