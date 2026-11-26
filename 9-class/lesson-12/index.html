@@ -48,7 +48,51 @@ function metric(field){if(teacher)return;ensureStats();let m=state.stats[level]|
 function saveOutbox(){try{localStorage.setItem(reportKey,JSON.stringify(outbox))}catch(e){}}
 function statusReport(msg){let e=$("report-status");if(e)e.textContent=msg}
 function makeCheckpoint(n){if(teacher||!studentReady())return;ensureStats();let m=state.stats[n]||(state.stats[n]={checks:0,failed:0,hints:0,durationSeconds:0});m.durationSeconds+=Math.max(0,Math.round((Date.now()-levelStarted)/1000));levelStarted=Date.now();let student={klass:$("grade").value,group:"",surname:$("surname").value.trim(),first:$("firstname").value.trim()};let levels=names.map((title,i)=>({level:i+1,missionId:i+1,title,completed:state.done.includes(i),checks:state.stats[i]?.checks||0,failed:state.stats[i]?.failed||0,hints:state.stats[i]?.hints||0,durationSeconds:state.stats[i]?.durationSeconds||0})).filter(x=>x.completed||x.level===n+1);let sum=k=>levels.reduce((a,x)=>a+(x[k]||0),0);let completed=state.done.length;let report={submissionId:state.sessionId+"-L"+String(n+1).padStart(2,"0"),version:"codequest9-lesson12-L"+String(n+1).padStart(2,"0"),lesson:12,student,klass:student.klass,surname:student.surname,firstname:student.first,level:n+1,completed,total:11,score:state.score,xp:state.score,examScore:state.exam,examTotal:8,summary:{completed,total:11,checks:sum("checks"),failedChecks:sum("failed"),hints:sum("hints"),durationMinutes:Math.round((Date.now()-state.started)/6000)/10,xp:state.score,examScore:state.exam,examTotal:8},levels,runs:[]};state.reports[n]=report;persist();outbox=outbox.filter(x=>x.submissionId!==report.submissionId);outbox.push(report);saveOutbox();drainReports()}
-async function drainReports(){if(sending||teacher||!outbox.length)return;sending=true;try{while(outbox.length){let report=outbox[0];statusReport("⏳ Надсилання результатів…");try{await fetch(RESULTS_WEB_APP,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=UTF-8"},body:JSON.stringify(report),keepalive:true,cache:"no-store"});outbox=outbox.filter(x=>x!==report);saveOutbox();statusReport("📤 Запит надіслано")}catch(e){statusReport("⚠ Не надіслано. Натисни «Повторити».");break}}}finally{sending=false;let b=$("retry-report");if(b)b.hidden=!outbox.length}}
+function checkpointForSend(report) {
+  // The journal indexes a checkpoint by the total progress of the attempt.
+  const level = report.completed;
+  const suffix = "-L" + String(level).padStart(2, "0");
+  return {...report, level, submissionId: report.submissionId.replace(/-L\d{2}$/, suffix),
+    version: "codequest9-lesson12" + suffix};
+}
+function latestCheckpoint() {
+  return Object.values(state.reports || {}).reduce((latest, report) =>
+    report && (!latest || report.completed >= latest.completed) ? report : latest, null);
+}
+function retryReports() {
+  if (teacher) return;
+  const report = latestCheckpoint();
+  if (report && !outbox.some(item => item.submissionId === report.submissionId)) {
+    outbox.push(report);
+    saveOutbox();
+  }
+  drainReports();
+}
+async function drainReports() {
+  if (sending || teacher || !outbox.length) return;
+  sending = true;
+  try {
+    while (outbox.length) {
+      const report = outbox[0];
+      statusReport("⏳ Надсилання результатів…");
+      try {
+        await fetch(RESULTS_WEB_APP, {method: "POST", mode: "no-cors",
+          headers: {"Content-Type": "text/plain;charset=UTF-8"},
+          body: JSON.stringify(checkpointForSend(report)), keepalive: true, cache: "no-store"});
+        outbox = outbox.filter(item => item !== report);
+        saveOutbox();
+        statusReport("📤 Запит надіслано. Статус запису невідомий.");
+      } catch (error) {
+        statusReport("⚠ Не надіслано. Натисни «Повторити».");
+        break;
+      }
+    }
+  } finally {
+    sending = false;
+    const button = $("retry-report");
+    if (button) button.hidden = !outbox.length && !latestCheckpoint();
+  }
+}
 window.addEventListener("online",drainReports);
 function persist(){if(!teacher)try{localStorage.setItem(key,JSON.stringify(state))}catch(e){}}
 function unlock(){let n=0;while(state.done.includes(n)&&n<10)n++;return n}
@@ -82,9 +126,19 @@ document.addEventListener("pointerdown",e=>{if(e.target.closest("[data-token],[d
 ["input","click","keyup","select","touchend"].forEach(type=>document.addEventListener(type,e=>{if(e.target.id==="editor")updateCursorInfo()}));
 function overview(){clearInterval(timer);$("main").innerHTML='<div class="teacher"><h2>👩‍🏫 Огляд уроку</h2><p>Відкрий будь-який рівень, покажи розв’язок або запусти демонстрацію без зміни прогресу.</p><button class="btn ghost" id="exit-teacher">Вийти</button></div><div class="teacher-grid">'+names.map((n,i)=>'<button class="btn secondary" data-level="'+i+'">'+(i+1)+'. '+esc(n)+'</button>').join('')+'</div>'}
 document.addEventListener("submit",e=>{if(e.target.id!=="login")return;e.preventDefault();if($("access").value.trim()!=="Кусяк токсік"){$("loginmsg").textContent="Невірний код";return}teacher=true;$("studentbar").hidden=true;$("access").value="";$("loginmsg").textContent="";nav();overview()});
-document.addEventListener("click",e=>{let b=e.target.closest("button");if(!b||b.disabled)return;let d=b.dataset,id=b.id;if(d.level!==undefined){let n=+d.level;if(teacher||n<=unlock())render(n);return}if(id==="reset"){if(!teacher&&confirm("Скинути прогрес?")){state={done:[],score:0,exam:null};ensureStats();persist();render(0)}return}if(id==="exit-teacher"){teacher=false;$("studentbar").hidden=false;render(unlock());return}if(id==="overview"){overview();return}if(id==="prev"){render(level-1);return}if(id==="retry-report"){drainReports();return}if(id==="next-teacher"||id==="next"){if(!teacher&&id==="next"){if(!studentReady())return;makeCheckpoint(level)}render(level+1);return}if(id==="reveal"){let s=$("solution");s.hidden=!s.hidden;s.innerHTML=level<5?'<p>'+esc(theory[level].opts[theory[level].ok])+'</p>':level<10?code(solution(missions[level-5])):exam.map((q,i)=>'<p>'+(i+1)+'. '+esc(q[1][q[2]])+'</p>').join("");return}if(id==="demo"){if(teacher){$("editor").value=solution(missions[level-5]);$("editor").setSelectionRange($("editor").value.length,$("editor").value.length);updateCursorInfo();run()}return}if(d.answer!==undefined){selected=+d.answer;document.querySelectorAll("[data-answer]").forEach(x=>x.classList.toggle("selected",x===b));return}if(id==="check"){if(!studentReady())return;metric("checks");let t=theory[level],f=$("feedback"),ok=selected===t.ok;f.className="feedback show "+(ok?"good":"bad");f.textContent=ok?"✅ "+t.why:"Спробуй ще раз. Переглянь приклад.";if(ok)advance();else metric("failed");return}if(d.slot!==undefined){let i=+d.slot;document.querySelectorAll("[data-slot]").forEach(x=>x.classList.toggle("active",x===b));$("slotout").textContent="hotbar["+i+"] → "+missions[2].values[i];return}if(id==="example-route"){clearInterval(timer);let p=20,v=[20],moves=[1,1,-5],i=0;timer=setInterval(()=>{if(i===moves.length||!$("visual")){clearInterval(timer);return}p+=moves[i++];v.push(p);$("visual").innerHTML=grid(p,v)+'<button class="btn secondary" id="example-route">↺ Повторити</button>'},350);return}if(d.token!==undefined){editCode("insert",d.token==="="? " = ":d.token===","?", ":d.token);return}if(d.edit){editCode(d.edit);return}if(id==="hint"){$("hintbox").hidden=!$("hintbox").hidden;if(!$("hintbox").hidden)metric("hints");return}if(id==="run"){if(studentReady())run();return}if(d.song!==undefined){activeSong=+d.song;drawPlayer(false);return}if(id==="songplay"){embed();return}if(id==="songprev"||id==="songnext"){activeSong=(activeSong+(id==="songnext"?1:playlist.length-1))%playlist.length;drawPlayer(false);return}if(d.addsong!==undefined){playlist.push(d.addsong);drawPlayer(false);return}if(id==="clearsongs"){playlist=[];$("result").innerHTML='<div class="player"><h3>Порожня черга</h3>'+songs.map(a=>'<button class="btn ghost" data-addsong="'+esc(a[0])+'">'+esc(a[0])+'</button>').join('')+'</div>';activeSong=0;return}if(id==="submit"){if(!studentReady())return;let answers=exam.map((q,i)=>document.querySelector('input[name="q'+i+'"]:checked'));let f=$("examout");f.hidden=false;if(answers.some(x=>!x)){f.textContent="Дай відповіді на всі запитання.";return}let score=answers.filter((a,i)=>+a.value===exam[i][2]).length;f.innerHTML='<h3>Результат: '+score+' / 8</h3>'+(!teacher?'<p><b>'+esc($("surname").value.trim()+" "+$("firstname").value.trim())+' · '+esc($("grade").value.trim())+'</b></p>':'')+exam.map((q,i)=>'<p>'+(+answers[i].value===q[2]?'✅':'❌')+' '+(i+1)+'. '+esc(q[1][q[2]])+'</p>').join("");if(!teacher){metric("checks");state.exam=score;complete();persist();makeCheckpoint(level)}return}});
+document.addEventListener("click",e=>{let b=e.target.closest("button");if(!b||b.disabled)return;let d=b.dataset,id=b.id;if(d.level!==undefined){let n=+d.level;if(teacher||n<=unlock())render(n);return}if(id==="reset"){if(!teacher&&confirm("Скинути прогрес?")){state={done:[],score:0,exam:null};ensureStats();persist();render(0)}return}if(id==="exit-teacher"){teacher=false;$("studentbar").hidden=false;render(unlock());return}if(id==="overview"){overview();return}if(id==="prev"){render(level-1);return}if(id==="retry-report"){retryReports();return}if(id==="next-teacher"||id==="next"){if(!teacher&&id==="next"){if(!studentReady())return;makeCheckpoint(level)}render(level+1);return}if(id==="reveal"){let s=$("solution");s.hidden=!s.hidden;s.innerHTML=level<5?'<p>'+esc(theory[level].opts[theory[level].ok])+'</p>':level<10?code(solution(missions[level-5])):exam.map((q,i)=>'<p>'+(i+1)+'. '+esc(q[1][q[2]])+'</p>').join("");return}if(id==="demo"){if(teacher){$("editor").value=solution(missions[level-5]);$("editor").setSelectionRange($("editor").value.length,$("editor").value.length);updateCursorInfo();run()}return}if(d.answer!==undefined){selected=+d.answer;document.querySelectorAll("[data-answer]").forEach(x=>x.classList.toggle("selected",x===b));return}if(id==="check"){if(!studentReady())return;metric("checks");let t=theory[level],f=$("feedback"),ok=selected===t.ok;f.className="feedback show "+(ok?"good":"bad");f.textContent=ok?"✅ "+t.why:"Спробуй ще раз. Переглянь приклад.";if(ok)advance();else metric("failed");return}if(d.slot!==undefined){let i=+d.slot;document.querySelectorAll("[data-slot]").forEach(x=>x.classList.toggle("active",x===b));$("slotout").textContent="hotbar["+i+"] → "+missions[2].values[i];return}if(id==="example-route"){clearInterval(timer);let p=20,v=[20],moves=[1,1,-5],i=0;timer=setInterval(()=>{if(i===moves.length||!$("visual")){clearInterval(timer);return}p+=moves[i++];v.push(p);$("visual").innerHTML=grid(p,v)+'<button class="btn secondary" id="example-route">↺ Повторити</button>'},350);return}if(d.token!==undefined){editCode("insert",d.token==="="? " = ":d.token===","?", ":d.token);return}if(d.edit){editCode(d.edit);return}if(id==="hint"){$("hintbox").hidden=!$("hintbox").hidden;if(!$("hintbox").hidden)metric("hints");return}if(id==="run"){if(studentReady())run();return}if(d.song!==undefined){activeSong=+d.song;drawPlayer(false);return}if(id==="songplay"){embed();return}if(id==="songprev"||id==="songnext"){activeSong=(activeSong+(id==="songnext"?1:playlist.length-1))%playlist.length;drawPlayer(false);return}if(d.addsong!==undefined){playlist.push(d.addsong);drawPlayer(false);return}if(id==="clearsongs"){playlist=[];$("result").innerHTML='<div class="player"><h3>Порожня черга</h3>'+songs.map(a=>'<button class="btn ghost" data-addsong="'+esc(a[0])+'">'+esc(a[0])+'</button>').join('')+'</div>';activeSong=0;return}if(id==="submit"){if(!studentReady())return;let answers=exam.map((q,i)=>document.querySelector('input[name="q'+i+'"]:checked'));let f=$("examout");f.hidden=false;if(answers.some(x=>!x)){f.textContent="Дай відповіді на всі запитання.";return}let score=answers.filter((a,i)=>+a.value===exam[i][2]).length;f.innerHTML='<h3>Результат: '+score+' / 8</h3>'+(!teacher?'<p><b>'+esc($("surname").value.trim()+" "+$("firstname").value.trim())+' · '+esc($("grade").value.trim())+'</b></p>':'')+exam.map((q,i)=>'<p>'+(+answers[i].value===q[2]?'✅':'❌')+' '+(i+1)+'. '+esc(q[1][q[2]])+'</p>').join("");if(!teacher){metric("checks");state.exam=score;complete();persist();makeCheckpoint(level)}return}});
 const stickyStatus=$("sticky-status");function measureSticky(){document.documentElement.style.setProperty("--sticky-height",(stickyStatus.getBoundingClientRect().height+10)+"px")}if(typeof ResizeObserver!=="undefined")new ResizeObserver(measureSticky).observe(stickyStatus);measureSticky();window.addEventListener("resize",measureSticky);if("scrollRestoration" in history)history.scrollRestoration="manual";
-render(unlock(),false);if(outbox.length){$("retry-report").hidden=false;drainReports()}
+render(unlock(),false);
+if (!teacher && !state.replayedCheckpointV11 && latestCheckpoint()) {
+  state.replayedCheckpointV11 = true;
+  persist();
+  retryReports();
+} else if (outbox.length) {
+  $("retry-report").hidden = false;
+  drainReports();
+} else if (latestCheckpoint()) {
+  $("retry-report").hidden = false;
+}
 window.scrollTo({top:0,behavior:"instant"});
 window.addEventListener("pageshow",()=>window.scrollTo({top:0,behavior:"instant"}),{once:true});
 </script></body></html>
