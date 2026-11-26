@@ -520,9 +520,12 @@ tests:[[[35,25],["10"]],[[25,25],["0"]],[[20,25],["Немає ресурсів"]
 ];
 let student=null,level=0,done=0,success=false,attempts=0,hints=0,teacherMode=false;
 const RESULTS_WEB_APP="https://script.google.com/macros/s/AKfycbwt-DCRbrBcXjx8hE3g1bT8f0HtN-3Y8CKvfabe8s7jVKVTHeYhdTx2MYFHF1spHfaqMw/exec";
-const GAME_VERSION="codequest7-episode2-10missions-checkpoint-v2";
+const GAME_VERSION="codequest7-episode2-offline-autosave-v3";
 let gameStartedAt=0,levelStartedAt=0,submissionId="",sessionLevelStats=[],sessionRuns=[];
 let checkpointReports=new Map(),checkpointQueue=[],checkpointUploadBusy=false,lastCheckpointStage=0;
+const SAVE_KEY="codequest7-episode2-save-v3", SAVE_VERSION=3;
+let savedGameAvailable=null,localSaveTimer=null,profileReturn="play",lastLocalSavedAt="";
+
 
 function elapsedSeconds(since){return since?Math.max(0,Math.round((Date.now()-since)/1000)):0}
 function newStats(){
@@ -593,7 +596,8 @@ function updateCheckpointFeedback(stage,state){
   sending:"⏳ Зберігаємо прогрес після "+stage+" рівнів…",
   sent:"📤 Прогрес "+stage+"/10: запит на збереження надіслано. Остаточне підтвердження можна побачити тільки в журналі вчителя.",
   failed:"⚠️ Прогрес "+stage+"/10 не вдалося надіслати. Перевір Інтернет і натисни «Повторити збереження».",
-  pending:"⏳ Прогрес "+stage+"/10 поставлено в чергу на збереження."
+  pending:"⏳ Прогрес "+stage+"/10 поставлено в чергу на збереження.",
+  offline:"📴 Прогрес "+stage+"/10 збережено на пристрої. Звіт надішлеться після відновлення інтернету."
  };
  const text=msg[state]||msg.pending;
  const progress=$("checkpointStatus"),finish=$("sendStatus");
@@ -607,7 +611,7 @@ function updateCheckpointFeedback(stage,state){
  $("retrySend").disabled=state==="sending";
 }
 function queueCheckpoint(stage,retry=false){
- if(teacherMode||!student||!submissionId||stage<5||stage>missions.length)return;
+ if(teacherMode||!student||!submissionId||stage<1||stage>missions.length)return;
  if(!retry&&checkpointReports.has(stage))return;
  if(!checkpointReports.has(stage))checkpointReports.set(stage,makeReport(stage));
  lastCheckpointStage=Math.max(lastCheckpointStage,stage);
@@ -615,10 +619,11 @@ function queueCheckpoint(stage,retry=false){
   checkpointQueue.push({stage,report:checkpointReports.get(stage)});
  }
  updateCheckpointFeedback(stage,"pending");
+ persistProgress();
  drainCheckpointQueue(); // умисно не блокуємо перехід до наступної місії
 }
 async function drainCheckpointQueue(){
- if(checkpointUploadBusy)return;
+ if(checkpointUploadBusy||!checkpointQueue.length||navigator.onLine===false)return;
  checkpointUploadBusy=true;
  try{
   while(checkpointQueue.length){
@@ -634,8 +639,12 @@ async function drainCheckpointQueue(){
     // У режимі no-cors Google Apps Script не дає браузеру прочитати
     // відповідь сервера. "Надіслано" тут не означає "запис підтверджено".
     updateCheckpointFeedback(item.stage,"sent");
+    persistProgress();
    }catch(err){
-    updateCheckpointFeedback(item.stage,"failed");
+    checkpointQueue.unshift(item);
+    updateCheckpointFeedback(item.stage,navigator.onLine===false?"offline":"failed");
+    persistProgress();
+    break;
    }
   }
  }finally{
@@ -644,10 +653,10 @@ async function drainCheckpointQueue(){
 }
 function sendStudentReport(){queueCheckpoint(10,true);}
 $("retryCheckpoint").addEventListener("click",()=>{
- if(lastCheckpointStage>=5)queueCheckpoint(lastCheckpointStage,true);
+ if(lastCheckpointStage>=1)queueCheckpoint(lastCheckpointStage,true);
 });
 $("retrySend").addEventListener("click",()=>{
- if(lastCheckpointStage>=5)queueCheckpoint(lastCheckpointStage,true);
+ if(lastCheckpointStage>=1)queueCheckpoint(lastCheckpointStage,true);
 });
 const editor=$("editor");
 
@@ -948,7 +957,10 @@ function renderPad(){
  });
  if(granular)renderTokenPad();else renderLinePad();
 }
-function show(id){["intro","play","finish","teacherDashboard"].forEach(x=>$(x).hidden=x!==id)}
+function show(id){
+ ["intro","play","finish","teacherDashboard","achievements"].forEach(x=>$(x).hidden=x!==id);
+ if(!teacherMode&&student&&["play","finish","achievements"].includes(id))scheduleProgressSave();
+}
 
 const teacherAccessCode="Вова";
 function teacherCodeFor(m){
@@ -1038,6 +1050,7 @@ function draw(){
  $("map").innerHTML=missions.map((mm,i)=>'<span class="node '+(i<done?"done":i===level?"active":"")+'">'+(i<done?"✓":mm.id)+'</span>').join("");
  $("bar").style.width=(done/missions.length*100)+"%";
  $("score").textContent="⭐ "+done+"/"+missions.length;
+ scheduleProgressSave();
 }
 function syntaxError(message,line){throw Error((line?"Рядок "+line+": ":"")+message);}
 function parsePython(source){
@@ -1155,6 +1168,10 @@ function runCheck(){
 }
 $("studentForm").addEventListener("submit",e=>{
  e.preventDefault();if(!e.currentTarget.reportValidity())return;
+ if(loadProgress()){
+  if(!confirm("На цьому пристрої вже є збережений квест. Почати новий і видалити попередній локальний прогрес?"))return;
+  clearLocalProgress();
+ }
  const tidy=s=>s.trim().replace(/\s+/g," ");
  teacherMode=false;
  student={klass:$("studentClass").value,group:$("studentGroup").value,surname:tidy($("surname").value),first:tidy($("firstName").value)};
@@ -1164,10 +1181,11 @@ $("studentForm").addEventListener("submit",e=>{
  submissionId="cq7-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,11);
  sessionLevelStats=newStats();sessionRuns=[];
  checkpointReports=new Map();checkpointQueue=[];checkpointUploadBusy=false;lastCheckpointStage=0;
+ $("achievementOpen").hidden=false;$("localSaveIndicator").hidden=false;
  $("checkpointStatus").hidden=true;$("checkpointActions").hidden=true;
  $("sendStatus").textContent="Очікуємо збереження фінального звіту…";
  $("retrySend").hidden=true;
- show("play");$("score").hidden=false;draw();
+ show("play");$("score").hidden=false;draw();persistProgress();
 });
 $("help").addEventListener("toggle",()=>{
  if($("help").open&&!success){
@@ -1186,21 +1204,22 @@ $("check").addEventListener("click",()=>{
  const ok=runCheck();
  takeRunSnapshot(ok);
  launchScene(ok);
- if(!ok){$("help").hidden=false;return;}
- if(success)return; // повторні симуляції потрібні, щоб дослідити інші вхідні дані
+ if(!ok){$("help").hidden=false;scheduleProgressSave();return;}
+ if(success){scheduleProgressSave();return;} // повторні симуляції потрібні, щоб дослідити інші вхідні дані
  success=true;done++;
  const finishedStats=activeStats();if(finishedStats)finishedStats.completed=true;
  $("codepad").querySelectorAll("button").forEach(b=>b.disabled=true);
  editor.disabled=true;$("restore").disabled=true;
  $("check").textContent="▶ Запустити з іншими даними";
- $("nextArea").hidden=false;$("next").textContent=level===missions.length-1?"Зберегти результат 🏆":done>=5?"Зберегти та перейти →":"Наступна місія →";
+ $("nextArea").hidden=false;$("next").textContent=level===missions.length-1?"Зберегти результат 🏆":"Зберегти та перейти →";
  $("score").textContent="⭐ "+done+"/"+missions.length;
  $("bar").style.width=(done/missions.length*100)+"%";
  $("map").children[level].className="node done";
+ persistProgress();
 });
 $("restore").addEventListener("click",()=>{
  if(success)return;editor.value="";caret=selEnd=0;$("feedback").className="feedback";
- $("feedback").textContent="Редактор очищено — спробуй інший алгоритм.";$("tests").hidden=true;
+ $("feedback").textContent="Редактор очищено — спробуй інший алгоритм.";$("tests").hidden=true;scheduleProgressSave();
 });
 $("next").addEventListener("click",()=>{
  if(!success)return;
@@ -1211,6 +1230,7 @@ $("next").addEventListener("click",()=>{
   $("result").textContent="⭐ Епізод 2: "+done+" з "+missions.length+" місій · перевірок коду: "+attempts;
   show("finish");
  }else{level++;draw();}
+ persistProgress();
 });
 function report(){
  const data=makeReport();
@@ -1234,9 +1254,9 @@ $("copy").addEventListener("click",async()=>{
  $("copyStatus").hidden=false;
 });
 $("again").addEventListener("click",()=>{
- student=null;gameStartedAt=0;levelStartedAt=0;submissionId="";
- sessionLevelStats=[];sessionRuns=[];checkpointReports=new Map();checkpointQueue=[];lastCheckpointStage=0;
- $("studentForm").reset();$("score").hidden=true;show("intro");
+ if(!confirm("Почати новий квест? Збереження цього проходження на пристрої буде видалено."))return;
+ clearLocalProgress();
+ $("studentForm").reset();show("intro");
 });
 
 </script></body></html>
