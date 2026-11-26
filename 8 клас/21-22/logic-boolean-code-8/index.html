@@ -81,10 +81,11 @@
 .student-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px}.reset-progress{flex:none;min-height:32px;border:1px solid #cbab82;border-radius:9px;padding:5px 10px;color:#ffdfab;background:#413a37;font-size:12px;font-weight:850;white-space:nowrap}.reset-progress:focus-visible{outline:3px solid #ffe29c;outline-offset:2px}@media(max-width:650px){.student-actions{gap:6px}.student-actions small{display:none}.reset-progress{padding:5px 8px;font-size:11px;min-height:32px}}
 .builder-buttons .builder-chip{white-space:pre-wrap;text-align:left;justify-items:start}.builder-order .builder-chip{white-space:pre-wrap}.builder-help strong{color:#edfff8}.sample-row{display:flex;align-items:baseline;flex-wrap:wrap;gap:5px;margin-top:5px}.builder-line .builder-chip{font-family:ui-monospace,Consolas,monospace}
 .offline-chip{font-size:11px;line-height:1.4;padding:6px 8px;margin-top:5px;border:1px solid #536e92;border-radius:8px;color:#d0e0f0;background:#152741}.offline-chip[data-state="ready"],.offline-chip[data-state="offline"]{background:#16463d;color:#defff3;border-color:#64cca8}.offline-chip[data-state="error"]{background:#49352e;color:#ffdfbc;border-color:#d7a172}@media(max-width:650px){.offline-chip{font-size:10px;padding:5px 7px}}
+.game-nav{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}.progress-link{border-color:#ab8457!important;color:#ffdc9e!important;text-decoration:none}.finish .progress-link{display:inline-flex;align-items:center;justify-content:center}@media(max-width:650px){.game-nav{width:100%}.game-nav .btn{flex:1;min-width:0}}
 </style>
 </head>
 <body><div class="wrap">
-<header class="top"><div class="brand"><div class="logo">⌨️</div><div><div class="eyebrow">8 клас · Частина 2</div><strong>Агенція логіки</strong></div></div><a class="btn small" href="../logic-true-false-8/">← Теорія та гра</a></header>
+<header class="top"><div class="brand"><div class="logo">⌨️</div><div><div class="eyebrow">8 клас · Частина 2</div><strong>Агенція логіки</strong></div></div><div class="game-nav"><a class="btn small" href="../logic-true-false-8/">← Частина 1</a><a class="btn small progress-link" href="../progress/">🏅 Картка гравця</a></div></header>
 <section class="student-bar" aria-label="Дані учня і прогрес">
  <div class="student-heading"><span>Конструктор Python</span><div class="student-actions"><small>5 завдань · 12 балів</small><button id="resetAll" type="button" class="reset-progress" title="Почати нову спробу й скинути прогрес">↻ Скинути</button></div></div>
  <div class="student-fields">
@@ -121,7 +122,7 @@
  <div class="trophy">🏆</div><h2>П’ять завдань виконано!</h2>
  <p id="resultText"></p>
  <p>Ти використав(-ла) порівняння, логічні операції <code>not</code>, <code>and</code>, <code>or</code> і склав(-ла) програми з блоків.</p>
- <div class="actions"><button id="copy" class="action">Скопіювати результат</button></div>
+ <div class="actions"><button id="copy" class="action">Скопіювати результат</button><a class="btn progress-link" href="../progress/">🏅 Мої досягнення</a></div>
  <p class="mini">Після кожного завдання гра надсилає запис до Google-журналу. Фактичне збереження перевіряє вчитель.</p>
 </div>
 <footer class="footer">Практичний тренажер за КТП, урок №22. Перевіряється навчальний піднабір Python, а не повний інтерпретатор. Результати надсилаються до шкільного журналу.</footer>
@@ -147,7 +148,7 @@ function esc(text){return String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'
 function uid(){return typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():'class8-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)}
 function stored(key){try{return JSON.parse(localStorage.getItem(key)||'null')||{}}catch{return{}}}
 const legacy=stored(PREVIOUS),raw=stored(KEY),oldName=String(legacy.student||'').trim().split(/\s+/).filter(Boolean);
-function fresh(){return {step:0,builders:{},surname:String(raw.surname||legacy.surname||oldName[0]||''),firstname:String(raw.firstname||legacy.firstname||oldName.slice(1).join(' ')||''),klass:raw.klass||legacy.klass||'8-А',group:raw.group||legacy.group||'',misses:0,questionMisses:0,firstTry:0,sessionId:uid()}}
+function fresh(){return {step:0,builders:{},checks:0,surname:String(raw.surname||legacy.surname||oldName[0]||''),firstname:String(raw.firstname||legacy.firstname||oldName.slice(1).join(' ')||''),klass:raw.klass||legacy.klass||'8-А',group:raw.group||legacy.group||'',misses:0,questionMisses:0,firstTry:0,sessionId:uid()}}
 let state=Object.keys(raw).length?Object.assign(fresh(),raw):fresh();
 state.step=Math.min(5,Math.max(0,Math.trunc(Number(state.step)||0)));
 state.builders=state.builders&&typeof state.builders==='object'?state.builders:{};
@@ -292,6 +293,8 @@ function compile(source,mission){let lines=source.replace(/\r/g,'').split('\n');
 function testCode(){
  const t=current(),b=builder(),feedback=$('feedback');
  if(!t)return;
+ state.checks=Math.max(0,Math.trunc(Number(state.checks)||0))+1;
+ save();
  const p=blockProgram(t,b);
  let program;
  try{
@@ -390,4 +393,4 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&navigator
 render();sendPending();
 })();
 
-</script><script src="../offline.js" defer></script></body></html>
+</script><script src="../offline.js" defer></script><script src="../playtime.js" data-game="practice" defer></script></body></html>
