@@ -40,7 +40,7 @@ const exam=[
 ["Чи може список Python містити числа і текст одночасно?",["Так","Ні","Лише якщо він порожній"],0]
 ];
 const profileKey="python_list_9grade_student";const profileFields=["surname","firstname","grade"];let profile={};try{profile=JSON.parse(localStorage.getItem(profileKey))||{}}catch(e){};profileFields.forEach(k=>{$(k).value=typeof profile[k]==="string"?profile[k]:"";$(k).addEventListener("input",()=>{try{localStorage.setItem(profileKey,JSON.stringify(Object.fromEntries(profileFields.map(x=>[x,$(x).value]))))}catch(e){};if(profileFields.every(x=>$(x).value.trim()))$("student-warning").hidden=true})});function studentReady(){if(teacher)return true;let missing=profileFields.find(k=>!$(k).value.trim());if(!missing)return true;$("student-warning").hidden=false;$(missing).focus();return false}
-const RESULTS_WEB_APP="https://script.google.com/macros/s/AKfycby4vw0ztTgydg1QN-UXKIeC0wjGacblRiNq0-TablWEyibc9vJiL1aNMynRCwKJnFZiBg/exec";
+const RESULTS_WEB_APP="https://script.google.com/macros/s/AKfycbwXeUqDupQshEoTgvjE4ZkKTL6wSVk6Hu9RAwgd-m2kubruvc2sWz76kHQxb6OryO1G0Q/exec";
 const reportKey=key+"_outbox";let outbox=[];try{outbox=JSON.parse(localStorage.getItem(reportKey))||[]}catch(e){};if(!Array.isArray(outbox))outbox=[];let sending=false,levelStarted=Date.now();
 function ensureStats(){if(!state.sessionId)state.sessionId=(globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+Math.random().toString(36).slice(2));if(!state.started)state.started=Date.now();if(!state.stats)state.stats={};if(!state.reports)state.reports={};}
 ensureStats();
