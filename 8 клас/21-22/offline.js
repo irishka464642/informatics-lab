@@ -1,4 +1,4 @@
-/* Спільний індикатор офлайн-готовності для меню та двох ігор. */
+/* Спільний індикатор офлайн-готовності для меню, двох ігор і картки гравця. */
 (() => {
   'use strict';
   const status = document.getElementById('offlineState');
@@ -9,7 +9,8 @@
     './', './index.html',
     './logic-true-false-8/', './logic-true-false-8/index.html',
     './logic-boolean-code-8/', './logic-boolean-code-8/index.html',
-    './offline.js'
+    './progress/', './progress/index.html',
+    './offline.js', './playtime.js'
   ];
   let confirmed = false;
 
@@ -23,9 +24,9 @@
         '⏳ Готуємо ігри для роботи без інтернету…' :
         '⚠️ Офлайн-кеш ще не готовий. Підключись до інтернету й відкрий меню ігор.', 'pending');
     } else if (navigator.onLine) {
-      update('✅ Обидві гри збережено на телефоні. Можна працювати без інтернету.', 'ready');
+      update('✅ Обидві гри та картка прогресу збережені на телефоні. Можна працювати без інтернету.', 'ready');
     } else {
-      update('📴 Офлайн-режим: гра працює. Прогрес зберігається на телефоні.', 'offline');
+      update('📴 Офлайн-режим: ігри й картка доступні. Прогрес зберігається на телефоні.', 'offline');
     }
   }
   async function readyInCache() {
@@ -51,7 +52,7 @@
       // використовуємо вже встановлений service worker з телефону.
       let registration = await navigator.serviceWorker.getRegistration(scopeURL.href);
       // Інші ігри цього репозиторію можуть мати власний SW з ширшою областю.
-      // Нам потрібна реєстрація саме для цих двох уроків.
+      // Нам потрібна реєстрація саме для цього офлайн-комплекту.
       if (registration && registration.scope !== scopeURL.href) registration = null;
       if (!registration) {
         if (!navigator.onLine) {
@@ -69,10 +70,15 @@
       confirmed = await readyInCache();
       if (!confirmed && navigator.onLine) {
         try { await registration.update(); } catch {}
-        confirmed = await readyInCache();
+        // Оновлення SW і завантаження всіх сторінок асинхронні.
+        // Зелений статус показуємо лише коли весь комплект є у кеші.
+        for (let i=0; i<24 && !confirmed; i++) {
+          confirmed = await readyInCache();
+          if (!confirmed) await new Promise(resolve => setTimeout(resolve, 500));
+        }
       }
       if (!confirmed) {
-        update('⚠️ Не всі сторінки збережено. Підключись до інтернету та онови сторінку.', 'error');
+        update('⚠️ Картка або гра ще не збережена. Підключись до інтернету, онови меню й дочекайся зеленого повідомлення.', 'error');
       } else show();
     } catch (e) {
       update('⚠️ Не вдалося зберегти ігри для офлайн-роботи. Спробуй ще раз з інтернетом.', 'error');
