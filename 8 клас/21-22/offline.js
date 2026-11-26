@@ -47,8 +47,20 @@
     }
     show();
     try {
-      const registration = await navigator.serviceWorker.register(swURL.href,
-        {scope: scopeURL.href, updateViaCache: 'none'});
+      // Якщо інтернет зник, не намагаємося повторно завантажити sw.js:
+      // використовуємо вже встановлений service worker з телефону.
+      let registration = await navigator.serviceWorker.getRegistration(scopeURL.href);
+      if (!registration) {
+        if (!navigator.onLine) {
+          update('⚠️ Спочатку відкрий меню один раз з інтернетом і дочекайся ✅.', 'error');
+          return;
+        }
+        registration = await navigator.serviceWorker.register(swURL.href,
+          {scope: scopeURL.href, updateViaCache: 'none'});
+      } else if (navigator.onLine) {
+        // Перевірка оновлення не перешкоджає роботі старого офлайн-кешу.
+        registration.update().catch(() => {});
+      }
       // Service worker install waits until ALL game pages have been cached.
       await navigator.serviceWorker.ready;
       confirmed = await readyInCache();
