@@ -1,7 +1,7 @@
 /* Агенція логіки — офлайн-кеш для уроків 21–22, 8 клас.
    Прогрес і персональні дані НЕ зберігаються в цьому кеші:
    вони залишаються тільки в localStorage браузера учня. */
-const VERSION = 'agency-logic-8-offline-v20261127-2';
+const VERSION = 'agency-logic-8-offline-v20261127-3';
 const FILES = [
   './',
   './index.html',
