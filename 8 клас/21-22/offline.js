@@ -50,6 +50,9 @@
       // Якщо інтернет зник, не намагаємося повторно завантажити sw.js:
       // використовуємо вже встановлений service worker з телефону.
       let registration = await navigator.serviceWorker.getRegistration(scopeURL.href);
+      // Інші ігри цього репозиторію можуть мати власний SW з ширшою областю.
+      // Нам потрібна реєстрація саме для цих двох уроків.
+      if (registration && registration.scope !== scopeURL.href) registration = null;
       if (!registration) {
         if (!navigator.onLine) {
           update('⚠️ Спочатку відкрий меню один раз з інтернетом і дочекайся ✅.', 'error');
