@@ -290,12 +290,43 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
  .task-footer{font-size:12px}
 }
 
+
+.hud-actions{display:flex;align-items:end;flex-direction:column;gap:6px;flex-shrink:0}
+.hud-actions button{font-size:13px;min-height:40px;padding:8px 11px;border:1px solid #f1b653;color:#ffdc92;background:#352c27}
+.hud-actions .score{display:block;text-align:right}
+.save-indicator{font-size:11px;color:#b7d8cb;max-width:170px;text-align:right}
+.offline-alert{background:#402d24;border:1px solid #d99443;color:#ffe7ac;border-radius:13px;padding:10px 13px;font-size:13px;margin:12px 0}
+.resume-card{border:1px solid #e7ab4c;background:linear-gradient(125deg,#453526,#212d43);border-radius:18px;padding:17px;margin:16px 0;box-shadow:0 8px 25px #060b1745}
+.resume-card strong{display:block;color:#ffe0a1;font-size:20px}.resume-card p{font-size:14px;color:#dbe4ed;margin:8px 0}
+.achievement-page{padding:0!important;overflow:hidden;border:1px solid #b98838!important;background:linear-gradient(160deg,#262e32,#101d2c 60%,#162337)!important}
+.achievement-top{background:radial-gradient(circle at 80% 13%,#be812e55,transparent 47%),linear-gradient(135deg,#40382d,#172337);padding:clamp(19px,5vw,31px);border-bottom:1px solid #b18c50}
+.achievement-tag{color:#ffe090;font-size:12px;font-weight:900;letter-spacing:2px}
+.achievement-top h2{font-size:clamp(27px,7vw,41px);line-height:1.13;margin:12px 0 5px;color:#f6f8fc;overflow-wrap:anywhere}
+.achievement-class{color:#bad5e3;font-size:16px}.achievement-rank{display:inline-block;margin-top:13px;border-radius:9px;background:#ae75283d;border:1px solid #986929;color:#ffdf83;padding:8px 12px;font-weight:900;font-size:13px}
+.achievement-content{padding:clamp(17px,4vw,27px)}.achievement-progress{height:11px;background:#0b1522;border-radius:50px;overflow:hidden;margin:10px 0 17px}
+.achievement-progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#e96d26,#ffc862);transition:width .3s}
+.achievement-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.achievement-stat{padding:18px 16px;background:#202e37;border:1px solid #44515a;border-radius:16px;min-width:0}
+.achievement-stat.main{background:linear-gradient(135deg,#c76c18,#f1a236);color:#171b22;border:0}
+.achievement-stat strong{display:block;font-size:clamp(29px,7vw,40px);line-height:1.1;font-weight:950;font-variant-numeric:tabular-nums}
+.achievement-stat small{font-size:13px;color:#bfd0dc}.achievement-stat.main small{color:#302214;font-weight:700}
+.achievement-section-title{font-size:14px;font-weight:900;letter-spacing:.8px;color:#f2c46b;margin:24px 0 12px}
+.achievement-badges{display:flex;flex-wrap:wrap;gap:8px}.achievement-badge{font-size:13px;background:#203642;border:1px solid #597080;border-radius:999px;padding:9px 12px;font-weight:800}
+.achievement-badge.locked{color:#788792;background:#17212e;border-color:#364452}
+.achievement-levels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.achievement-level{background:#1b2a37;border:1px solid #374e62;border-radius:10px;padding:9px 10px;font-size:12px;color:#dce9f6}
+.achievement-level strong{display:block;color:#b6e59f;font-size:11px;letter-spacing:.5px}.achievement-level.pending{opacity:.58}
+.achievement-note{font-size:12px;color:#b7c7d5;padding-top:14px}.achievement-bottom{border-top:1px solid #4e533f;margin-top:17px;padding-top:15px}
+@media(max-width:460px){header h1{font-size:26px}.hud-actions button{font-size:11px;padding:8px}.achievement-levels{grid-template-columns:1fr 1fr}}
+@media print{header,#intro,#play,#finish,.achievement-actions,#offlineStatus,footer{display:none!important}body{background:white!important}main{padding:0}.achievement-page{border:0!important}}
 </style></head><body><main>
-<header><div><span class="tag">Інформатика · 7 клас · Python</span><h1>⚡ CODE QUEST 7</h1><small>Місії 10–19 · Епізод 2 · Python</small></div><div id="score" class="score" hidden>⭐ 0/10</div></header>
+<header><div><span class="tag">Інформатика · 7 клас · Python</span><h1>⚡ CODE QUEST 7</h1><small>Місії 10–19 · Епізод 2 · Python</small></div><div class="hud-actions"><div id="score" class="score" hidden>⭐ 0/10</div><button type="button" id="achievementOpen" hidden>🏅 Мої досягнення</button><small class="save-indicator" id="localSaveIndicator" hidden></small></div></header>
+<div id="offlineStatus" class="offline-alert" role="status" hidden>📴 Немає інтернету. Квест і досягнення працюють офлайн, прогрес зберігається на цьому пристрої. Звіти для вчителя надішлються після повернення зв’язку.</div>
 <section id="intro" class="panel">
 <div class="character">🎮 ⚡ 🖥️</div>
 <h2>Лабіринт рішень</h2>
 <p>Після фінального калькулятора відкрилася нова зона цифрової арени! Тепер база потребує рішень: коли відкрити міст, як перевірити код і чи вистачить ресурсів. Пройди 10 нових місій із командами <strong>if, else, elif</strong>. У рівнях 1–5 збирай програму готовими рядками, а в рівнях 6–10 — з окремих команд, змінних, знаків і дужок. Після кожного запуску побачиш результат на ігровій сцені. <a class="backlink" href="../python-quest-7/">↩ Повернутися до епізоду 1</a></p>
+<div id="savedGamePrompt" class="resume-card" hidden><strong>💾 Знайдено збережений квест</strong><p id="savedGameDetails"></p><div class="actions"><button type="button" class="primary" id="resumeSaved">▶ Продовжити</button><button type="button" class="secondary" id="viewSavedAwards">🏅 Досягнення</button></div><div class="actions"><button type="button" class="secondary" id="eraseSaved">🗑 Почати новий квест</button></div></div>
 <h2 style="font-size:20px">Профіль гравця</h2>
 <form id="studentForm">
 <div class="fields">
@@ -396,6 +427,22 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
 <div class="actions" id="checkpointActions" hidden><button type="button" class="secondary" id="retryCheckpoint">↻ Повторити збереження результатів</button></div>
 </div>
 </section>
+<section id="achievements" class="panel achievement-page" hidden>
+<div class="achievement-top"><span class="achievement-tag">✦ CODE QUEST 7 · КАРТКА ГРАВЦЯ</span><h2 id="awardName"></h2><div id="awardClass" class="achievement-class"></div><div id="awardRank" class="achievement-rank"></div></div>
+<div class="achievement-content">
+<div class="achievement-section-title">ПРОГРЕС ЕКСПЕДИЦІЇ</div><div id="awardProgressText"></div><div class="achievement-progress"><span id="awardProgressFill"></span></div>
+<div class="achievement-stats">
+ <div class="achievement-stat main"><strong id="awardDone">0/10</strong><small>місій пройдено</small></div>
+ <div class="achievement-stat"><strong id="awardDatasets">0/28</strong><small>тестових наборів перевірено</small></div>
+ <div class="achievement-stat"><strong id="awardAttempts">0</strong><small>запусків коду</small></div>
+ <div class="achievement-stat"><strong id="awardTime">0 хв</strong><small>часу в квесті</small></div>
+</div>
+<div class="achievement-section-title">НАГОРОДИ ТА ЗВАННЯ</div><div class="achievement-badges" id="awardBadges"></div>
+<div class="achievement-section-title">ЖУРНАЛ МІСІЙ</div><div class="achievement-levels" id="awardLevels"></div>
+<p id="awardSavedAt" class="achievement-note"></p>
+<div class="achievement-bottom achievement-actions actions"><button type="button" class="primary" id="awardBack">← Повернутися до гри</button><button type="button" class="secondary" id="awardCopy">📋 Скопіювати результати</button><button type="button" class="secondary" id="awardPrint">🖨 Друк / PDF</button></div>
+<div id="awardCopyMessage" class="feedback" hidden></div>
+</div></section>
 <section id="finish" class="panel" hidden style="text-align:center">
 <div class="character">🏆 ⚡</div><h2>Усі місії виконано!</h2>
 <div class="student-summary" id="studentSummary"></div>
@@ -403,7 +450,7 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
 <p class="muted">Проміжні результати надсилаються після 5-го рівня та після кожного наступного. Останній звіт містить усі пройдені місії й тестові дані. Якщо немає Інтернету, повтори надсилання або скопіюй результат.</p>
 <div id="sendStatus" class="feedback" role="status" aria-live="polite">Готуємо звіт для шкільної Google Таблиці…</div>
 <div class="actions"><button type="button" class="secondary" id="retrySend" hidden>↻ Повторити надсилання звіту</button></div>
-<div class="actions"><button class="primary" id="copy">📋 Скопіювати результат</button><button class="secondary" id="again">↺ Новий квест</button></div>
+<div class="actions"><button type="button" class="primary" id="finishAwards">🏅 Мої досягнення</button><button class="secondary" id="copy">📋 Скопіювати результат</button><button class="secondary" id="again">↺ Новий квест</button></div>
 <div class="feedback" id="copyStatus" hidden></div>
 </section>
 <footer>Навчальний тренажер без зовнішніх бібліотек. Виконує обмежений набір команд Python для перевірки задач, а не весь Python.</footer>
