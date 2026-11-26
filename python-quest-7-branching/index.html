@@ -290,12 +290,43 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
  .task-footer{font-size:12px}
 }
 
+
+.hud-actions{display:flex;align-items:end;flex-direction:column;gap:6px;flex-shrink:0}
+.hud-actions button{font-size:13px;min-height:40px;padding:8px 11px;border:1px solid #f1b653;color:#ffdc92;background:#352c27}
+.hud-actions .score{display:block;text-align:right}
+.save-indicator{font-size:11px;color:#b7d8cb;max-width:170px;text-align:right}
+.offline-alert{background:#402d24;border:1px solid #d99443;color:#ffe7ac;border-radius:13px;padding:10px 13px;font-size:13px;margin:12px 0}
+.resume-card{border:1px solid #e7ab4c;background:linear-gradient(125deg,#453526,#212d43);border-radius:18px;padding:17px;margin:16px 0;box-shadow:0 8px 25px #060b1745}
+.resume-card strong{display:block;color:#ffe0a1;font-size:20px}.resume-card p{font-size:14px;color:#dbe4ed;margin:8px 0}
+.achievement-page{padding:0!important;overflow:hidden;border:1px solid #b98838!important;background:linear-gradient(160deg,#262e32,#101d2c 60%,#162337)!important}
+.achievement-top{background:radial-gradient(circle at 80% 13%,#be812e55,transparent 47%),linear-gradient(135deg,#40382d,#172337);padding:clamp(19px,5vw,31px);border-bottom:1px solid #b18c50}
+.achievement-tag{color:#ffe090;font-size:12px;font-weight:900;letter-spacing:2px}
+.achievement-top h2{font-size:clamp(27px,7vw,41px);line-height:1.13;margin:12px 0 5px;color:#f6f8fc;overflow-wrap:anywhere}
+.achievement-class{color:#bad5e3;font-size:16px}.achievement-rank{display:inline-block;margin-top:13px;border-radius:9px;background:#ae75283d;border:1px solid #986929;color:#ffdf83;padding:8px 12px;font-weight:900;font-size:13px}
+.achievement-content{padding:clamp(17px,4vw,27px)}.achievement-progress{height:11px;background:#0b1522;border-radius:50px;overflow:hidden;margin:10px 0 17px}
+.achievement-progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#e96d26,#ffc862);transition:width .3s}
+.achievement-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.achievement-stat{padding:18px 16px;background:#202e37;border:1px solid #44515a;border-radius:16px;min-width:0}
+.achievement-stat.main{background:linear-gradient(135deg,#c76c18,#f1a236);color:#171b22;border:0}
+.achievement-stat strong{display:block;font-size:clamp(29px,7vw,40px);line-height:1.1;font-weight:950;font-variant-numeric:tabular-nums}
+.achievement-stat small{font-size:13px;color:#bfd0dc}.achievement-stat.main small{color:#302214;font-weight:700}
+.achievement-section-title{font-size:14px;font-weight:900;letter-spacing:.8px;color:#f2c46b;margin:24px 0 12px}
+.achievement-badges{display:flex;flex-wrap:wrap;gap:8px}.achievement-badge{font-size:13px;background:#203642;border:1px solid #597080;border-radius:999px;padding:9px 12px;font-weight:800}
+.achievement-badge.locked{color:#788792;background:#17212e;border-color:#364452}
+.achievement-levels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.achievement-level{background:#1b2a37;border:1px solid #374e62;border-radius:10px;padding:9px 10px;font-size:12px;color:#dce9f6}
+.achievement-level strong{display:block;color:#b6e59f;font-size:11px;letter-spacing:.5px}.achievement-level.pending{opacity:.58}
+.achievement-note{font-size:12px;color:#b7c7d5;padding-top:14px}.achievement-bottom{border-top:1px solid #4e533f;margin-top:17px;padding-top:15px}
+@media(max-width:460px){header h1{font-size:26px}.hud-actions button{font-size:11px;padding:8px}.achievement-levels{grid-template-columns:1fr 1fr}}
+@media print{header,#intro,#play,#finish,.achievement-actions,#offlineStatus,footer{display:none!important}body{background:white!important}main{padding:0}.achievement-page{border:0!important}}
 </style></head><body><main>
-<header><div><span class="tag">Інформатика · 7 клас · Python</span><h1>⚡ CODE QUEST 7</h1><small>Місії 10–19 · Епізод 2 · Python</small></div><div id="score" class="score" hidden>⭐ 0/10</div></header>
+<header><div><span class="tag">Інформатика · 7 клас · Python</span><h1>⚡ CODE QUEST 7</h1><small>Місії 10–19 · Епізод 2 · Python</small></div><div class="hud-actions"><div id="score" class="score" hidden>⭐ 0/10</div><button type="button" id="achievementOpen" hidden>🏅 Мої досягнення</button><small class="save-indicator" id="localSaveIndicator" hidden></small></div></header>
+<div id="offlineStatus" class="offline-alert" role="status" hidden>📴 Немає інтернету. Квест і досягнення працюють офлайн, прогрес зберігається на цьому пристрої. Звіти для вчителя надішлються після повернення зв’язку.</div>
 <section id="intro" class="panel">
 <div class="character">🎮 ⚡ 🖥️</div>
 <h2>Лабіринт рішень</h2>
 <p>Після фінального калькулятора відкрилася нова зона цифрової арени! Тепер база потребує рішень: коли відкрити міст, як перевірити код і чи вистачить ресурсів. Пройди 10 нових місій із командами <strong>if, else, elif</strong>. У рівнях 1–5 збирай програму готовими рядками, а в рівнях 6–10 — з окремих команд, змінних, знаків і дужок. Після кожного запуску побачиш результат на ігровій сцені. <a class="backlink" href="../python-quest-7/">↩ Повернутися до епізоду 1</a></p>
+<div id="savedGamePrompt" class="resume-card" hidden><strong>💾 Знайдено збережений квест</strong><p id="savedGameDetails"></p><div class="actions"><button type="button" class="primary" id="resumeSaved">▶ Продовжити</button><button type="button" class="secondary" id="viewSavedAwards">🏅 Досягнення</button></div><div class="actions"><button type="button" class="secondary" id="eraseSaved">🗑 Почати новий квест</button></div></div>
 <h2 style="font-size:20px">Профіль гравця</h2>
 <form id="studentForm">
 <div class="fields">
@@ -303,7 +334,7 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
 <label>Група<select id="studentGroup" required><option value="">Обери групу</option><option value="1">1 група</option><option value="2">2 група</option></select></label>
 <label>Прізвище<input id="surname" required maxlength="50" autocomplete="family-name" placeholder="Наприклад, Петренко"></label>
 <label>Ім’я<input id="firstName" required maxlength="50" autocomplete="given-name" placeholder="Наприклад, Марія"></label>
-</div><small>Уводь лише навчальні дані. Номер телефону, паролі та адресу не потрібно. Ім'я не надсилається на сервер.</small>
+</div><small>Уводь лише навчальні дані. Номер телефону, паролі та адресу не потрібно. ПІБ передається тільки до шкільного журналу результатів, не вводь особистих контактних даних.</small>
 <div class="actions"><button type="submit" class="primary">Увійти в гру →</button></div>
 </form>
 <details class="teacher-entry" id="teacherEntry">
@@ -396,6 +427,22 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
 <div class="actions" id="checkpointActions" hidden><button type="button" class="secondary" id="retryCheckpoint">↻ Повторити збереження результатів</button></div>
 </div>
 </section>
+<section id="achievements" class="panel achievement-page" hidden>
+<div class="achievement-top"><span class="achievement-tag">✦ CODE QUEST 7 · КАРТКА ГРАВЦЯ</span><h2 id="awardName"></h2><div id="awardClass" class="achievement-class"></div><div id="awardRank" class="achievement-rank"></div></div>
+<div class="achievement-content">
+<div class="achievement-section-title">ПРОГРЕС ЕКСПЕДИЦІЇ</div><div id="awardProgressText"></div><div class="achievement-progress"><span id="awardProgressFill"></span></div>
+<div class="achievement-stats">
+ <div class="achievement-stat main"><strong id="awardDone">0/10</strong><small>місій пройдено</small></div>
+ <div class="achievement-stat"><strong id="awardDatasets">0/28</strong><small>тестових наборів перевірено</small></div>
+ <div class="achievement-stat"><strong id="awardAttempts">0</strong><small>запусків коду</small></div>
+ <div class="achievement-stat"><strong id="awardTime">0 хв</strong><small>часу в квесті</small></div>
+</div>
+<div class="achievement-section-title">НАГОРОДИ ТА ЗВАННЯ</div><div class="achievement-badges" id="awardBadges"></div>
+<div class="achievement-section-title">ЖУРНАЛ МІСІЙ</div><div class="achievement-levels" id="awardLevels"></div>
+<p id="awardSavedAt" class="achievement-note"></p>
+<div class="achievement-bottom achievement-actions actions"><button type="button" class="primary" id="awardBack">← Повернутися до гри</button><button type="button" class="secondary" id="awardCopy">📋 Скопіювати результати</button><button type="button" class="secondary" id="awardPrint">🖨 Друк / PDF</button></div>
+<div id="awardCopyMessage" class="feedback" hidden></div>
+</div></section>
 <section id="finish" class="panel" hidden style="text-align:center">
 <div class="character">🏆 ⚡</div><h2>Усі місії виконано!</h2>
 <div class="student-summary" id="studentSummary"></div>
@@ -403,7 +450,7 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
 <p class="muted">Проміжні результати надсилаються після 5-го рівня та після кожного наступного. Останній звіт містить усі пройдені місії й тестові дані. Якщо немає Інтернету, повтори надсилання або скопіюй результат.</p>
 <div id="sendStatus" class="feedback" role="status" aria-live="polite">Готуємо звіт для шкільної Google Таблиці…</div>
 <div class="actions"><button type="button" class="secondary" id="retrySend" hidden>↻ Повторити надсилання звіту</button></div>
-<div class="actions"><button class="primary" id="copy">📋 Скопіювати результат</button><button class="secondary" id="again">↺ Новий квест</button></div>
+<div class="actions"><button type="button" class="primary" id="finishAwards">🏅 Мої досягнення</button><button class="secondary" id="copy">📋 Скопіювати результат</button><button class="secondary" id="again">↺ Новий квест</button></div>
 <div class="feedback" id="copyStatus" hidden></div>
 </section>
 <footer>Навчальний тренажер без зовнішніх бібліотек. Виконує обмежений набір команд Python для перевірки задач, а не весь Python.</footer>
@@ -473,9 +520,12 @@ tests:[[[35,25],["10"]],[[25,25],["0"]],[[20,25],["Немає ресурсів"]
 ];
 let student=null,level=0,done=0,success=false,attempts=0,hints=0,teacherMode=false;
 const RESULTS_WEB_APP="https://script.google.com/macros/s/AKfycbwt-DCRbrBcXjx8hE3g1bT8f0HtN-3Y8CKvfabe8s7jVKVTHeYhdTx2MYFHF1spHfaqMw/exec";
-const GAME_VERSION="codequest7-episode2-10missions-checkpoint-v2";
+const GAME_VERSION="codequest7-episode2-offline-autosave-v3";
 let gameStartedAt=0,levelStartedAt=0,submissionId="",sessionLevelStats=[],sessionRuns=[];
 let checkpointReports=new Map(),checkpointQueue=[],checkpointUploadBusy=false,lastCheckpointStage=0;
+const SAVE_KEY="codequest7-episode2-save-v3", SAVE_VERSION=3;
+let savedGameAvailable=null,localSaveTimer=null,profileReturn="play",lastLocalSavedAt="";
+
 
 function elapsedSeconds(since){return since?Math.max(0,Math.round((Date.now()-since)/1000)):0}
 function newStats(){
@@ -546,7 +596,8 @@ function updateCheckpointFeedback(stage,state){
   sending:"⏳ Зберігаємо прогрес після "+stage+" рівнів…",
   sent:"📤 Прогрес "+stage+"/10: запит на збереження надіслано. Остаточне підтвердження можна побачити тільки в журналі вчителя.",
   failed:"⚠️ Прогрес "+stage+"/10 не вдалося надіслати. Перевір Інтернет і натисни «Повторити збереження».",
-  pending:"⏳ Прогрес "+stage+"/10 поставлено в чергу на збереження."
+  pending:"⏳ Прогрес "+stage+"/10 поставлено в чергу на збереження.",
+  offline:"📴 Прогрес "+stage+"/10 збережено на пристрої. Звіт надішлеться після відновлення інтернету."
  };
  const text=msg[state]||msg.pending;
  const progress=$("checkpointStatus"),finish=$("sendStatus");
@@ -560,7 +611,7 @@ function updateCheckpointFeedback(stage,state){
  $("retrySend").disabled=state==="sending";
 }
 function queueCheckpoint(stage,retry=false){
- if(teacherMode||!student||!submissionId||stage<5||stage>missions.length)return;
+ if(teacherMode||!student||!submissionId||stage<1||stage>missions.length)return;
  if(!retry&&checkpointReports.has(stage))return;
  if(!checkpointReports.has(stage))checkpointReports.set(stage,makeReport(stage));
  lastCheckpointStage=Math.max(lastCheckpointStage,stage);
@@ -568,10 +619,11 @@ function queueCheckpoint(stage,retry=false){
   checkpointQueue.push({stage,report:checkpointReports.get(stage)});
  }
  updateCheckpointFeedback(stage,"pending");
+ persistProgress();
  drainCheckpointQueue(); // умисно не блокуємо перехід до наступної місії
 }
 async function drainCheckpointQueue(){
- if(checkpointUploadBusy)return;
+ if(checkpointUploadBusy||!checkpointQueue.length||navigator.onLine===false)return;
  checkpointUploadBusy=true;
  try{
   while(checkpointQueue.length){
@@ -587,8 +639,12 @@ async function drainCheckpointQueue(){
     // У режимі no-cors Google Apps Script не дає браузеру прочитати
     // відповідь сервера. "Надіслано" тут не означає "запис підтверджено".
     updateCheckpointFeedback(item.stage,"sent");
+    persistProgress();
    }catch(err){
-    updateCheckpointFeedback(item.stage,"failed");
+    checkpointQueue.unshift(item);
+    updateCheckpointFeedback(item.stage,navigator.onLine===false?"offline":"failed");
+    persistProgress();
+    break;
    }
   }
  }finally{
@@ -597,10 +653,10 @@ async function drainCheckpointQueue(){
 }
 function sendStudentReport(){queueCheckpoint(10,true);}
 $("retryCheckpoint").addEventListener("click",()=>{
- if(lastCheckpointStage>=5)queueCheckpoint(lastCheckpointStage,true);
+ if(lastCheckpointStage>=1)queueCheckpoint(lastCheckpointStage,true);
 });
 $("retrySend").addEventListener("click",()=>{
- if(lastCheckpointStage>=5)queueCheckpoint(lastCheckpointStage,true);
+ if(lastCheckpointStage>=1)queueCheckpoint(lastCheckpointStage,true);
 });
 const editor=$("editor");
 
@@ -901,7 +957,10 @@ function renderPad(){
  });
  if(granular)renderTokenPad();else renderLinePad();
 }
-function show(id){["intro","play","finish","teacherDashboard"].forEach(x=>$(x).hidden=x!==id)}
+function show(id){
+ ["intro","play","finish","teacherDashboard","achievements"].forEach(x=>$(x).hidden=x!==id);
+ if(!teacherMode&&student&&["play","finish","achievements"].includes(id))scheduleProgressSave();
+}
 
 const teacherAccessCode="Вова";
 function teacherCodeFor(m){
@@ -991,6 +1050,7 @@ function draw(){
  $("map").innerHTML=missions.map((mm,i)=>'<span class="node '+(i<done?"done":i===level?"active":"")+'">'+(i<done?"✓":mm.id)+'</span>').join("");
  $("bar").style.width=(done/missions.length*100)+"%";
  $("score").textContent="⭐ "+done+"/"+missions.length;
+ scheduleProgressSave();
 }
 function syntaxError(message,line){throw Error((line?"Рядок "+line+": ":"")+message);}
 function parsePython(source){
@@ -1108,6 +1168,10 @@ function runCheck(){
 }
 $("studentForm").addEventListener("submit",e=>{
  e.preventDefault();if(!e.currentTarget.reportValidity())return;
+ if(loadProgress()){
+  if(!confirm("На цьому пристрої вже є збережений квест. Почати новий і видалити попередній локальний прогрес?"))return;
+  clearLocalProgress();
+ }
  const tidy=s=>s.trim().replace(/\s+/g," ");
  teacherMode=false;
  student={klass:$("studentClass").value,group:$("studentGroup").value,surname:tidy($("surname").value),first:tidy($("firstName").value)};
@@ -1117,10 +1181,11 @@ $("studentForm").addEventListener("submit",e=>{
  submissionId="cq7-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,11);
  sessionLevelStats=newStats();sessionRuns=[];
  checkpointReports=new Map();checkpointQueue=[];checkpointUploadBusy=false;lastCheckpointStage=0;
+ $("achievementOpen").hidden=false;$("localSaveIndicator").hidden=false;
  $("checkpointStatus").hidden=true;$("checkpointActions").hidden=true;
  $("sendStatus").textContent="Очікуємо збереження фінального звіту…";
  $("retrySend").hidden=true;
- show("play");$("score").hidden=false;draw();
+ show("play");$("score").hidden=false;draw();persistProgress();
 });
 $("help").addEventListener("toggle",()=>{
  if($("help").open&&!success){
@@ -1139,31 +1204,33 @@ $("check").addEventListener("click",()=>{
  const ok=runCheck();
  takeRunSnapshot(ok);
  launchScene(ok);
- if(!ok){$("help").hidden=false;return;}
- if(success)return; // повторні симуляції потрібні, щоб дослідити інші вхідні дані
+ if(!ok){$("help").hidden=false;scheduleProgressSave();return;}
+ if(success){scheduleProgressSave();return;} // повторні симуляції потрібні, щоб дослідити інші вхідні дані
  success=true;done++;
  const finishedStats=activeStats();if(finishedStats)finishedStats.completed=true;
  $("codepad").querySelectorAll("button").forEach(b=>b.disabled=true);
  editor.disabled=true;$("restore").disabled=true;
  $("check").textContent="▶ Запустити з іншими даними";
- $("nextArea").hidden=false;$("next").textContent=level===missions.length-1?"Зберегти результат 🏆":done>=5?"Зберегти та перейти →":"Наступна місія →";
+ $("nextArea").hidden=false;$("next").textContent=level===missions.length-1?"Зберегти результат 🏆":"Зберегти та перейти →";
  $("score").textContent="⭐ "+done+"/"+missions.length;
  $("bar").style.width=(done/missions.length*100)+"%";
  $("map").children[level].className="node done";
+ persistProgress();
 });
 $("restore").addEventListener("click",()=>{
  if(success)return;editor.value="";caret=selEnd=0;$("feedback").className="feedback";
- $("feedback").textContent="Редактор очищено — спробуй інший алгоритм.";$("tests").hidden=true;
+ $("feedback").textContent="Редактор очищено — спробуй інший алгоритм.";$("tests").hidden=true;scheduleProgressSave();
 });
 $("next").addEventListener("click",()=>{
  if(!success)return;
  closeLevelTimer();
- if(done>=5)queueCheckpoint(done);
+ if(done>=1)queueCheckpoint(done);
  if(level===missions.length-1){
   $("studentSummary").textContent=student.klass+" · група "+student.group+" · "+student.surname+" "+student.first;
   $("result").textContent="⭐ Епізод 2: "+done+" з "+missions.length+" місій · перевірок коду: "+attempts;
   show("finish");
  }else{level++;draw();}
+ persistProgress();
 });
 function report(){
  const data=makeReport();
@@ -1186,10 +1253,220 @@ $("copy").addEventListener("click",async()=>{
  }catch(e){$("copyStatus").textContent="Зроби скриншот — копіювання недоступне.";}
  $("copyStatus").hidden=false;
 });
-$("again").addEventListener("click",()=>{
+
+/* Автозбереження працює локально після кожного введення, тесту і переходу.
+   Для offline-first квесту не потрібно виконувати запити на сервер для редагування коду. */
+function collectProgress(){
+ const stats=sessionLevelStats.map((m,i)=>({
+  ...m,usedInputs:m.usedInputs.map(a=>a.slice()),
+  durationSeconds:m.durationSeconds+(i===level&&levelStartedAt?elapsedSeconds(levelStartedAt):0)
+ }));
+ return {
+  saveVersion:SAVE_VERSION,savedAt:new Date().toISOString(),
+  elapsedGameSeconds:elapsedSeconds(gameStartedAt),student:{...student},
+  level,done,success,attempts,hints,submissionId,selectedTest,
+  code:editor.value,stats,runs:sessionRuns.map(r=>({...r,inputs:r.inputs.slice()})),
+  checkpointReports:[...checkpointReports.entries()],
+  pendingUploads:checkpointQueue.map(item=>({stage:item.stage,report:item.report})),
+  lastCheckpointStage,profileReturn,
+  view:$("finish").hidden===false?"finish":$("achievements").hidden===false?"achievements":"play"
+ };
+}
+function persistProgress(){
+ if(teacherMode||!student||!submissionId)return;
+ try{
+  const data=collectProgress();
+  localStorage.setItem(SAVE_KEY,JSON.stringify(data));
+  lastLocalSavedAt=data.savedAt;
+  $("localSaveIndicator").hidden=false;
+  $("localSaveIndicator").textContent="✓ Збережено на пристрої";
+  savedGameAvailable=data;
+ }catch(err){
+  $("localSaveIndicator").hidden=false;
+  $("localSaveIndicator").textContent="⚠️ Не вдалося зберегти прогрес";
+ }
+}
+function scheduleProgressSave(){
+ if(teacherMode||!student)return;
+ if(localSaveTimer!==null)clearTimeout(localSaveTimer);
+ localSaveTimer=setTimeout(()=>{localSaveTimer=null;persistProgress()},120);
+}
+function loadProgress(){
+ try{
+  const raw=localStorage.getItem(SAVE_KEY);if(!raw)return null;
+  const data=JSON.parse(raw);
+  if(data.saveVersion!==SAVE_VERSION||!data.student||!data.submissionId||
+     !Array.isArray(data.stats)||data.stats.length!==missions.length||
+     !Array.isArray(data.runs))return null;
+  return data;
+ }catch(err){return null;}
+}
+function showSavedGamePrompt(){
+ const saved=loadProgress();savedGameAvailable=saved;
+ $("savedGamePrompt").hidden=!saved;
+ if(!saved)return;
+ const date=saved.savedAt?new Date(saved.savedAt).toLocaleString("uk-UA"):"раніше";
+ $("savedGameDetails").textContent=saved.student.klass+" · "+saved.student.surname+" "+saved.student.first+
+  " · виконано "+saved.done+"/10 місій · збережено "+date+". Можна відновити навіть незавершений код.";
+}
+function restoreProgress(data=loadProgress()){
+ if(!data)return false;
+ teacherMode=false;
+ student={...data.student};
+ level=Math.min(missions.length-1,Math.max(0,Number(data.level)||0));
+ done=Math.min(missions.length,Math.max(0,Number(data.done)||0));
+ attempts=Number(data.attempts)||0;hints=Number(data.hints)||0;
+ submissionId=data.submissionId;
+ gameStartedAt=Date.now()-1000*(Number(data.elapsedGameSeconds)||0);
+ levelStartedAt=0;
+ sessionLevelStats=data.stats;sessionRuns=data.runs;
+ lastLocalSavedAt=data.savedAt||"";
+ profileReturn=data.profileReturn==="finish"?"finish":"play";
+ checkpointReports=new Map(data.checkpointReports||[]);
+ checkpointQueue=Array.isArray(data.pendingUploads)?data.pendingUploads:[];
+ checkpointUploadBusy=false;lastCheckpointStage=Number(data.lastCheckpointStage)||0;
+ $("studentClass").value=student.klass;$("studentGroup").value=student.group;
+ $("surname").value=student.surname;$("firstName").value=student.first;
+ $("achievementOpen").hidden=false;$("score").hidden=false;
+ $("checkpointStatus").hidden=true;$("checkpointActions").hidden=true;
+ show("play");draw();
+ editor.value=String(data.code||"");
+ const indexes=previewSets[missions[level].id]||[0,1,2];
+ if(indexes.includes(data.selectedTest)){
+  selectedTest=data.selectedTest;
+  $("tryChoices").querySelectorAll("button").forEach((button,i)=>
+   button.setAttribute("aria-pressed",String(indexes[i]===selectedTest)));
+ }
+ if(data.success){
+  success=true;
+  $("codepad").querySelectorAll("button").forEach(b=>b.disabled=true);
+  editor.disabled=true;$("restore").disabled=true;
+  $("check").textContent="▶ Запустити з іншими даними";
+  $("nextArea").hidden=false;
+  $("next").textContent=level===missions.length-1?"Зберегти результат 🏆":"Зберегти та перейти →";
+ }else{success=false;}
+ $("score").textContent="⭐ "+done+"/"+missions.length;
+ levelStartedAt=Date.now(); // Не рахуємо час, коли пристрій був вимкнений.
+ if(done===missions.length){
+  $("studentSummary").textContent=student.klass+" · група "+student.group+" · "+student.surname+" "+student.first;
+  $("result").textContent="⭐ Епізод 2: "+done+" з "+missions.length+" місій · перевірок коду: "+attempts;
+  if(data.view==="finish")show("finish");
+ }
+ if(data.view==="achievements"){
+  renderAchievements();show("achievements");
+ }
+ if(checkpointQueue.length&&navigator.onLine!==false)drainCheckpointQueue();
+ persistProgress();
+ return true;
+}
+function clearLocalProgress(){
+ if(localSaveTimer!==null){clearTimeout(localSaveTimer);localSaveTimer=null;}
+ try{localStorage.removeItem(SAVE_KEY)}catch(e){}
+ savedGameAvailable=null;lastLocalSavedAt="";
  student=null;gameStartedAt=0;levelStartedAt=0;submissionId="";
- sessionLevelStats=[];sessionRuns=[];checkpointReports=new Map();checkpointQueue=[];lastCheckpointStage=0;
- $("studentForm").reset();$("score").hidden=true;show("intro");
+ level=0;done=0;success=false;attempts=0;hints=0;
+ sessionLevelStats=[];sessionRuns=[];checkpointReports=new Map();
+ checkpointQueue=[];checkpointUploadBusy=false;lastCheckpointStage=0;
+ $("score").hidden=true;$("achievementOpen").hidden=true;
+ $("localSaveIndicator").hidden=true;
+ $("savedGamePrompt").hidden=true;
+}
+function renderAchievements(){
+ if(!student)return;
+ const valid=new Set(sessionRuns.filter(r=>r.executed&&r.codeValid).map(r=>r.level+":"+JSON.stringify(r.inputs)));
+ const verified=valid.size;
+ const totalChecks=sessionLevelStats.reduce((n,m)=>n+m.checks,0);
+ const fullName=student.surname+" "+student.first;
+ const rank=done===10?"КАПІТАН КОДУ":done>=7?"МАЙСТЕР РОЗГАЛУЖЕНЬ":done>=4?"ШТУРМАН PYTHON":"ДОСЛІДНИК УМОВ";
+ $("awardName").textContent=fullName;
+ $("awardClass").textContent=student.klass+" · група "+student.group+" · Епізод 2 «Лабіринт рішень»";
+ $("awardRank").textContent="✦ "+rank;
+ $("awardDone").textContent=done+"/10";
+ $("awardDatasets").textContent=verified+"/28";
+ $("awardAttempts").textContent=totalChecks;
+ $("awardTime").textContent=Math.round(elapsedSeconds(gameStartedAt)/60)+" хв";
+ $("awardProgressText").textContent=done===10?"Усі 10 місій завершено!":"Експедиція триває: "+done+" із 10 місій пройдено";
+ $("awardProgressFill").style.width=(done*10)+"%";
+ const earned=[
+ ["🌱 Перший алгоритм",done>=1],["🔐 Три місії",done>=3],
+ ["⚡ Пів шляху",done>=5],["🧩 Інженер коду",done>=8],
+ ["🏆 Капітан коду",done===10],["🔬 Тестер: 10 наборів",verified>=10],
+ ["🧪 Майстер тестування",verified>=20],["💎 Усі 28 тестів",verified>=28]
+ ];
+ const container=$("awardBadges");container.replaceChildren();
+ for(const [name,ok] of earned){
+  const span=document.createElement("span");
+  span.className="achievement-badge"+(ok?"":" locked");
+  span.textContent=(ok?"":"🔒 ")+name;container.append(span);
+ }
+ const levels=$("awardLevels");levels.replaceChildren();
+ missions.forEach((m,i)=>{
+  const card=document.createElement("div");
+  const finished=!!sessionLevelStats[i]?.completed;
+  card.className="achievement-level"+(finished?"":" pending");
+  const heading=document.createElement("strong");
+  heading.textContent=(finished?"✓ ПРОЙДЕНО":"○ ПОПЕРЕДУ")+" · "+(i+1)+"/10";
+  const title=document.createElement("div");title.textContent=m.goal+" "+m.title;
+  card.append(heading,title);levels.append(card);
+ });
+ const stamp=lastLocalSavedAt||savedGameAvailable?.savedAt||new Date().toISOString();
+ $("awardSavedAt").textContent="💾 Автозбереження на цьому пристрої: "+new Date(stamp).toLocaleString("uk-UA")+
+  ". Після відновлення мережі накопичені звіти надішлються вчителю.";
+}
+function openAchievements(){
+ if(!student)return;
+ profileReturn=$("finish").hidden===false?"finish":"play";
+ persistProgress();renderAchievements();show("achievements");persistProgress();
+}
+$("achievementOpen").addEventListener("click",openAchievements);
+$("finishAwards").addEventListener("click",openAchievements);
+$("awardBack").addEventListener("click",()=>{
+ show(profileReturn==="finish"?"finish":"play");
+ persistProgress();
+});
+$("awardCopy").addEventListener("click",async()=>{
+ try{
+  const text=report();
+  if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(text);
+  else{const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();}
+  $("awardCopyMessage").textContent="✅ Результат скопійовано.";
+ }catch(e){$("awardCopyMessage").textContent="Зроби скриншот картки досягнень."}
+ $("awardCopyMessage").hidden=false;
+});
+$("awardPrint").addEventListener("click",()=>{if(window.print)window.print()});
+$("resumeSaved").addEventListener("click",()=>restoreProgress());
+$("viewSavedAwards").addEventListener("click",()=>{
+ if(restoreProgress())openAchievements();
+});
+$("eraseSaved").addEventListener("click",()=>{
+ if(!confirm("Видалити збережений прогрес із цього пристрою?"))return;
+ clearLocalProgress();$("studentForm").reset();show("intro");
+});
+document.addEventListener("input",scheduleProgressSave);
+document.addEventListener("change",scheduleProgressSave);
+document.addEventListener("click",()=>setTimeout(scheduleProgressSave,0));
+document.addEventListener("visibilitychange",()=>{
+ if(document.visibilityState==="hidden")persistProgress();
+});
+window.addEventListener("pagehide",persistProgress);
+window.addEventListener("online",()=>{
+ $("offlineStatus").hidden=true;
+ if(checkpointQueue.length)drainCheckpointQueue();
+});
+window.addEventListener("offline",()=>{
+ $("offlineStatus").hidden=false;
+ persistProgress();
+});
+$("offlineStatus").hidden=navigator.onLine!==false;
+if("serviceWorker" in navigator){
+ navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{});
+}
+showSavedGamePrompt();
+
+$("again").addEventListener("click",()=>{
+ if(!confirm("Почати новий квест? Збереження цього проходження на пристрої буде видалено."))return;
+ clearLocalProgress();
+ $("studentForm").reset();show("intro");
 });
 
 </script></body></html>
