@@ -1253,6 +1253,212 @@ $("copy").addEventListener("click",async()=>{
  }catch(e){$("copyStatus").textContent="Зроби скриншот — копіювання недоступне.";}
  $("copyStatus").hidden=false;
 });
+
+/* Автозбереження працює локально після кожного введення, тесту і переходу.
+   Для offline-first квесту не потрібно виконувати запити на сервер для редагування коду. */
+function collectProgress(){
+ const stats=sessionLevelStats.map((m,i)=>({
+  ...m,usedInputs:m.usedInputs.map(a=>a.slice()),
+  durationSeconds:m.durationSeconds+(i===level&&levelStartedAt?elapsedSeconds(levelStartedAt):0)
+ }));
+ return {
+  saveVersion:SAVE_VERSION,savedAt:new Date().toISOString(),
+  elapsedGameSeconds:elapsedSeconds(gameStartedAt),student:{...student},
+  level,done,success,attempts,hints,submissionId,selectedTest,
+  code:editor.value,stats,runs:sessionRuns.map(r=>({...r,inputs:r.inputs.slice()})),
+  checkpointReports:[...checkpointReports.entries()],
+  pendingUploads:checkpointQueue.map(item=>({stage:item.stage,report:item.report})),
+  lastCheckpointStage,
+  view:$("finish").hidden===false?"finish":$("achievements").hidden===false?"achievements":"play"
+ };
+}
+function persistProgress(){
+ if(teacherMode||!student||!submissionId)return;
+ try{
+  const data=collectProgress();
+  localStorage.setItem(SAVE_KEY,JSON.stringify(data));
+  lastLocalSavedAt=data.savedAt;
+  $("localSaveIndicator").hidden=false;
+  $("localSaveIndicator").textContent="✓ Збережено на пристрої";
+  savedGameAvailable=data;
+ }catch(err){
+  $("localSaveIndicator").hidden=false;
+  $("localSaveIndicator").textContent="⚠️ Не вдалося зберегти прогрес";
+ }
+}
+function scheduleProgressSave(){
+ if(teacherMode||!student)return;
+ if(localSaveTimer!==null)clearTimeout(localSaveTimer);
+ localSaveTimer=setTimeout(()=>{localSaveTimer=null;persistProgress()},120);
+}
+function loadProgress(){
+ try{
+  const raw=localStorage.getItem(SAVE_KEY);if(!raw)return null;
+  const data=JSON.parse(raw);
+  if(data.saveVersion!==SAVE_VERSION||!data.student||!data.submissionId||
+     !Array.isArray(data.stats)||data.stats.length!==missions.length||
+     !Array.isArray(data.runs))return null;
+  return data;
+ }catch(err){return null;}
+}
+function showSavedGamePrompt(){
+ const saved=loadProgress();savedGameAvailable=saved;
+ $("savedGamePrompt").hidden=!saved;
+ if(!saved)return;
+ const date=saved.savedAt?new Date(saved.savedAt).toLocaleString("uk-UA"):"раніше";
+ $("savedGameDetails").textContent=saved.student.klass+" · "+saved.student.surname+" "+saved.student.first+
+  " · виконано "+saved.done+"/10 місій · збережено "+date+". Можна відновити навіть незавершений код.";
+}
+function restoreProgress(data=loadProgress()){
+ if(!data)return false;
+ teacherMode=false;
+ student={...data.student};
+ level=Math.min(missions.length-1,Math.max(0,Number(data.level)||0));
+ done=Math.min(missions.length,Math.max(0,Number(data.done)||0));
+ attempts=Number(data.attempts)||0;hints=Number(data.hints)||0;
+ submissionId=data.submissionId;
+ gameStartedAt=Date.now()-1000*(Number(data.elapsedGameSeconds)||0);
+ levelStartedAt=0;
+ sessionLevelStats=data.stats;sessionRuns=data.runs;
+ checkpointReports=new Map(data.checkpointReports||[]);
+ checkpointQueue=Array.isArray(data.pendingUploads)?data.pendingUploads:[];
+ checkpointUploadBusy=false;lastCheckpointStage=Number(data.lastCheckpointStage)||0;
+ $("studentClass").value=student.klass;$("studentGroup").value=student.group;
+ $("surname").value=student.surname;$("firstName").value=student.first;
+ $("achievementOpen").hidden=false;$("score").hidden=false;
+ $("checkpointStatus").hidden=true;$("checkpointActions").hidden=true;
+ show("play");draw();
+ editor.value=String(data.code||"");
+ const indexes=previewSets[missions[level].id]||[0,1,2];
+ if(indexes.includes(data.selectedTest)){
+  selectedTest=data.selectedTest;
+  $("tryChoices").querySelectorAll("button").forEach((button,i)=>
+   button.setAttribute("aria-pressed",String(indexes[i]===selectedTest)));
+ }
+ if(data.success){
+  success=true;
+  $("codepad").querySelectorAll("button").forEach(b=>b.disabled=true);
+  editor.disabled=true;$("restore").disabled=true;
+  $("check").textContent="▶ Запустити з іншими даними";
+  $("nextArea").hidden=false;
+  $("next").textContent=level===missions.length-1?"Зберегти результат 🏆":"Зберегти та перейти →";
+ }else{success=false;}
+ $("score").textContent="⭐ "+done+"/"+missions.length;
+ levelStartedAt=Date.now(); // Не рахуємо час, коли пристрій був вимкнений.
+ if(done===missions.length&&data.view==="finish"){
+  $("studentSummary").textContent=student.klass+" · група "+student.group+" · "+student.surname+" "+student.first;
+  $("result").textContent="⭐ Епізод 2: "+done+" з "+missions.length+" місій · перевірок коду: "+attempts;
+  show("finish");
+ }
+ if(data.view==="achievements")openAchievements();
+ if(checkpointQueue.length&&navigator.onLine!==false)drainCheckpointQueue();
+ persistProgress();
+ return true;
+}
+function clearLocalProgress(){
+ if(localSaveTimer!==null){clearTimeout(localSaveTimer);localSaveTimer=null;}
+ try{localStorage.removeItem(SAVE_KEY)}catch(e){}
+ savedGameAvailable=null;lastLocalSavedAt="";
+ student=null;gameStartedAt=0;levelStartedAt=0;submissionId="";
+ level=0;done=0;success=false;attempts=0;hints=0;
+ sessionLevelStats=[];sessionRuns=[];checkpointReports=new Map();
+ checkpointQueue=[];checkpointUploadBusy=false;lastCheckpointStage=0;
+ $("score").hidden=true;$("achievementOpen").hidden=true;
+ $("localSaveIndicator").hidden=true;
+ $("savedGamePrompt").hidden=true;
+}
+function renderAchievements(){
+ if(!student)return;
+ const valid=new Set(sessionRuns.filter(r=>r.executed&&r.codeValid).map(r=>r.level+":"+JSON.stringify(r.inputs)));
+ const verified=valid.size;
+ const totalChecks=sessionLevelStats.reduce((n,m)=>n+m.checks,0);
+ const fullName=student.surname+" "+student.first;
+ const rank=done===10?"КАПІТАН КОДУ":done>=7?"МАЙСТЕР РОЗГАЛУЖЕНЬ":done>=4?"ШТУРМАН PYTHON":"ДОСЛІДНИК УМОВ";
+ $("awardName").textContent=fullName;
+ $("awardClass").textContent=student.klass+" · група "+student.group+" · Епізод 2 «Лабіринт рішень»";
+ $("awardRank").textContent="✦ "+rank;
+ $("awardDone").textContent=done+"/10";
+ $("awardDatasets").textContent=verified+"/28";
+ $("awardAttempts").textContent=totalChecks;
+ $("awardTime").textContent=Math.round(elapsedSeconds(gameStartedAt)/60)+" хв";
+ $("awardProgressText").textContent=done===10?"Усі 10 місій завершено!":"Експедиція триває: "+done+" із 10 місій пройдено";
+ $("awardProgressFill").style.width=(done*10)+"%";
+ const earned=[
+ ["🌱 Перший алгоритм",done>=1],["🔐 Три місії",done>=3],
+ ["⚡ Пів шляху",done>=5],["🧩 Інженер коду",done>=8],
+ ["🏆 Капітан коду",done===10],["🔬 Тестер: 10 наборів",verified>=10],
+ ["🧪 Майстер тестування",verified>=20],["💎 Усі 28 тестів",verified>=28]
+ ];
+ const container=$("awardBadges");container.replaceChildren();
+ for(const [name,ok] of earned){
+  const span=document.createElement("span");
+  span.className="achievement-badge"+(ok?"":" locked");
+  span.textContent=(ok?"":"🔒 ")+name;container.append(span);
+ }
+ const levels=$("awardLevels");levels.replaceChildren();
+ missions.forEach((m,i)=>{
+  const card=document.createElement("div");
+  const finished=!!sessionLevelStats[i]?.completed;
+  card.className="achievement-level"+(finished?"":" pending");
+  const heading=document.createElement("strong");
+  heading.textContent=(finished?"✓ ПРОЙДЕНО":"○ ПОПЕРЕДУ")+" · "+(i+1)+"/10";
+  const title=document.createElement("div");title.textContent=m.goal+" "+m.title;
+  card.append(heading,title);levels.append(card);
+ });
+ const stamp=lastLocalSavedAt||savedGameAvailable?.savedAt||new Date().toISOString();
+ $("awardSavedAt").textContent="💾 Автозбереження на цьому пристрої: "+new Date(stamp).toLocaleString("uk-UA")+
+  ". Після відновлення мережі накопичені звіти надішлються вчителю.";
+}
+function openAchievements(){
+ if(!student)return;
+ profileReturn=done===missions.length?"finish":$("finish").hidden===false?"finish":"play";
+ persistProgress();renderAchievements();show("achievements");persistProgress();
+}
+$("achievementOpen").addEventListener("click",openAchievements);
+$("finishAwards").addEventListener("click",openAchievements);
+$("awardBack").addEventListener("click",()=>{
+ show(profileReturn==="finish"?"finish":"play");
+ persistProgress();
+});
+$("awardCopy").addEventListener("click",async()=>{
+ try{
+  const text=report();
+  if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(text);
+  else{const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();}
+  $("awardCopyMessage").textContent="✅ Результат скопійовано.";
+ }catch(e){$("awardCopyMessage").textContent="Зроби скриншот картки досягнень."}
+ $("awardCopyMessage").hidden=false;
+});
+$("awardPrint").addEventListener("click",()=>{if(window.print)window.print()});
+$("resumeSaved").addEventListener("click",()=>restoreProgress());
+$("viewSavedAwards").addEventListener("click",()=>{
+ if(restoreProgress())openAchievements();
+});
+$("eraseSaved").addEventListener("click",()=>{
+ if(!confirm("Видалити збережений прогрес із цього пристрою?"))return;
+ clearLocalProgress();$("studentForm").reset();show("intro");
+});
+document.addEventListener("input",scheduleProgressSave);
+document.addEventListener("change",scheduleProgressSave);
+document.addEventListener("click",()=>setTimeout(scheduleProgressSave,0));
+document.addEventListener("visibilitychange",()=>{
+ if(document.visibilityState==="hidden")persistProgress();
+});
+window.addEventListener("pagehide",persistProgress);
+window.addEventListener("online",()=>{
+ $("offlineStatus").hidden=true;
+ if(checkpointQueue.length)drainCheckpointQueue();
+});
+window.addEventListener("offline",()=>{
+ $("offlineStatus").hidden=false;
+ persistProgress();
+});
+$("offlineStatus").hidden=navigator.onLine!==false;
+if("serviceWorker" in navigator){
+ navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{});
+}
+showSavedGamePrompt();
+
 $("again").addEventListener("click",()=>{
  if(!confirm("Почати новий квест? Збереження цього проходження на пристрої буде видалено."))return;
  clearLocalProgress();
