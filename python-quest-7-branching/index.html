@@ -334,7 +334,7 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
 <label>Група<select id="studentGroup" required><option value="">Обери групу</option><option value="1">1 група</option><option value="2">2 група</option></select></label>
 <label>Прізвище<input id="surname" required maxlength="50" autocomplete="family-name" placeholder="Наприклад, Петренко"></label>
 <label>Ім’я<input id="firstName" required maxlength="50" autocomplete="given-name" placeholder="Наприклад, Марія"></label>
-</div><small>Уводь лише навчальні дані. Номер телефону, паролі та адресу не потрібно. Ім'я не надсилається на сервер.</small>
+</div><small>Уводь лише навчальні дані. Номер телефону, паролі та адресу не потрібно. ПІБ передається тільки до шкільного журналу результатів, не вводь особистих контактних даних.</small>
 <div class="actions"><button type="submit" class="primary">Увійти в гру →</button></div>
 </form>
 <details class="teacher-entry" id="teacherEntry">
@@ -1268,7 +1268,7 @@ function collectProgress(){
   code:editor.value,stats,runs:sessionRuns.map(r=>({...r,inputs:r.inputs.slice()})),
   checkpointReports:[...checkpointReports.entries()],
   pendingUploads:checkpointQueue.map(item=>({stage:item.stage,report:item.report})),
-  lastCheckpointStage,
+  lastCheckpointStage,profileReturn,
   view:$("finish").hidden===false?"finish":$("achievements").hidden===false?"achievements":"play"
  };
 }
@@ -1320,6 +1320,8 @@ function restoreProgress(data=loadProgress()){
  gameStartedAt=Date.now()-1000*(Number(data.elapsedGameSeconds)||0);
  levelStartedAt=0;
  sessionLevelStats=data.stats;sessionRuns=data.runs;
+ lastLocalSavedAt=data.savedAt||"";
+ profileReturn=data.profileReturn==="finish"?"finish":"play";
  checkpointReports=new Map(data.checkpointReports||[]);
  checkpointQueue=Array.isArray(data.pendingUploads)?data.pendingUploads:[];
  checkpointUploadBusy=false;lastCheckpointStage=Number(data.lastCheckpointStage)||0;
@@ -1345,12 +1347,14 @@ function restoreProgress(data=loadProgress()){
  }else{success=false;}
  $("score").textContent="⭐ "+done+"/"+missions.length;
  levelStartedAt=Date.now(); // Не рахуємо час, коли пристрій був вимкнений.
- if(done===missions.length&&data.view==="finish"){
+ if(done===missions.length){
   $("studentSummary").textContent=student.klass+" · група "+student.group+" · "+student.surname+" "+student.first;
   $("result").textContent="⭐ Епізод 2: "+done+" з "+missions.length+" місій · перевірок коду: "+attempts;
-  show("finish");
+  if(data.view==="finish")show("finish");
  }
- if(data.view==="achievements")openAchievements();
+ if(data.view==="achievements"){
+  renderAchievements();show("achievements");
+ }
  if(checkpointQueue.length&&navigator.onLine!==false)drainCheckpointQueue();
  persistProgress();
  return true;
@@ -1411,7 +1415,7 @@ function renderAchievements(){
 }
 function openAchievements(){
  if(!student)return;
- profileReturn=done===missions.length?"finish":$("finish").hidden===false?"finish":"play";
+ profileReturn=$("finish").hidden===false?"finish":"play";
  persistProgress();renderAchievements();show("achievements");persistProgress();
 }
 $("achievementOpen").addEventListener("click",openAchievements);
