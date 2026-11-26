@@ -1224,7 +1224,7 @@ $("restore").addEventListener("click",()=>{
 $("next").addEventListener("click",()=>{
  if(!success)return;
  closeLevelTimer();
- if(done>=5)queueCheckpoint(done);
+ if(done>=1)queueCheckpoint(done);
  if(level===missions.length-1){
   $("studentSummary").textContent=student.klass+" · група "+student.group+" · "+student.surname+" "+student.first;
   $("result").textContent="⭐ Епізод 2: "+done+" з "+missions.length+" місій · перевірок коду: "+attempts;
