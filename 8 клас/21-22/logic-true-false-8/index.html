@@ -39,10 +39,10 @@
 }
 
 .offline-chip{font-size:11px;line-height:1.4;padding:6px 8px;margin-top:5px;border:1px solid #536e92;border-radius:8px;color:#d0e0f0;background:#152741}.offline-chip[data-state="ready"],.offline-chip[data-state="offline"]{background:#16463d;color:#defff3;border-color:#64cca8}.offline-chip[data-state="error"]{background:#49352e;color:#ffdfbc;border-color:#d7a172}@media(max-width:650px){.offline-chip{font-size:10px;padding:5px 7px}}
-</style>
+.game-nav{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.profile-link{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;padding:8px 12px;min-height:37px;color:#ffdc97!important;border-color:#ad8755!important;font-size:12px;font-weight:850}@media(max-width:600px){.game-nav{width:100%}.game-nav>.btn{flex:1;min-height:40px}}</style>
 </head>
 <body><div class="wrap">
-<header class="top"><div class="brand"><div class="mark">🧠</div><div><div class="smallcaps">8 клас · Частина 1</div><strong>Агенція логіки</strong></div></div><button id="reset" class="btn secondary" type="button">↻ Почати заново</button></header>
+<header class="top"><div class="brand"><div class="mark">🧠</div><div><div class="smallcaps">8 клас · Частина 1</div><strong>Агенція логіки</strong></div></div><div class="game-nav"><a class="btn secondary profile-link" href="../progress/">🏅 Картка гравця</a><button id="reset" class="btn secondary" type="button">↻ Почати заново</button></div></header>
 
 <section class="student-bar" id="studentBar" aria-label="Дані учня та прогрес">
  <div class="student-heading"><strong>TRUE чи FALSE? · Агенція логіки</strong><small>6 місій · 12 запитань</small></div>
@@ -60,8 +60,8 @@
 
 <div id="progress" class="progress" aria-label="Прогрес місій"></div>
 <div id="game" class="grid"><section class="panel"><div class="pad"><div class="chapter" id="chapter"></div><h2 id="title"></h2><p id="intro"></p><div id="explain" class="explain"></div><div id="example" class="code"></div><div id="count" class="mini"></div><div id="question" class="question-title"></div><div id="choices" class="choice-list"></div><div id="feedback" class="feedback hidden" role="status" aria-live="polite"></div><div class="actions"><button id="next" class="next" type="button" disabled>Наступне запитання →</button></div></div></section><aside class="panel"><div class="visual"><div class="emoji" id="emoji">🧠</div></div><div class="side"><h3>Шпаргалка агента</h3><div id="cheat"></div><p class="mini">Помилка — це підказка, а не поразка. Обери правильну відповідь, щоби пройти далі.</p></div></aside></div>
-<div id="finish" class="end hidden"><div class="emoji">🏆</div><h2>Агент логіки: місії виконано!</h2><p id="finishText" class="summary"></p><p>Ти навчився(-лася) працювати з <code>True</code>, <code>False</code>, порівняннями, <code>not</code>, <code>and</code> та <code>or</code>.</p><div class="actions" style="justify-content:center"><button id="copy" class="next">Скопіювати результат</button><a class="btn" href="../logic-boolean-code-8/" style="text-decoration:none;display:inline-grid;place-items:center">Частина 2: пишемо код →</a></div><p class="mini">Для звіту вчителю можна також зробити скриншот екрана.</p></div>
-<footer class="footer">Інтерактив для уроків №21–22 за КТП: логічні величини та логічні операції. Автономна гра: відповіді не передаються до мережі, результат зберігається тільки в цьому браузері.</footer>
+<div id="finish" class="end hidden"><div class="emoji">🏆</div><h2>Агент логіки: місії виконано!</h2><p id="finishText" class="summary"></p><p>Ти навчився(-лася) працювати з <code>True</code>, <code>False</code>, порівняннями, <code>not</code>, <code>and</code> та <code>or</code>.</p><div class="actions" style="justify-content:center"><button id="copy" class="next">Скопіювати результат</button><a class="btn" href="../logic-boolean-code-8/" style="text-decoration:none;display:inline-grid;place-items:center">Частина 2: пишемо код →</a><a class="btn profile-link" href="../progress/">🏅 Мої досягнення</a></div><p class="mini">Для звіту вчителю можна також зробити скриншот екрана.</p></div>
+<footer class="footer">Інтерактив для уроків №21–22 за КТП: логічні величини та логічні операції. Автономна гра: прогрес залишається в браузері. Після повернення інтернету результати надсилаються до Google-журналу.</footer>
 </div>
 <script>
 (()=>{'use strict';
@@ -212,4 +212,4 @@ window.addEventListener('offline',refreshSync);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&navigator.onLine)sendPending();});
 render();sendPending();
 })();
-</script><script src="../offline.js" defer></script></body></html>
+</script><script src="../offline.js" defer></script><script src="../playtime.js" data-game="theory" defer></script></body></html>
