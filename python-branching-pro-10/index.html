@@ -213,6 +213,17 @@ textarea[readonly]{min-height:150px}
 .final-hero{padding:28px;text-align:center}
 .final-hero h2{font-size:clamp(29px,4vw,44px)}
 .final-hero .medal{font-size:92px}
+.finish-proof{max-width:760px;margin:18px auto 8px;border:2px solid #7ee5c5;border-radius:19px;background:linear-gradient(125deg,#193d48,#1d3150);padding:19px 24px;box-shadow:0 12px 35px #0005;text-align:center}
+.finish-proof h3{font-size:clamp(21px,3vw,29px);color:#fff0be;margin:5px 0 12px}
+.finish-proof .student-name{font-size:clamp(20px,3vw,30px);font-weight:950;overflow-wrap:anywhere}
+.finish-proof .student-klass{font-size:17px;color:#d0e5fa;font-weight:800}
+.finish-proof .big-result{font-size:clamp(42px,6vw,64px);font-weight:1000;color:#adffe0;line-height:1.1;margin:13px 0 8px}
+.finish-proof .details{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;font-size:14px;margin:9px 0;color:#d8edf9}
+.finish-proof .details span{background:#253b57;border:1px solid #6585ab;padding:6px 9px;border-radius:9px}
+.finish-proof .meta{font-size:12px;color:#bed4e8;margin-top:10px;overflow-wrap:anywhere}
+.finish-proof .screen-note{font-size:14px;color:#ffe6b2;margin:12px 0 1px;font-weight:850}
+#offlineCacheStatus{color:#bce9d7}
+
 @media(max-width:900px){.levels{grid-template-columns:repeat(5,minmax(0,1fr))}}
 @media(max-width:480px){.quest-pad{padding:17px 16px}.block-button{min-width:calc(50% - 7px);flex-basis:calc(50% - 7px);padding:9px 8px}.block-button code{font-size:12px}.token-pill{font-size:13px;padding:8px 10px}.tool-row button{flex:1 1 100%}}
 </style>
@@ -237,7 +248,7 @@ textarea[readonly]{min-height:150px}
  <div class="levels" id="levels"></div>
 </section>
 <main id="app"></main>
-<footer class="footer"><span>💾 Прогрес частини 3 зберігається окремо. Можна відкрити її без попередніх частин.</span><span>🎓 У кінці — три місії зі складання коду з окремих елементів.</span></footer>
+<footer class="footer"><span>💾 Прогрес зберігається на цьому пристрої. Гра продовжується навіть без інтернету.</span><span id="offlineCacheStatus" role="status">📦 Для гарантованого офлайн-відкриття завантажте гру з інтернетом один раз.</span></footer>
 </div>
 <script>
 
@@ -352,7 +363,7 @@ function load(){
  }
  return base;
 }
-var state=load(),sending=false;
+var state=load(),sending=false,activeRequest=null;
 function store(){try{localStorage.setItem(STORAGE,JSON.stringify(state));}catch(e){}}
 function modeTitle(n){
  if(n<3)return "🔁 Повторення · 1 зайвий рядок";
@@ -417,38 +428,104 @@ function report(stage){
  distinctDatasets:sum("distinctDatasets"),testRuns:runs.length},levels:stageLevels,runs:runs,
  linkedPrevious:state.linkedSession||""};
 }
+// Звіт кожного наступного рівня містить ВСІ попередні, тому потрібна
+// тільки одна невідправлена контрольна точка — найновіша.
+function compactPending(){
+ var ids=Object.keys(state.pending||{}).filter(k=>state.pending[k]).map(Number)
+  .filter(n=>Number.isInteger(n)&&n>=1&&n<=TASK_COUNT);
+ if(!ids.length){state.pending={};state.snapshots={};store();return 0;}
+ var latest=Math.max.apply(null,ids),data=state.snapshots[latest]||report(latest);
+ state.pending={[latest]:true};
+ state.snapshots={[latest]:data};
+ store();
+ return latest;
+}
 function checkpoint(){
  if(!requireProfile())return false;
  if(!state.sessionId)state.sessionId="apro10-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,10);
  if(!state.startedAt)state.startedAt=Date.now();
  state.locked=true;
  var stage=correctCount();
- if(stage===0)return false;
- if(!state.snapshots[stage])state.snapshots[stage]=report(stage);
- if(stage>state.lastSent||state.pending[stage])state.pending[stage]=true;
- store();renderProfile();sendQueued();return true;
+ if(stage<1)return false;
+ // Новий знімок накопичує 1..stage. Старі невідправлені більше не потрібні.
+ state.snapshots={[stage]:report(stage)};
+ state.pending={[stage]:true};
+ state.saveError="";
+ store();renderProfile();
+ // Якщо старий POST ще завис, знімаємо його вже зараз і передаємо новий.
+ if(activeRequest&&activeRequest.stage<stage&&activeRequest.cancel)activeRequest.cancel();
+ sendQueued();
+ return true;
 }
 async function sendQueued(){
  if(sending||!state.locked)return;
+ var stage=compactPending();
+ if(!stage)return;
+ if(typeof navigator!=="undefined"&&navigator.onLine===false){
+  state.saveError="Немає інтернету. Найновіший результат збережено на комп’ютері.";
+  store();syncStatus("📴 "+state.saveError+" Гра працює далі.",true);
+  return;
+ }
  sending=true;
+ var controller=typeof AbortController!=="undefined"?new AbortController():null;
+ var record={stage:stage,controller:controller,cancel:null},timerId=null;
+ activeRequest=record;
  try{
-  while(true){
-   var unsent=Object.keys(state.pending).filter(n=>state.pending[n]).map(Number).sort((a,b)=>a-b);
-   if(!unsent.length)break;
-   var n=unsent[0],body=state.snapshots[n];
-   if(!body){delete state.pending[n];store();continue;}
-   syncStatus("⏳ Надсилаємо рівень "+n+"/"+TASK_COUNT+"…",false);
-   try{
-    await fetch(WEB_APP,{method:"POST",mode:"no-cors",cache:"no-store",redirect:"follow",
-      headers:{"Content-Type":"text/plain;charset=UTF-8"},body:JSON.stringify(body),keepalive:true});
-    delete state.pending[n];state.lastSent=Math.max(state.lastSent||0,n);state.saveError="";store();
-    syncStatus("📤 Звіт "+n+"/"+TASK_COUNT+" надіслано. Перевірити запис можна в таблиці вчителя.",false);
-   }catch(e){
-    state.saveError="Мережна помилка. Звіт залишився на цьому пристрої.";store();
-    syncStatus("⚠️ "+state.saveError+" Натисни «Повторити».",true);break;
+  syncStatus("⏳ Надсилаємо накопичений результат "+stage+"/"+TASK_COUNT+" (до 10 секунд)…",false);
+  var superseded=new Promise(resolve=>{
+   record.cancel=()=>{
+    if(record.cancelled)return;
+    record.cancelled=true;
+    if(controller)controller.abort();
+    resolve({status:"superseded"});
+   };
+  });
+  var timed=new Promise(resolve=>{
+   timerId=setTimeout(()=>{
+    if(controller)controller.abort();
+    resolve({status:"timeout"});
+   },10000);
+  });
+  var payload=state.snapshots[stage];
+  var request=fetch(WEB_APP,{
+   method:"POST",mode:"no-cors",cache:"no-store",redirect:"follow",
+   headers:{"Content-Type":"text/plain;charset=UTF-8"},
+   body:JSON.stringify(payload),signal:controller?controller.signal:undefined
+  }).then(()=>({status:"submitted"}),error=>({status:"error",error:error}));
+  var result=await Promise.race([request,timed,superseded]);
+  if(timerId!==null)clearTimeout(timerId);
+  // Стару відповідь ігноруємо, якщо вже накопичили новіший результат.
+  if(state.pending[stage]===true){
+   if(result.status==="submitted"){
+    delete state.pending[stage];
+    state.snapshots={};
+    state.lastSent=Math.max(state.lastSent||0,stage);
+    state.saveError="";store();
+    syncStatus("📤 Результат "+stage+"/"+TASK_COUNT+" передано на надсилання. Запис у таблиці перевіряє вчитель.",false);
+   }else if(result.status==="timeout"){
+    state.saveError="За 10 секунд немає відповіді. Результат збережено на комп’ютері.";
+    store();syncStatus("📴 "+state.saveError+" Можна продовжувати.",true);
+   }else if(result.status!=="superseded"){
+    state.saveError="Не вдалося надіслати. Результат залишився на комп’ютері.";
+    store();syncStatus("⚠️ "+state.saveError+" Спробуємо з наступним рівнем.",true);
    }
   }
- }finally{sending=false;}
+ }catch(e){
+  if(state.pending[stage]){
+   state.saveError="Під час надсилання сталася помилка. Найновіший результат залишився на комп’ютері.";
+   store();syncStatus("⚠️ "+state.saveError,true);
+  }
+ }finally{
+  if(timerId!==null)clearTimeout(timerId);
+  if(activeRequest===record)activeRequest=null;
+  sending=false;
+  // Поки працював запит, учень міг перейти на новий рівень.
+  // Тоді відправляємо лише нову контрольну точку.
+  var next=Object.keys(state.pending||{}).filter(k=>state.pending[k]).map(Number);
+  if(next.some(n=>n>stage)&&!(typeof navigator!=="undefined"&&navigator.onLine===false)){
+   sendQueued();
+  }
+ }
 }
 function expectedLines(m){return m.solution.split("\n");}
 function lineChoices(m){
@@ -743,14 +820,25 @@ function missionHTML(){
  '</div>';
 }
 function finishHTML(){
- var score=correctCount(),f=state.student;
+ var score=correctCount(),name=state.student.surname+" "+state.student.first;
+ var session=state.sessionId||"локальне проходження";
+ var date=new Date().toLocaleDateString("uk-UA",{day:"2-digit",month:"2-digit",year:"numeric"});
+ var failures=state.errors.reduce((a,b)=>a+Number(b||0),0);
  return '<div class="quest-panel final-hero"><div class="medal">🏆</div>'+
  '<div class="kicker">АКАДЕМІЯ РІШЕНЬ · РОЗГАЛУЖЕННЯ PRO</div>'+
  '<h2>Вітаємо! Ти пройшов усі 10 рівнів!</h2>'+
  '<p class="lead">Від готових рядків до власної програми з if, elif та else.</p>'+
- '<div class="report"><div><strong>'+score+'/10</strong><span>пройдено рівнів</span></div>'+
- '<div><strong>'+testsCount()+'</strong><span>правильних запусків тестів</span></div></div>'+
- '<p class="practice-info">Ти навчився знаходити синтаксичні помилки, виправляти відступи, працювати з elif та збирати код із окремих елементів.</p>'+
+ '<div class="finish-proof" id="resultScreenshot" aria-label="Підсумковий результат для скриншота">'+
+ '<div class="eyebrow">📸 ПІДСУМОК ДЛЯ ВЧИТЕЛЯ</div>'+
+ '<h3>Академія рішень — Розгалуження PRO</h3>'+
+ '<div class="student-name">'+esc(name)+'</div>'+
+ '<div class="student-klass">Клас: '+esc(state.student.klass)+'</div>'+
+ '<div class="big-result">'+score+' / '+TASK_COUNT+' РІВНІВ</div>'+
+ '<div class="details"><span>✅ Правильні тести: '+testsCount()+'</span>'+
+ '<span>🔎 Невдалі спроби: '+failures+'</span></div>'+
+ '<div class="meta">Дата: '+esc(date)+' · Код проходження: '+esc(session)+'</div>'+
+ '<p class="screen-note">Без інтернету? Зроби скриншот цього блоку й покажи вчителю.</p>'+
+ '</div>'+
  '<div class="actions" style="justify-content:center"><button type="button" class="btn primary" data-action="copy">📋 Скопіювати результат</button>'+
  '<a class="btn secondary" href="../python-branching-code-4/">← До частини 2</a>'+
  '<button type="button" class="btn secondary" data-action="restart">↻ Нова спроба</button></div>'+
@@ -790,6 +878,7 @@ function interact(action,value){
 function restart(){
  if(!confirm("Почати всі 10 рівнів заново? Локальний прогрес цієї частини буде очищено."))return;
  var person=Object.assign({},state.student),parent=state.linkedSession;
+ if(activeRequest&&activeRequest.cancel)activeRequest.cancel();
  state=blank();state.student=person;state.linkedSession=parent;store();render();
  syncStatus("Почата нова спроба. Перевір дані учня перед відправленням.",false);
 }
@@ -804,16 +893,40 @@ document.addEventListener("click",e=>{
 });
 el("retry").addEventListener("click",()=>{
  if(!state.locked){requireProfile();return;}
- if(!Object.keys(state.pending).length&&state.lastSent){state.pending[state.lastSent]=true;store();}
+ if(!Object.keys(state.pending).length&&state.lastSent){
+  var n=state.lastSent;state.pending={[n]:true};state.snapshots={[n]:report(n)};store();
+ }
  sendQueued();
 });
 el("restart").addEventListener("click",restart);
 window.addEventListener("online",sendQueued);
 render();
-if(state.linkedSession&&!state.locked)syncStatus("👤 Дані підставлено з попередньої частини. Перевір ім’я, прізвище, клас і групу.",false);
-if(Object.keys(state.pending).length)sendQueued();
+if(state.linkedSession&&!state.locked)syncStatus("👤 Дані підставлено з попередньої частини. Перевір ім’я, прізвище та клас.",false);
+if(Object.keys(state.pending).length){compactPending();sendQueued();}
 })();
 
+</script>
+<script>
+// Service Worker кешує саму HTML-гру після першого завантаження з інтернетом.
+(function(){
+ var status=document.getElementById("offlineCacheStatus");
+ if(!("serviceWorker" in navigator)){
+  if(status)status.textContent="📦 Прогрес зберігається локально. Офлайн-відкриття не підтримується цим браузером.";
+  return;
+ }
+ window.addEventListener("load",function(){
+  navigator.serviceWorker.register("./sw.js",{scope:"./"})
+   .then(function(){
+    return navigator.serviceWorker.ready;
+   })
+   .then(function(){
+    if(status)status.textContent="📦 Офлайн-копія гри готова на цьому пристрої.";
+   })
+   .catch(function(){
+    if(status)status.textContent="📦 Прогрес збережено. Для офлайн-відкриття потрібне завантаження з інтернетом.";
+   });
+ });
+})();
 </script>
 </body>
 </html>
