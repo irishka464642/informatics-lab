@@ -38,6 +38,7 @@
  .top .brand strong{font-size:15px}
 }
 
+.offline-chip{font-size:11px;line-height:1.4;padding:6px 8px;margin-top:5px;border:1px solid #536e92;border-radius:8px;color:#d0e0f0;background:#152741}.offline-chip[data-state="ready"],.offline-chip[data-state="offline"]{background:#16463d;color:#defff3;border-color:#64cca8}.offline-chip[data-state="error"]{background:#49352e;color:#ffdfbc;border-color:#d7a172}@media(max-width:650px){.offline-chip{font-size:10px;padding:5px 7px}}
 </style>
 </head>
 <body><div class="wrap">
@@ -53,7 +54,8 @@
  </div>
  <div class="student-stats"><span id="stateLabel">Запитання 1 із 12</span><span class="score" id="score">0/12</span></div>
  <div class="meter" aria-hidden="true"><span id="meterFill"></span></div>
- <div class="sync-line warning" id="syncStatus" role="status" aria-live="polite">Результат зберігається в телефоні</div>
+ <div class="sync-line warning" id="syncStatus" role="status" aria-live="polite">Прогрес зберігається в телефоні</div>
+ <div class="offline-chip" id="offlineState" role="status" aria-live="polite">⏳ Підготовка офлайн-режиму…</div>
 </section>
 
 <div id="progress" class="progress" aria-label="Прогрес місій"></div>
@@ -104,6 +106,7 @@ function escape(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt
 function syncText(txt,warn){$('syncStatus').textContent=txt;$('syncStatus').classList.toggle('warning',!!warn);}
 function refreshSync(){
  if(!RESULTS_ENDPOINT){syncText('Журнал на робочому Диску підготовлено. Підключення очікує URL /exec; дані зберігаються тут.',true);return;}
+ if(!navigator.onLine){syncText('📴 Без інтернету. Прогрес і '+outbox.length+' ненадісланих записів збережено на телефоні.',true);return;}
  if(sending){syncText('Надсилаємо результати…');return;}
  if(outbox.length){syncText('Є записи для повторної відправки: '+outbox.length+'.',true);return;}
  syncText(remoteInfo||'Збереження: журнал Google Таблиць (перевірка у вчителя).');
@@ -161,7 +164,7 @@ function enqueue(progress){
  writeOutbox(outbox);
 }
 async function sendPending(){
- if(!RESULTS_ENDPOINT||sending||!outbox.length){refreshSync();return;}
+ if(!RESULTS_ENDPOINT||sending||!outbox.length||!navigator.onLine){refreshSync();return;}
  sending=true;refreshSync();
  try{
   while(outbox.length){
@@ -204,6 +207,9 @@ $('copy').onclick=async()=>{
  try{await navigator.clipboard.writeText(t);$('copy').textContent='✓ Скопійовано';}
  catch{prompt('Скопіюй свій результат:',t);}
 };
+window.addEventListener('online',()=>{sendPending();refreshSync();});
+window.addEventListener('offline',refreshSync);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&navigator.onLine)sendPending();});
 render();sendPending();
 })();
-</script></body></html>
+</script><script src="../offline.js" defer></script></body></html>
