@@ -295,7 +295,7 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
 .hud-actions button{font-size:13px;min-height:40px;padding:8px 11px;border:1px solid #f1b653;color:#ffdc92;background:#352c27}
 .hud-actions .score{display:block;text-align:right}
 .save-indicator{font-size:11px;color:#b7d8cb;max-width:170px;text-align:right}
-.offline-alert{background:#402d24;border:1px solid #d99443;color:#ffe7ac;border-radius:13px;padding:10px 13px;font-size:13px;margin:12px 0}
+.cache-ready{display:block;color:#9bebbc;font-size:11px;font-weight:900;margin-top:4px}.offline-alert{background:#402d24;border:1px solid #d99443;color:#ffe7ac;border-radius:13px;padding:10px 13px;font-size:13px;margin:12px 0}
 .resume-card{border:1px solid #e7ab4c;background:linear-gradient(125deg,#453526,#212d43);border-radius:18px;padding:17px;margin:16px 0;box-shadow:0 8px 25px #060b1745}
 .resume-card strong{display:block;color:#ffe0a1;font-size:20px}.resume-card p{font-size:14px;color:#dbe4ed;margin:8px 0}
 .achievement-page{padding:0!important;overflow:hidden;border:1px solid #b98838!important;background:linear-gradient(160deg,#262e32,#101d2c 60%,#162337)!important}
@@ -320,7 +320,7 @@ h1{letter-spacing:-.04em;text-shadow:0 0 22px #57d5ed52}
 @media(max-width:460px){header h1{font-size:26px}.hud-actions button{font-size:11px;padding:8px}.achievement-levels{grid-template-columns:1fr 1fr}}
 @media print{header,#intro,#play,#finish,.achievement-actions,#offlineStatus,footer{display:none!important}body{background:white!important}main{padding:0}.achievement-page{border:0!important}}
 </style></head><body><main>
-<header><div><span class="tag">Інформатика · 7 клас · Python</span><h1>⚡ CODE QUEST 7</h1><small>Місії 10–19 · Епізод 2 · Python</small></div><div class="hud-actions"><div id="score" class="score" hidden>⭐ 0/10</div><button type="button" id="achievementOpen" hidden>🏅 Мої досягнення</button><small class="save-indicator" id="localSaveIndicator" hidden></small></div></header>
+<header><div><span class="tag">Інформатика · 7 клас · Python</span><h1>⚡ CODE QUEST 7</h1><small>Місії 10–19 · Епізод 2 · Python</small><small id="offlineCached" class="cache-ready" hidden>✅ Офлайн-версія готова</small></div><div class="hud-actions"><div id="score" class="score" hidden>⭐ 0/10</div><button type="button" id="achievementOpen" hidden>🏅 Мої досягнення</button><small class="save-indicator" id="localSaveIndicator" hidden></small></div></header>
 <div id="offlineStatus" class="offline-alert" role="status" hidden>📴 Немає інтернету. Квест і досягнення працюють офлайн, прогрес зберігається на цьому пристрої. Звіти для вчителя надішлються після повернення зв’язку.</div>
 <section id="intro" class="panel">
 <div class="character">🎮 ⚡ 🖥️</div>
@@ -1459,7 +1459,10 @@ window.addEventListener("offline",()=>{
 });
 $("offlineStatus").hidden=navigator.onLine!==false;
 if("serviceWorker" in navigator){
- navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{});
+ navigator.serviceWorker.register("./sw.js",{scope:"./"})
+  .then(()=>navigator.serviceWorker.ready)
+  .then(()=>{$("offlineCached").hidden=false})
+  .catch(()=>{});
 }
 showSavedGamePrompt();
 
