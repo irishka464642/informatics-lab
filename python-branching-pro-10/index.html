@@ -222,6 +222,27 @@ textarea[readonly]{min-height:150px}
 .finish-proof .details span{background:#253b57;border:1px solid #6585ab;padding:6px 9px;border-radius:9px}
 .finish-proof .meta{font-size:12px;color:#bed4e8;margin-top:10px;overflow-wrap:anywhere}
 .finish-proof .screen-note{font-size:14px;color:#ffe6b2;margin:12px 0 1px;font-weight:850}
+@media(max-width:480px){
+ .navtop{gap:8px}
+ .brand{min-width:0;gap:8px}
+ .brand-title{display:block;font-size:17px}
+ .eyebrow{font-size:10px;letter-spacing:.07em}
+ .navlinks{width:100%;justify-content:flex-end}
+ .navbutton{padding:7px 9px;font-size:12px}
+ .student-bar{top:0;gap:8px}
+ .student-fields{gap:6px}
+ .student-fields .field{flex:1 1 40%;min-width:0}
+ .student-fields .field.small{flex:1 1 25%;max-width:none}
+ .stats strong{font-size:18px}
+ .finish-proof{padding:14px 11px}
+ .final-hero{padding:16px 11px}
+ .final-hero .medal{font-size:56px}
+ .finish-proof h3{font-size:20px}
+ .finish-proof .student-name{font-size:22px}
+ .finish-proof .big-result{font-size:38px}
+ .finish-proof .details{font-size:12px}
+ .finish-proof .meta{font-size:11px}
+}
 #offlineCacheStatus{color:#bce9d7}
 
 @media(max-width:900px){.levels{grid-template-columns:repeat(5,minmax(0,1fr))}}
@@ -248,7 +269,7 @@ textarea[readonly]{min-height:150px}
  <div class="levels" id="levels"></div>
 </section>
 <main id="app"></main>
-<footer class="footer"><span>💾 Прогрес зберігається на цьому пристрої. Гра продовжується навіть без інтернету.</span><span id="offlineCacheStatus" role="status">📦 Для гарантованого офлайн-відкриття завантажте гру з інтернетом один раз.</span></footer>
+<footer class="footer"><span>💾 Прогрес зберігається в браузері цього телефона. Гра працює без інтернету.</span><span id="offlineCacheStatus" role="status">📦 Для гарантованого офлайн-відкриття завантажте гру з інтернетом один раз.</span></footer>
 </div>
 <script>
 
@@ -462,7 +483,7 @@ async function sendQueued(){
  var stage=compactPending();
  if(!stage)return;
  if(typeof navigator!=="undefined"&&navigator.onLine===false){
-  state.saveError="Немає інтернету. Найновіший результат збережено на комп’ютері.";
+  state.saveError="Немає інтернету. Найновіший результат збережено в браузері телефона.";
   store();syncStatus("📴 "+state.saveError+" Гра працює далі.",true);
   return;
  }
@@ -503,16 +524,16 @@ async function sendQueued(){
     state.saveError="";store();
     syncStatus("📤 Результат "+stage+"/"+TASK_COUNT+" передано на надсилання. Запис у таблиці перевіряє вчитель.",false);
    }else if(result.status==="timeout"){
-    state.saveError="За 10 секунд немає відповіді. Результат збережено на комп’ютері.";
+    state.saveError="За 10 секунд немає відповіді. Результат збережено в браузері телефона.";
     store();syncStatus("📴 "+state.saveError+" Можна продовжувати.",true);
    }else if(result.status!=="superseded"){
-    state.saveError="Не вдалося надіслати. Результат залишився на комп’ютері.";
+    state.saveError="Не вдалося надіслати. Результат залишився в браузері телефона.";
     store();syncStatus("⚠️ "+state.saveError+" Спробуємо з наступним рівнем.",true);
    }
   }
  }catch(e){
   if(state.pending[stage]){
-   state.saveError="Під час надсилання сталася помилка. Найновіший результат залишився на комп’ютері.";
+   state.saveError="Під час надсилання сталася помилка. Найновіший результат залишився в браузері телефона.";
    store();syncStatus("⚠️ "+state.saveError,true);
   }
  }finally{
@@ -837,12 +858,17 @@ function finishHTML(){
  '<div class="details"><span>✅ Правильні тести: '+testsCount()+'</span>'+
  '<span>🔎 Невдалі спроби: '+failures+'</span></div>'+
  '<div class="meta">Дата: '+esc(date)+' · Код проходження: '+esc(session)+'</div>'+
- '<p class="screen-note">Без інтернету? Зроби скриншот цього блоку й покажи вчителю.</p>'+
+ '<p class="screen-note">📸 Зроби скриншот цього результату на телефоні.</p>'+
  '</div>'+
  '<div class="actions" style="justify-content:center"><button type="button" class="btn primary" data-action="copy">📋 Скопіювати результат</button>'+
  '<a class="btn secondary" href="../python-branching-code-4/">← До частини 2</a>'+
  '<button type="button" class="btn secondary" data-action="restart">↻ Нова спроба</button></div>'+
- '<p class="micro" id="copyText"></p></div>';
+ '<p class="micro" id="copyText"></p>'+
+ '<div class="practice-info" style="max-width:760px;margin:14px auto;text-align:left">'+
+ '<strong>📱 Як зберегти результат на телефоні</strong>'+
+ '<p><strong>Android:</strong> одночасно натисни кнопку живлення та зменшення гучності.</p>'+
+ '<p><strong>iPhone:</strong> одночасно натисни бічну кнопку та збільшення гучності. На старіших моделях із кнопкою «Початок» — бічну/верхню кнопку та «Початок».</p>'+
+ '<p class="micro">Зображення збережеться у «Фото» або «Галереї». Не очищуй дані браузера, поки результати не надійшли до вчителя.</p></div></div>';
 }
 function render(){
  var done=state.level>=TASK_COUNT,m=missions[Math.min(state.level,TASK_COUNT-1)];
@@ -920,7 +946,7 @@ if(Object.keys(state.pending).length){compactPending();sendQueued();}
     return navigator.serviceWorker.ready;
    })
    .then(function(){
-    if(status)status.textContent="📦 Офлайн-копія гри готова на цьому пристрої.";
+    if(status)status.textContent="📦 Гру збережено для офлайн-відкриття на цьому телефоні.";
    })
    .catch(function(){
     if(status)status.textContent="📦 Прогрес збережено. Для офлайн-відкриття потрібне завантаження з інтернетом.";
